@@ -1,0 +1,19 @@
+# Backend
+backend/.venv/
+backend/.env.example
+
+backend/__pycache__/
+backend/**/__pycache__/
+backend/.env
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+pyproject.toml
+
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# OS
+.DS_Store
