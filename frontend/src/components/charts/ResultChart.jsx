@@ -1,5 +1,8 @@
 import React from "react";
-import Plot from "react-plotly.js";
+import createPlotlyComponent from "react-plotly.js/factory";
+import Plotly from "plotly.js/dist/plotly.js";
+
+const Plot = createPlotlyComponent(Plotly);
 
 /**
  * Renders a Plotly chart from the deterministic chart_spec returned by the

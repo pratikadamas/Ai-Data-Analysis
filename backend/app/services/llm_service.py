@@ -6,10 +6,14 @@ from __future__ import annotations
 import json
 import re
 
+# pyrefly: ignore [missing-import]
 from groq import Groq
 
+# pyrefly: ignore [missing-import]
 from app.config import settings
+# pyrefly: ignore [missing-import]
 from app.models.schemas import DatasetSchema
+# pyrefly: ignore [missing-import]
 from app.services.schema_service import schema_to_llm_prompt
 
 # Model to use for both SQL generation and explanation.
@@ -24,6 +28,8 @@ Rules:
 - Only reference the table and columns provided in the schema. Never invent columns.
 - Never use DROP, DELETE, INSERT, UPDATE, ALTER, CREATE, TRUNCATE, ATTACH, DETACH, COPY, PRAGMA.
 - Use DuckDB SQL syntax.
+- Always use standard function calls with parentheses for all aggregate functions (e.g., write MAX("Discount") or SUM("Total") instead of MAX Discount or SUM Total).
+- Always double-quote the table name and column names to ensure valid syntax regardless of spaces, special characters, or case-sensitivity (e.g. SELECT MAX("Discount") FROM "sales_data").
 - Return ONLY raw SQL, no markdown fences, no commentary.
 """
 
@@ -47,7 +53,9 @@ class LLMService:
                 "GROQ_API_KEY is not set. Add it to backend/.env to enable AI features."
             )
         if self._client is None:
-            self._client = Groq(api_key=settings.groq_api_key)
+            import httpx
+            http_client = httpx.Client()
+            self._client = Groq(api_key=settings.groq_api_key, http_client=http_client)
         return self._client
 
     def is_off_topic(self, question: str) -> bool:

@@ -54,17 +54,29 @@ export default function ChatPanel() {
 
       setChatMessages((prev) => [...prev, { role: "assistant", ...data }]);
     } catch (err) {
+      const httpStatus = err?.response?.status;
+      let errMsg;
+      if (httpStatus === 401 || httpStatus === 403) {
+        errMsg = "Your session has expired. Please log out and log in again.";
+      } else if (httpStatus === 404) {
+        errMsg = "Dataset session expired — please re-upload your file to continue.";
+      } else if (httpStatus === 503) {
+        errMsg = "AI service is temporarily unavailable. Please try again in a moment.";
+      } else {
+        errMsg = err?.response?.data?.detail || "Something went wrong. Please try again.";
+      }
       setChatMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: err?.response?.data?.detail || "Something went wrong answering that.",
+          content: errMsg,
           warning: true,
         },
       ]);
     } finally {
       setIsLoading(false);
     }
+
   };
 
   if (!dataset) {

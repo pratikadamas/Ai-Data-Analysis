@@ -3,7 +3,11 @@ schema + preview information.
 """
 from __future__ import annotations
 
+import logging
+
 from fastapi import APIRouter, File, HTTPException, UploadFile
+
+logger = logging.getLogger(__name__)
 
 from app.config import settings
 from app.db.duckdb_manager import duckdb_manager, filename_to_table_name
@@ -60,9 +64,11 @@ async def upload_dataset(file: UploadFile = File(...)) -> UploadResponse:
 
     except UnsupportedFileError as exc:
         duckdb_manager.drop_connection(dataset_id)
+        logger.warning("Unsupported file: %s", exc)
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except Exception as exc:  # noqa: BLE001 - surfaced as a clean 400 to the client
         duckdb_manager.drop_connection(dataset_id)
+        logger.exception("File processing failed for %s: %s", safe_name, exc)
         raise HTTPException(status_code=400, detail=f"Failed to process file: {exc}") from exc
     finally:
         # Delete the temp file from disk once loaded into DuckDB (data now

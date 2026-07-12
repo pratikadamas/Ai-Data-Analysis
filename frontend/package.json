@@ -10,9 +10,10 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "axios": "^1.7.7",
     "ag-grid-community": "^32.2.0",
     "ag-grid-react": "^32.2.0",
+    "axios": "^1.7.7",
+    "lucide-react": "^1.24.0",
     "plotly.js": "^2.35.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -27,6 +28,6 @@
     "eslint": "^8.57.1",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.13",
-    "vite": "^5.4.8"
+    "vite": "^8.1.4"
   }
 }

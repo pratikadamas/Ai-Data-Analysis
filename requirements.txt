@@ -1,0 +1,35 @@
+# --- Web framework ---
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+python-multipart>=0.0.18         # required for file upload (UploadFile)
+
+# --- Data engine / file formats ---
+duckdb==1.0.0
+pandas==2.2.2
+openpyxl==3.1.5                  # .xlsx / .xlsm read+write
+xlrd==2.0.1                      # ADDED: needed for legacy .xls files
+sqlparse==0.5.1                  # SQL validation/parsing
+
+# --- Visualization ---
+plotly==5.24.1
+
+# --- Config ---
+python-dotenv==1.0.1
+
+# --- LLM (NL -> SQL) ---
+groq==0.11.0                     # PINNED: was unpinned, risk of breaking on redeploy
+
+# --- Validation ---
+pydantic==2.9.2
+email-validator==2.2.0           # ADDED: required at runtime for pydantic EmailStr
+
+# --- Database (MongoDB Atlas) ---
+pymongo==4.17.0                  # pulls in dnspython automatically for mongodb+srv://
+certifi==2024.8.30               # ADDED: explicit CA bundle for TLS to Atlas
+
+# --- Auth ---
+bcrypt==5.0.0                    # password hashing
+pyjwt==2.8.0                     # JWT access/refresh tokens
+
+# --- Optional but recommended ---
+slowapi==0.1.9                   # rate-limit OTP-send endpoint against abuse

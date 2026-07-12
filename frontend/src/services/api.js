@@ -5,12 +5,21 @@ const api = axios.create({
   timeout: 60000,
 });
 
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 export const uploadDataset = (file) => {
   const formData = new FormData();
   formData.append("file", file);
-  return api.post("/upload", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  return api.post("/upload", formData);
 };
 
 export const getSchema = (datasetId) => api.get(`/dataset/${datasetId}/schema`);

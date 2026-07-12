@@ -1,11 +1,12 @@
 """FastAPI application entrypoint."""
 from __future__ import annotations
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import chat, dataset, download, explore, upload
+from app.api.routes import chat, dataset, download, explore, upload, auth
 from app.config import settings
+from app.utils.auth import get_current_user
 
 app = FastAPI(
     title="AI Data Analyst API",
@@ -21,11 +22,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(upload.router)
-app.include_router(explore.router)
-app.include_router(chat.router)
-app.include_router(dataset.router)
-app.include_router(download.router)
+app.include_router(auth.router)
+app.include_router(upload.router, dependencies=[Depends(get_current_user)])
+app.include_router(explore.router, dependencies=[Depends(get_current_user)])
+app.include_router(chat.router, dependencies=[Depends(get_current_user)])
+app.include_router(dataset.router, dependencies=[Depends(get_current_user)])
+app.include_router(download.router, dependencies=[Depends(get_current_user)])
 
 
 @app.get("/api/health")

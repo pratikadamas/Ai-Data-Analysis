@@ -25,7 +25,12 @@ async def chat(req: ChatRequest) -> ChatResponse:
     schema = extract_schema(conn, req.dataset_id)
 
     # --- Off-topic guard ---------------------------------------------------
-    if llm_service.is_off_topic(req.question):
+    try:
+        is_off_topic = llm_service.is_off_topic(req.question)
+    except LLMServiceError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    if is_off_topic:
         return ChatResponse(
             answer="I can only help with questions about your uploaded data.",
             off_topic=True,

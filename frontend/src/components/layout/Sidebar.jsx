@@ -4,6 +4,7 @@ const NAV_ITEMS = [
   { key: "preview", label: "Data Preview", icon: "📋" },
   { key: "explore", label: "Explore", icon: "📊" },
   { key: "chat", label: "Ask AI", icon: "💬" },
+  { key: "profile", label: "User Profile", icon: "👤" },
 ];
 
 export default function Sidebar({ active, onSelect }) {

@@ -5,6 +5,7 @@ import re
 import uuid
 from pathlib import Path
 
+# pyrefly: ignore [missing-import]
 from app.config import settings
 
 _SAFE_CHARS = re.compile(r"[^A-Za-z0-9._-]")

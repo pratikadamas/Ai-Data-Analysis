@@ -1,9 +1,12 @@
 """Extracts and caches schema information for a loaded DuckDB table."""
 from __future__ import annotations
 
+# pyrefly: ignore [missing-import]
 import duckdb
 
+# pyrefly: ignore [missing-import]
 from app.db.duckdb_manager import DuckDBManager, duckdb_manager
+# pyrefly: ignore [missing-import]
 from app.models.schemas import ColumnSchema, DatasetSchema
 
 _NUMERIC_TYPES = {
@@ -26,17 +29,17 @@ def extract_schema(conn: duckdb.DuckDBPyConnection, dataset_id: str) -> DatasetS
         return _schema_cache[dataset_id]
 
     table = duckdb_manager.get_table_name(dataset_id)
-    describe_rows = conn.execute(f"DESCRIBE {table}").fetchall()
-    row_count = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+    describe_rows = conn.execute(f'DESCRIBE "{table}"').fetchall()
+    row_count = conn.execute(f'SELECT COUNT(*) FROM "{table}"').fetchone()[0]
 
     columns: list[ColumnSchema] = []
     for col_name, col_type, *_rest in describe_rows:
         base_type = col_type.split("(")[0].upper()
         missing = conn.execute(
-            f'SELECT COUNT(*) FROM {table} WHERE "{col_name}" IS NULL'
+            f'SELECT COUNT(*) FROM "{table}" WHERE "{col_name}" IS NULL'
         ).fetchone()[0]
         distinct = conn.execute(
-            f'SELECT COUNT(DISTINCT "{col_name}") FROM {table}'
+            f'SELECT COUNT(DISTINCT "{col_name}") FROM "{table}"'
         ).fetchone()[0]
 
         is_numeric = base_type in _NUMERIC_TYPES
@@ -61,7 +64,7 @@ def extract_schema(conn: duckdb.DuckDBPyConnection, dataset_id: str) -> DatasetS
         f"""
         SELECT COUNT(*) - COUNT(*) FILTER (WHERE rn = 1) FROM (
             SELECT ROW_NUMBER() OVER (PARTITION BY {col_list}) AS rn
-            FROM {table}
+            FROM "{table}"
         ) t
         """
     ).fetchone()[0]
