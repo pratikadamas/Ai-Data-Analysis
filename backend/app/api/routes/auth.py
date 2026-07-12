@@ -201,12 +201,11 @@ async def forgot_password(payload: ForgotPasswordRequest):
     users_col = db["users"]
     user = users_col.find_one({"email": payload.email.strip().lower()})
     
-    # Return success even if user not found for security purposes (no account enumeration)
     if not user:
-        return {
-            "status": "success",
-            "message": "If the email is registered, a password reset code has been sent."
-        }
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized access"
+        )
         
     otp = generate_otp()
     otp_hash = hash_password(otp)

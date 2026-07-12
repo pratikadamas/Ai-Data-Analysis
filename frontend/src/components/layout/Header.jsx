@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDarkMode } from "../../hooks/useDarkMode.js";
 import { useDataset } from "../../context/DatasetContext.jsx";
 import { useUser } from "../../context/UserContext.jsx";
+import { toast } from "react-toastify";
 
 export default function Header() {
   const [isDark, setIsDark] = useDarkMode();
@@ -14,6 +15,7 @@ export default function Header() {
   const handleLogoutClick = () => {
     clearDataset();
     logout();
+    toast.success("Successfully logged out!");
   };
 
   return (
