@@ -1,19 +1,26 @@
-# Backend
+# Virtual Environments
+.venv/
+/.venv/
 backend/.venv/
-backend/.env.example
 
+# Environment files
+.env
+.env.*
+.env.example
+
+# Backend Config & Cache
 backend/__pycache__/
 backend/**/__pycache__/
-backend/.env
+.env
+**/.env
 backend/uploads/*
 !backend/uploads/.gitkeep
 
-pyproject.toml
-
-
-# Frontend
+# Frontend Config & Cache
 frontend/node_modules/
 frontend/dist/
+frontend/.eslintcache
 
 # OS
 .DS_Store
+Thumbs.db
