@@ -3,6 +3,8 @@ import { DatasetProvider } from "./context/DatasetContext.jsx";
 import { useUser } from "./context/UserContext.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Auth from "./pages/Auth.jsx";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function App() {
   const { user, loading } = useUser();
@@ -20,13 +22,16 @@ export default function App() {
     );
   }
 
-  if (!user) {
-    return <Auth />;
-  }
-
   return (
-    <DatasetProvider>
-      <Dashboard />
-    </DatasetProvider>
+    <>
+      {user ? (
+        <DatasetProvider>
+          <Dashboard />
+        </DatasetProvider>
+      ) : (
+        <Auth />
+      )}
+      <ToastContainer position="bottom-right" autoClose={4000} theme="colored" />
+    </>
   );
 }

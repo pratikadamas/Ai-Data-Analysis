@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useUser } from "../../context/UserContext.jsx";
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from "react-toastify";
 
 export default function UserProfile() {
   const { user, changePassword } = useUser();
@@ -12,8 +13,6 @@ export default function UserProfile() {
   const [showPassword, setShowPassword] = useState(false);
   
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
 
   const initials = user?.username ? user.username.substring(0, 2).toUpperCase() : "US";
   const memberDate = user?.created_at
@@ -26,21 +25,22 @@ export default function UserProfile() {
 
   const handleChangePasswordSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
 
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setError("Please fill out all fields.");
+      const msg = "Please fill out all fields.";
+      toast.warning(msg);
       return;
     }
 
     if (newPassword.length < 6) {
-      setError("New password must be at least 6 characters long.");
+      const msg = "New password must be at least 6 characters long.";
+      toast.warning(msg);
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError("New password and confirmation password do not match.");
+      const msg = "New password and confirmation password do not match.";
+      toast.warning(msg);
       return;
     }
 
@@ -49,12 +49,13 @@ export default function UserProfile() {
     setLoading(false);
 
     if (result.success) {
-      setSuccess("Your password has been changed successfully!");
+      const msg = "Your password has been changed successfully!";
+      toast.success(msg);
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } else {
-      setError(result.error);
+      toast.error(result.error);
     }
   };
 
@@ -104,18 +105,6 @@ export default function UserProfile() {
           <p className="text-xs text-gray-500 dark:text-gray-400 mb-5">
             Ensure your account uses a secure password to prevent unauthorized access.
           </p>
-
-          {/* Feedback banners */}
-          {error && (
-            <div className="mb-4 p-3 text-xs text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 rounded-lg">
-              ⚠️ {error}
-            </div>
-          )}
-          {success && (
-            <div className="mb-4 p-3 text-xs text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/30 rounded-lg">
-              ✨ {success}
-            </div>
-          )}
 
           <form onSubmit={handleChangePasswordSubmit} className="space-y-4">
             <div>

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useUser } from "../context/UserContext.jsx";
 import { Eye, EyeOff, X } from "lucide-react";
+import { toast } from "react-toastify";
 
 export default function Auth() {
-  const { login, register, verifyOtp, forgotPassword, resetPassword, error, setError } = useUser();
+  const { login, register, verifyOtp, forgotPassword, resetPassword } = useUser();
   const [view, setView] = useState("login"); // login | register | verify | forgot | reset
   
   // Form states
@@ -11,14 +12,11 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
-  const [statusMessage, setStatusMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const switchView = (newView) => {
     setView(newView);
-    setError(null);
-    setStatusMessage("");
     // We intentionally don't clear email when switching views 
     // so it can be passed from register -> verify or forgot -> reset
     setUsername("");
@@ -31,15 +29,16 @@ export default function Auth() {
     e.preventDefault();
     if (!email || !password) return;
     setLoading(true);
-    setError(null);
-    const result = await login(email, password);
+    await login(email, password);
     setLoading(false);
-    if (!result.success) {
-      if (result.isUnverified) {
-        setEmail(result.email || email);
-        switchView("verify");
-        setStatusMessage("Please verify your account using the OTP code sent to your email.");
-      }
+    // Note: UserContext updates the user state and shows toasts or handles redirect
+    // But since login might fail and return a result, let's verify if we need to switch view:
+    const result = await login(email, password);
+    if (!result.success && result.isUnverified) {
+      setEmail(result.email || email);
+      switchView("verify");
+      const statusMsg = "Please verify your account using the OTP code sent to your email.";
+      toast.warning(statusMsg);
     }
   };
 
@@ -47,13 +46,15 @@ export default function Auth() {
     e.preventDefault();
     if (!username || !email || !password) return;
     setLoading(true);
-    setError(null);
     const result = await register(username, email, password);
     setLoading(false);
     if (result.success) {
       setEmail(result.email);
       switchView("verify");
-      setStatusMessage("Account registered! A 6-digit OTP code has been sent to your email.");
+      const statusMsg = "Account registered! A 6-digit OTP code has been sent to your email.";
+      toast.success(statusMsg);
+    } else {
+      toast.error(result.error);
     }
   };
 
@@ -61,12 +62,14 @@ export default function Auth() {
     e.preventDefault();
     if (!email || !otp) return;
     setLoading(true);
-    setError(null);
     const result = await verifyOtp(email, otp);
     setLoading(false);
     if (result.success) {
       switchView("login");
-      setStatusMessage("Verification successful! You can now sign in.");
+      const statusMsg = "Verification successful! You can now sign in.";
+      toast.success(statusMsg);
+    } else {
+      toast.error(result.error);
     }
   };
 
@@ -74,12 +77,14 @@ export default function Auth() {
     e.preventDefault();
     if (!email) return;
     setLoading(true);
-    setError(null);
     const result = await forgotPassword(email);
     setLoading(false);
     if (result.success) {
       switchView("reset");
-      setStatusMessage("If the email matches, a reset OTP code was sent. Fill details below to reset.");
+      const statusMsg = "If the email matches, a reset OTP code was sent. Fill details below to reset.";
+      toast.success(statusMsg);
+    } else {
+      toast.error(result.error);
     }
   };
 
@@ -87,12 +92,14 @@ export default function Auth() {
     e.preventDefault();
     if (!email || !password || !otp) return;
     setLoading(true);
-    setError(null);
     const result = await resetPassword(email, password, otp);
     setLoading(false);
     if (result.success) {
       switchView("login");
-      setStatusMessage("Password reset successful! Please login with your new password.");
+      const statusMsg = "Password reset successful! Please login with your new password.";
+      toast.success(statusMsg);
+    } else {
+      toast.error(result.error);
     }
   };
 
@@ -118,18 +125,6 @@ export default function Auth() {
             {view === "reset" && "Create a new strong password"}
           </p>
         </div>
-
-        {/* Feedback Messages */}
-        {error && (
-          <div className="mb-4 p-3.5 text-xs text-red-200 bg-red-950/40 border border-red-500/30 rounded-lg animate-shake">
-            ⚠️ {error}
-          </div>
-        )}
-        {statusMessage && (
-          <div className="mb-4 p-3.5 text-xs text-emerald-200 bg-emerald-950/40 border border-emerald-500/30 rounded-lg">
-            ✨ {statusMessage}
-          </div>
-        )}
 
         {/* Dynamic Views */}
         {view === "login" && (

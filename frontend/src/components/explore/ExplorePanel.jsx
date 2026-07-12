@@ -5,6 +5,7 @@ import ResultChart from "../charts/ResultChart.jsx";
 import ResultTable from "../charts/ResultTable.jsx";
 import SqlViewer from "../charts/SqlViewer.jsx";
 import DownloadButtons from "../charts/DownloadButtons.jsx";
+import { toast } from "react-toastify";
 
 const CHART_TYPES = ["bar", "line", "pie", "scatter", "histogram", "box", "area"];
 const AGGREGATIONS = ["none", "sum", "avg", "count", "min", "max"];
@@ -16,7 +17,6 @@ export default function ExplorePanel() {
   const [aggregation, setAggregation] = useState("sum");
   const [chartType, setChartType] = useState("bar");
   const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   if (!dataset) {
@@ -27,10 +27,10 @@ export default function ExplorePanel() {
 
   const runQuery = async () => {
     if (!xColumn) {
-      setError("Please select an X-axis column.");
+      const msg = "Please select an X-axis column.";
+      toast.warning(msg);
       return;
     }
-    setError(null);
     setResult(null);
     setLoading(true);
     try {
@@ -42,13 +42,16 @@ export default function ExplorePanel() {
         chart_type: chartType,
       });
       setResult(data);
+      toast.success("Chart generated successfully!");
     } catch (err) {
       const status = err?.response?.status;
+      let msg;
       if (status === 404) {
-        setError("Dataset session expired. Please re-upload your file.");
+        msg = "Dataset session expired. Please re-upload your file.";
       } else {
-        setError(err?.response?.data?.detail || "Query failed. Please try different columns.");
+        msg = err?.response?.data?.detail || "Query failed. Please try different columns.";
       }
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -81,12 +84,6 @@ export default function ExplorePanel() {
           "Generate Chart"
         )}
       </button>
-
-      {error && (
-        <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-          <p className="text-sm text-red-600 dark:text-red-400">⚠️ {error}</p>
-        </div>
-      )}
 
       {result && (
         <div className="space-y-3">

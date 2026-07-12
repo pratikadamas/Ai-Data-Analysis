@@ -5,6 +5,7 @@ import ResultChart from "../charts/ResultChart.jsx";
 import ResultTable from "../charts/ResultTable.jsx";
 import SqlViewer from "../charts/SqlViewer.jsx";
 import { exportChatAsHtml } from "../../utils/exportChat.js";
+import { toast } from "react-toastify";
 
 const EXAMPLE_QUESTIONS = [
   "Which category has the highest total?",
@@ -48,7 +49,9 @@ export default function ChatPanel() {
       if (data.off_topic) {
         // Remove the user message we just added
         setChatMessages((prev) => prev.slice(0, -1));
-        setPopup("🚫 I can only help with questions about your uploaded data.");
+        const warnMsg = "🚫 I can only help with questions about your uploaded data.";
+        setPopup(warnMsg);
+        toast.warning(warnMsg);
         return;
       }
 
@@ -65,6 +68,7 @@ export default function ChatPanel() {
       } else {
         errMsg = err?.response?.data?.detail || "Something went wrong. Please try again.";
       }
+      toast.error(errMsg);
       setChatMessages((prev) => [
         ...prev,
         {

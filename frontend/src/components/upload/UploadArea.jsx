@@ -1,25 +1,26 @@
 import React, { useCallback, useState } from "react";
 import { uploadDataset } from "../../services/api.js";
 import { useDataset } from "../../context/DatasetContext.jsx";
+import { toast } from "react-toastify";
 
 const ACCEPTED = ".csv,.xlsx,.xls,.db,.sqlite,.sql";
 
 export default function UploadArea() {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [error, setError] = useState(null);
   const { setDataset } = useDataset();
 
   const handleFile = useCallback(
     async (file) => {
       if (!file) return;
       setIsUploading(true);
-      setError(null);
       try {
         const { data } = await uploadDataset(file);
         setDataset(data);
+        toast.success("Dataset uploaded successfully!");
       } catch (err) {
-        setError(err?.response?.data?.detail || "Upload failed. Please try again.");
+        const errMsg = err?.response?.data?.detail || "Upload failed. Please try again.";
+        toast.error(errMsg);
       } finally {
         setIsUploading(false);
       }
@@ -61,8 +62,6 @@ export default function UploadArea() {
           onChange={(e) => handleFile(e.target.files?.[0])}
         />
       </label>
-
-      {error && <p className="mt-4 text-sm text-red-500">{error}</p>}
     </div>
   );
 }
