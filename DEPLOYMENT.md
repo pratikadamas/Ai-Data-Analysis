@@ -11,20 +11,23 @@ There are two primary ways to deploy this application: the **Split Architecture*
 
 ---
 
-### Option A: Unified Deployment (Vercel Only)
+## Option A: Unified Deployment (Vercel Only)
+
 Vercel *can* host both the React frontend and the Python FastAPI backend in a single deployment using a `vercel.json` configuration file at the root of your project.
 
 1. Ensure the `vercel.json` file is present in your root directory. It contains the configuration needed to map `/api/*` routes to your Python backend and the rest to your Vite frontend.
-2. Import the project into Vercel. 
+2. Import the project into Vercel.
 3. Vercel will automatically build the frontend and set up the Python environment for the backend based on `backend/requirements.txt`.
 4. Ensure you add your environment variables (`GROQ_API_KEY`, `MONGODB_URI`, etc.) in the Vercel project settings.
 
 ---
 
-### Option B: Split Architecture (Render Backend + Vercel Frontend)
+## Option B: Split Architecture (Render Backend + Vercel Frontend)
+
 Render is ideal for the backend because it provides a persistent Web Service that keeps your DuckDB instance loaded in memory during a user's session.
 
 #### 1. Backend (Render)
+
 1. Go to [Render.com](https://render.com/) and connect your GitHub account.
 2. Click **New +** and select **Web Service**.
 3. Select your repository.
@@ -34,10 +37,11 @@ Render is ideal for the backend because it provides a persistent Web Service tha
    - **Build Command:** `pip install -r requirements.txt`
    - **Start Command:** `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 5. Click **Advanced** and add **all** of the Environment Variables from your `.env` file (MongoDB URI, Groq API Key, Mail settings).
-6. Click **Create Web Service**. 
+6. Click **Create Web Service**.
 7. Save the provided live URL (e.g., `https://ai-data-analyst-backend.onrender.com`).
 
 #### 2. Frontend (Vercel)
+
 1. Go to [Vercel.com](https://vercel.com/) and connect your GitHub account.
 2. Click **Add New -> Project** and import your repository.
 3. In the configuration settings, set the **Root Directory** to `frontend`.

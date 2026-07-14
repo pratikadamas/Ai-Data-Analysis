@@ -19,6 +19,7 @@
 > The backend runs queries securely through DuckDB with a strict read-only SQL whitelist, while the frontend provides manual chart building and an AI chat mode powered by **Groq** (Llama 3.3 70B).
 
 ## 📚 Documentation
+
 - 📖 [Project Instructions & Codebase Guide](INSTRUCTIONS.md)
 - 🚀 [Deployment Guide](DEPLOYMENT.md)
 - 🏗️ [Architecture Overview](ARCHITECTURE.md)
@@ -72,6 +73,7 @@ pip install -r requirements.txt
 cp .env.example .env   # 🔑 Add your GROQ_API_KEY
 uvicorn app.main:app --reload --port 8000
 ```
+
 *API docs available at [http://localhost:8000/docs](http://localhost:8000/docs) once running.*
 
 ### 🎨 Frontend Setup
@@ -81,6 +83,7 @@ cd frontend
 npm install
 npm run dev
 ```
+
 *The Vite dev server proxies `/api/*` to `http://localhost:8000`.*
 
 ---
@@ -88,7 +91,7 @@ npm run dev
 ## 🔐 Environment Variables (`backend/.env`)
 
 | Variable | Required | Description |
-|---|:---:|---|
+| --- | :---: | --- |
 | `GROQ_API_KEY` | 🟢 **Yes** | Groq API key for LLM features. Get one free at [console.groq.com/keys](https://console.groq.com/keys) |
 | `APP_ENV` | ⚪ No | `development` (default) or `production` |
 | `MAX_UPLOAD_MB` | ⚪ No | Max file size in MB (default: `200`) |
@@ -102,31 +105,37 @@ npm run dev
 ## ✨ Features Implemented
 
 ### 📥 Data Ingestion
+
 - **Drag-and-drop** or click-to-upload for CSV, Excel (`.xlsx`/`.xls`), SQLite (`.db`/`.sqlite`), and SQL dump (`.sql`).
 - Format auto-detection → loaded into a per-session in-memory DuckDB database.
 - **Smart Naming**: The uploaded filename becomes the SQL table name (e.g. `sales_2024.csv` → table `sales_2024`), ensuring natural AI queries.
 
 ### 🤖 AI Chat (`/api/chat`)
+
 - 🛡️ **Off-topic guard**: Fast LLM classifier rejects non-data questions without polluting chat history.
 - ⚡ **On-topic flow**: Question → Groq Llama 3.3 70B generates SQL → Whitelist validation → DuckDB execution → Groq explains results → Deterministic chart selection.
 - 💾 **Persistent Chat**: Chat history is preserved across tab switches.
 - 📄 **Export Chat**: Download the entire conversation as a styled, printable HTML report!
 
 ### 🔍 Manual Explore (`/api/explore`)
+
 - Pick X / Y columns, aggregation (sum/avg/count/min/max), and chart type.
 - Plotly-rendered charts: bar, line, scatter, horizontal bar, KPI, heatmap, table.
 
 ### 🛡️ SQL Safety
+
 - Whitelist-based validator rejects destructive commands (`DROP`, `DELETE`, `INSERT`, `UPDATE`, etc.).
 - Multi-statement detection, leading-keyword check, and sqlparse-based parse tree validation.
 
 ### 📊 Result Display
+
 - 🗣️ AI explanation text in plain English.
 - 💻 Generated SQL (collapsible SQL viewer with copy button).
 - 📋 **Paginated data table** (sticky headers, null highlighting).
 - 📉 Plotly charts based on returned data.
 
 ### 📥 Downloads
+
 - `/api/download/csv` and `/api/download/excel` with SQL re-validation before export.
 
 ---
