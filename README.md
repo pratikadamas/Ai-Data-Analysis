@@ -20,6 +20,7 @@
 
 ## 📚 Documentation
 - 📖 [Project Instructions & Codebase Guide](INSTRUCTIONS.md)
+- 🚀 [Deployment Guide](DEPLOYMENT.md)
 - 🏗️ [Architecture Overview](ARCHITECTURE.md)
 - ⚙️ [Backend README](backend/README.md)
 - 🎨 [Frontend README](frontend/README.md)
@@ -152,5 +153,5 @@ npm run dev
 - [ ] 📱 Mobile-responsive layout
 
 <div align="center">
-  <i>Built with ❤️ for data analysts everywhere!</i>
+  <i>Built with ❤️ for data analysts everywhere! Happy Querying! 📊✨</i>
 </div>

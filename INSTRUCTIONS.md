@@ -84,3 +84,15 @@ Here is exactly how to get all the required keys for your `.env` file to get the
   - *The Visualizer.* Takes the JSON data and layout configurations returned by the backend and renders beautiful, interactive graphs using Plotly.js.
 - **`frontend/src/context/AuthContext.jsx`** 🔐
   - *The State Manager.* Globally manages whether the user is currently logged in, stores their JWT token securely, and handles logouts across the entire application.
+
+---
+
+## 🚀 Deployment
+
+For a comprehensive guide on deploying this application (including the Vercel Monorepo setup or the Render Split Architecture), please see our dedicated [Deployment Guide](DEPLOYMENT.md).
+
+<br/>
+
+<div align="center">
+  <i>Master your codebase and deploy with confidence! 🚀🌐</i>
+</div>
