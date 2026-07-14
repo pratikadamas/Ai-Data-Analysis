@@ -1,12 +1,15 @@
 import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { DatasetProvider } from "./context/DatasetContext.jsx";
 import { useUser } from "./context/UserContext.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Auth from "./pages/Auth.jsx";
+import LandingPage from "./pages/LandingPage.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export default function App() {
+// Protected Route Wrapper
+function ProtectedRoute({ children }) {
   const { user, loading } = useUser();
 
   if (loading) {
@@ -22,15 +25,40 @@ export default function App() {
     );
   }
 
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
+export default function App() {
+  const { user } = useUser();
+
   return (
     <>
-      {user ? (
-        <DatasetProvider>
-          <Dashboard />
-        </DatasetProvider>
-      ) : (
-        <Auth />
-      )}
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        
+        <Route 
+          path="/login" 
+          element={user ? <Navigate to="/app" replace /> : <Auth />} 
+        />
+        
+        <Route 
+          path="/app" 
+          element={
+            <ProtectedRoute>
+              <DatasetProvider>
+                <Dashboard />
+              </DatasetProvider>
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Fallback to home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
       <ToastContainer position="bottom-right" autoClose={4000} theme="colored" />
     </>
   );
