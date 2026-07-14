@@ -26,3 +26,9 @@ npm run dev
 ```
 
 > 💡 The Vite server automatically proxies `/api` requests to the backend on `localhost:8000`. Make sure the backend is running simultaneously!
+
+<br/>
+
+<div align="center">
+  <i>Delivering a beautiful, glassmorphism-inspired analytical experience! 🎨✨</i>
+</div>

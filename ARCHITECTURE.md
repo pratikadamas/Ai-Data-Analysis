@@ -68,3 +68,9 @@ graph TD
 6. **Execution**: The query runs against the temporary in-memory `DuckDB` instance assigned to that dataset.
 7. **Explanation & Charting**: The backend sends the query results back to the LLM for a plain-English explanation, and selects an appropriate chart type.
 8. **Frontend Rendering**: The user sees the AI's explanation, a data table, the raw SQL, and a Plotly chart!
+
+<br/>
+
+<div align="center">
+  <i>Designed for scalability, security, and lightning-fast AI interactions! 🏗️🧠</i>
+</div>
