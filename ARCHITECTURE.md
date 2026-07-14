@@ -9,6 +9,7 @@ This document describes the high-level architecture of the **AI Data Analyst** a
 ## 🌐 Overview
 
 The application follows a standard client-server architecture:
+
 - **Frontend**: A React application built with Vite and Tailwind CSS.
 - **Backend**: A FastAPI application in Python, utilizing DuckDB for in-memory analytical processing.
 - **AI Integration**: Powered by Groq's Llama 3.3 70B for natural language understanding and SQL generation.
@@ -68,3 +69,9 @@ graph TD
 6. **Execution**: The query runs against the temporary in-memory `DuckDB` instance assigned to that dataset.
 7. **Explanation & Charting**: The backend sends the query results back to the LLM for a plain-English explanation, and selects an appropriate chart type.
 8. **Frontend Rendering**: The user sees the AI's explanation, a data table, the raw SQL, and a Plotly chart!
+
+<br/>
+
+<div align="center">
+  <i>Designed for scalability, security, and lightning-fast AI interactions! 🏗️🧠</i>
+</div>

@@ -35,3 +35,9 @@ uvicorn app.main:app --reload --port 8000
 ```
 
 > 💡 Check out the interactive API documentation at [http://localhost:8000/docs](http://localhost:8000/docs) after starting the server!
+
+<br/>
+
+<div align="center">
+  <i>Powering your data analysis with speed, AI, and robust security! ⚙️🦆</i>
+</div>
