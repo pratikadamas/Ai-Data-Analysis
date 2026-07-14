@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
@@ -7,9 +7,8 @@ import {
   MessageSquare, 
   ShieldCheck, 
   Zap, 
-  ChevronDown, 
-  ChevronUp, 
-  ArrowRight
+  ArrowRight,
+  Sparkles
 } from "lucide-react";
 import ThemeToggle from "../components/ThemeToggle.jsx";
 
@@ -41,32 +40,7 @@ const features = [
   }
 ];
 
-const faqs = [
-  {
-    question: "Is my data stored permanently on your servers?",
-    answer: "No. Your data is loaded into a transient, in-memory DuckDB session. Once your session ends, the data is completely wiped from our temporary storage."
-  },
-  {
-    question: "What file formats do you support?",
-    answer: "We currently support CSV, Excel (.xlsx, .xls), SQLite (.db, .sqlite), and raw SQL dumps. Support for JSON and Parquet is coming soon!"
-  },
-  {
-    question: "How does the AI analysis work?",
-    answer: "When you ask a question, we securely send your query and your dataset's schema (column names and types) to our LLM. It generates the exact SQL query needed, runs it against your data, and returns the result and visualization."
-  },
-  {
-    question: "Can I deploy this on my own infrastructure?",
-    answer: "Yes! The entire project is open-source. You can clone the repository and deploy the frontend on Vercel and the backend on Render or your own servers."
-  }
-];
-
 export default function LandingPage() {
-  const [openFaq, setOpenFaq] = useState(null);
-
-  const toggleFaq = (index) => {
-    setOpenFaq(openFaq === index ? null : index);
-  };
-
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-[#050505] text-gray-900 dark:text-gray-100 font-sans transition-colors duration-500 overflow-x-hidden selection:bg-brand-500/30">
       
@@ -79,14 +53,14 @@ export default function LandingPage() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20 items-center">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-brand-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-glow">
+            <Link to="/" className="flex items-center space-x-3 group">
+              <div className="w-10 h-10 bg-gradient-to-br from-brand-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-glow group-hover:scale-105 transition-transform">
                 <Database className="w-6 h-6" />
               </div>
               <span className="font-bold text-2xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">
                 AI Data Analyst
               </span>
-            </div>
+            </Link>
             <div className="flex items-center space-x-6">
               <ThemeToggle />
               <Link to="/login" className="text-gray-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-brand-400 font-medium transition-colors">
@@ -105,8 +79,8 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section className="relative pt-40 pb-32 lg:pt-56 lg:pb-40 overflow-hidden">
-        {/* Deep Space Gradients */}
-        <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[120%] h-[800px] bg-gradient-to-b from-brand-500/20 via-indigo-500/10 to-transparent blur-[120px] -z-10 dark:from-brand-500/20 dark:via-purple-500/10 rounded-[100%] pointer-events-none"></div>
+        {/* Deep Space Gradients - Adjusted opacity for light mode visibility */}
+        <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[120%] h-[800px] bg-gradient-to-b from-brand-500/10 via-indigo-500/5 to-transparent dark:from-brand-500/20 dark:via-purple-500/10 blur-[120px] -z-10 rounded-[100%] pointer-events-none"></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col lg:flex-row items-center gap-16">
           <motion.div 
@@ -119,13 +93,14 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="inline-block mb-6 px-4 py-1.5 rounded-full border border-brand-500/30 bg-brand-500/10 text-brand-700 dark:text-brand-300 font-medium text-sm tracking-wide shadow-glow backdrop-blur-md"
+              className="inline-flex items-center mb-6 px-4 py-1.5 rounded-full border border-brand-500/30 bg-brand-500/10 text-brand-700 dark:text-brand-300 font-medium text-sm tracking-wide shadow-glow backdrop-blur-md"
             >
-              🚀 The Next Generation of Data Analysis
+              <Sparkles className="w-4 h-4 mr-2" />
+              The Next Generation of Data Analysis
             </motion.div>
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight mb-8 leading-[1.1]">
               Talk to your <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 via-indigo-500 to-purple-500 animate-gradient-x">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-indigo-500 to-purple-600 dark:from-brand-500 dark:via-indigo-500 dark:to-purple-500 animate-gradient-x">
                 Data Context.
               </span>
             </h1>
@@ -135,7 +110,8 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row justify-center lg:justify-start items-center space-y-4 sm:space-y-0 sm:space-x-6">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link to="/login" className="w-full sm:w-auto bg-white dark:bg-white text-gray-900 px-8 py-4 rounded-full font-bold text-lg transition-all shadow-[0_0_40px_rgba(255,255,255,0.3)] dark:shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] flex items-center justify-center">
+                {/* Changed button colors to ensure contrast in light mode */}
+                <Link to="/login" className="w-full sm:w-auto bg-gray-900 text-white dark:bg-white dark:text-gray-900 px-8 py-4 rounded-full font-bold text-lg transition-all shadow-xl hover:shadow-2xl flex items-center justify-center">
                   Start Analyzing <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </motion.div>
@@ -151,9 +127,9 @@ export default function LandingPage() {
             <motion.div 
               animate={{ y: [0, -20, 0] }}
               transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-              className="relative rounded-3xl overflow-hidden glassmorphism-deep border border-white/20 dark:border-gray-700/50 shadow-2xl"
+              className="relative rounded-3xl overflow-hidden glassmorphism-deep border border-gray-200 dark:border-gray-700/50 shadow-2xl"
             >
-              <div className="absolute inset-0 bg-gradient-to-tr from-brand-500/10 to-purple-500/10 z-10 pointer-events-none mix-blend-overlay"></div>
+              <div className="absolute inset-0 bg-gradient-to-tr from-brand-500/5 to-purple-500/5 dark:from-brand-500/10 dark:to-purple-500/10 z-10 pointer-events-none mix-blend-overlay"></div>
               <img src="/assets/hero_data_abstract.png" alt="Data Analytics Illustration" className="w-full h-auto object-cover opacity-90 scale-105" />
             </motion.div>
           </motion.div>
@@ -183,10 +159,10 @@ export default function LandingPage() {
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.6, delay: idx * 0.1 }}
                 whileHover={{ y: -10 }}
-                className="group relative bg-white/50 dark:bg-gray-900/40 backdrop-blur-lg p-8 rounded-3xl shadow-lg border border-gray-200/50 dark:border-gray-800/50 overflow-hidden"
+                className="group relative bg-white/50 dark:bg-gray-900/40 backdrop-blur-lg p-8 rounded-3xl shadow-lg border border-gray-200/80 dark:border-gray-800/50 overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-brand-500/0 to-purple-500/0 group-hover:from-brand-500/5 group-hover:to-purple-500/5 transition-colors duration-500 -z-10"></div>
-                <div className="w-14 h-14 bg-brand-50 dark:bg-brand-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-sm">
+                <div className="w-14 h-14 bg-brand-50 dark:bg-brand-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-sm border border-brand-100 dark:border-brand-900/50">
                   {feature.icon}
                 </div>
                 <h3 className="text-2xl font-bold mb-4">{feature.title}</h3>
@@ -219,14 +195,14 @@ export default function LandingPage() {
               className="flex flex-col md:flex-row items-center gap-16"
             >
               <div className="flex-1 order-2 md:order-1">
-                <div className="text-brand-500 font-bold text-xl mb-2">Step 1</div>
+                <div className="text-brand-600 dark:text-brand-500 font-bold text-xl mb-2">Step 1</div>
                 <h3 className="text-4xl font-bold mb-6">Upload Your Data</h3>
                 <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed">
                   Securely drag and drop your CSV, Excel, or JSON files into the workspace. Our engine instantly processes and maps the schema.
                 </p>
               </div>
               <div className="flex-1 order-1 md:order-2">
-                <img src="/assets/workflow_upload.png" alt="Upload illustration" className="rounded-3xl shadow-glow-lg border border-white/10" />
+                <img src="/assets/workflow_upload.png" alt="Upload illustration" className="rounded-3xl shadow-xl dark:shadow-glow-lg border border-gray-200 dark:border-white/10" />
               </div>
             </motion.div>
 
@@ -238,10 +214,10 @@ export default function LandingPage() {
               className="flex flex-col md:flex-row items-center gap-16"
             >
               <div className="flex-1">
-                <img src="/assets/workflow_charts.png" alt="Charts illustration" className="rounded-3xl shadow-glow-lg border border-white/10" />
+                <img src="/assets/workflow_charts.png" alt="Charts illustration" className="rounded-3xl shadow-xl dark:shadow-glow-lg border border-gray-200 dark:border-white/10" />
               </div>
               <div className="flex-1">
-                <div className="text-indigo-500 font-bold text-xl mb-2">Step 2</div>
+                <div className="text-indigo-600 dark:text-indigo-500 font-bold text-xl mb-2">Step 2</div>
                 <h3 className="text-4xl font-bold mb-6">Ask & Visualize</h3>
                 <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed">
                   Type questions naturally. The AI generates the precise SQL, executes it, and renders gorgeous, interactive charts instantly.
@@ -252,51 +228,29 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section id="faq" className="py-32 relative">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* CTA Section (Replacing Inline FAQ) */}
+      <section className="py-32 relative">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="bg-gradient-to-br from-brand-600 to-indigo-700 rounded-[3rem] p-12 md:p-20 shadow-2xl text-white relative overflow-hidden"
           >
-            <h2 className="text-4xl font-bold tracking-tight">Frequently Asked Questions</h2>
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-8 relative z-10">Ready to unlock your data?</h2>
+            <p className="text-xl text-brand-100 mb-10 relative z-10 max-w-2xl mx-auto">
+              Join thousands of analysts who are exploring their datasets 10x faster with AI-powered natural language queries.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 relative z-10">
+              <Link to="/login" className="bg-white text-brand-700 hover:bg-gray-50 px-8 py-4 rounded-full font-bold text-lg transition-all shadow-lg transform hover:-translate-y-1">
+                Start Analyzing for Free
+              </Link>
+              <Link to="/faq" className="text-white border border-white/30 hover:bg-white/10 px-8 py-4 rounded-full font-bold text-lg transition-all">
+                Read our FAQs
+              </Link>
+            </div>
           </motion.div>
-          
-          <div className="space-y-6">
-            {faqs.map((faq, idx) => (
-              <motion.div 
-                key={idx} 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                className="bg-white/50 dark:bg-gray-900/40 backdrop-blur-md rounded-2xl shadow-sm border border-gray-200/50 dark:border-gray-800/50 overflow-hidden"
-              >
-                <button 
-                  className="w-full px-8 py-6 text-left font-bold flex justify-between items-center focus:outline-none"
-                  onClick={() => toggleFaq(idx)}
-                >
-                  <span className="text-xl">{faq.question}</span>
-                  <motion.div
-                    animate={{ rotate: openFaq === idx ? 180 : 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <ChevronDown className="w-6 h-6 text-gray-400" />
-                  </motion.div>
-                </button>
-                <motion.div 
-                  initial={false}
-                  animate={{ height: openFaq === idx ? "auto" : 0, opacity: openFaq === idx ? 1 : 0 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                  className="overflow-hidden"
-                >
-                  <p className="px-8 pb-6 text-lg text-gray-600 dark:text-gray-400 leading-relaxed">{faq.answer}</p>
-                </motion.div>
-              </motion.div>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -311,10 +265,10 @@ export default function LandingPage() {
           </div>
           
           <div className="flex space-x-8 text-sm font-medium text-gray-500 dark:text-gray-400 mb-6 md:mb-0">
-            <a href="#features" className="hover:text-brand-600 dark:hover:text-white transition-colors">Features</a>
-            <a href="#workflow" className="hover:text-brand-600 dark:hover:text-white transition-colors">How it works</a>
-            <a href="#faq" className="hover:text-brand-600 dark:hover:text-white transition-colors">FAQ</a>
-            <a href="#" className="hover:text-brand-600 dark:hover:text-white transition-colors">Terms & Privacy</a>
+            <Link to="/docs" className="hover:text-brand-600 dark:hover:text-white transition-colors">Docs</Link>
+            <Link to="/faq" className="hover:text-brand-600 dark:hover:text-white transition-colors">FAQ</Link>
+            <Link to="/privacy" className="hover:text-brand-600 dark:hover:text-white transition-colors">Privacy</Link>
+            <Link to="/terms" className="hover:text-brand-600 dark:hover:text-white transition-colors">Terms</Link>
           </div>
           
           <div className="flex space-x-4">

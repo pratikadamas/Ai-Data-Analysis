@@ -5,6 +5,10 @@ import { useUser } from "./context/UserContext.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Auth from "./pages/Auth.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
+import FaqPage from "./pages/FaqPage.jsx";
+import Docs from "./pages/Docs.jsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
+import Terms from "./pages/Terms.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -39,6 +43,10 @@ export default function App() {
     <>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/faq" element={<FaqPage />} />
+        <Route path="/docs" element={<Docs />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<Terms />} />
         
         <Route 
           path="/login" 
