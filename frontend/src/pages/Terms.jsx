@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Database } from "lucide-react";
+import { Database, Globe, Shield, AlertTriangle, Scale } from "lucide-react";
 import ThemeToggle from "../components/ThemeToggle.jsx";
 
 export default function Terms() {
@@ -37,22 +37,42 @@ export default function Terms() {
               <p>Welcome to AI Data Analyst. By accessing or using our platform, you agree to be bound by these Terms of Service.</p>
               
               <div>
-                <h3 className="text-2xl font-bold mb-4">1. Use of the Platform</h3>
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="p-2 bg-brand-500/10 rounded-lg text-brand-600 dark:text-brand-400">
+                    <Globe className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-2xl font-bold m-0">1. Use of the Platform</h3>
+                </div>
                 <p>You agree to use the platform only for lawful purposes. You are strictly prohibited from uploading datasets that contain malicious code, illegal material, or data that you do not have the explicit right to process.</p>
               </div>
 
               <div>
-                <h3 className="text-2xl font-bold mb-4">2. Intellectual Property</h3>
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-600 dark:text-indigo-400">
+                    <Shield className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-2xl font-bold m-0">2. Intellectual Property</h3>
+                </div>
                 <p>The service, including its original content, features, and functionality, are owned by AI Data Analyst and are protected by international copyright, trademark, and other intellectual property laws.</p>
               </div>
 
               <div>
-                <h3 className="text-2xl font-bold mb-4">3. Disclaimer of Warranties</h3>
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="p-2 bg-purple-500/10 rounded-lg text-purple-600 dark:text-purple-400">
+                    <AlertTriangle className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-2xl font-bold m-0">3. Disclaimer of Warranties</h3>
+                </div>
                 <p>The platform is provided on an "AS IS" and "AS AVAILABLE" basis. While our AI attempts to provide accurate SQL queries and visual insights, we do not warrant that the analysis will be entirely error-free. It is your responsibility to verify critical business insights derived from the platform.</p>
               </div>
 
               <div>
-                <h3 className="text-2xl font-bold mb-4">4. Limitation of Liability</h3>
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-600 dark:text-emerald-400">
+                    <Scale className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-2xl font-bold m-0">4. Limitation of Liability</h3>
+                </div>
                 <p>In no event shall AI Data Analyst, nor its developers, be liable for any indirect, incidental, special, consequential or punitive damages resulting from your use of or inability to use the service.</p>
               </div>
             </div>

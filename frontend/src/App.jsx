@@ -9,6 +9,7 @@ import FaqPage from "./pages/FaqPage.jsx";
 import Docs from "./pages/Docs.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 import Terms from "./pages/Terms.jsx";
+import ScrollToTop from "./components/ScrollToTop.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -41,6 +42,7 @@ export default function App() {
 
   return (
     <>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/faq" element={<FaqPage />} />

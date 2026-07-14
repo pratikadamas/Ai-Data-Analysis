@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Database } from "lucide-react";
+import { Database, Server, Bot, User, RefreshCcw } from "lucide-react";
 import ThemeToggle from "../components/ThemeToggle.jsx";
 
 export default function PrivacyPolicy() {
@@ -37,24 +37,44 @@ export default function PrivacyPolicy() {
               <p>Your privacy is our primary concern. This Privacy Policy outlines how we handle, process, and protect your data when you use the AI Data Analyst platform.</p>
               
               <div>
-                <h3 className="text-2xl font-bold mb-4">1. Data Processing and Storage</h3>
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="p-2 bg-brand-500/10 rounded-lg text-brand-600 dark:text-brand-400">
+                    <Server className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-2xl font-bold m-0">1. Data Processing and Storage</h3>
+                </div>
                 <p>When you upload a dataset to our platform, the file is processed in a transient, isolated environment. We use DuckDB in-memory databases to ensure that your data is never written to persistent disk storage on our servers.</p>
                 <p>Once your session ends or you close your browser, the temporary memory allocation is wiped completely. We do not retain copies of your datasets.</p>
               </div>
 
               <div>
-                <h3 className="text-2xl font-bold mb-4">2. AI Integration (LLMs)</h3>
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-600 dark:text-indigo-400">
+                    <Bot className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-2xl font-bold m-0">2. AI Integration (LLMs)</h3>
+                </div>
                 <p>To provide intelligent query generation, we integrate with third-party Large Language Models (such as OpenAI or Anthropic). However, <strong>we strictly prohibit the transmission of raw row data to these models.</strong></p>
                 <p>Only the structural schema of your dataset (column names, data types) and your natural language prompts are sent to the AI. This ensures that sensitive information contained within your data rows remains completely private.</p>
               </div>
 
               <div>
-                <h3 className="text-2xl font-bold mb-4">3. Account Information</h3>
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="p-2 bg-purple-500/10 rounded-lg text-purple-600 dark:text-purple-400">
+                    <User className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-2xl font-bold m-0">3. Account Information</h3>
+                </div>
                 <p>If you create an account, we store minimal information necessary to maintain your profile (e.g., email address, hashed password). We do not share this information with any third parties for marketing purposes.</p>
               </div>
 
               <div>
-                <h3 className="text-2xl font-bold mb-4">4. Changes to This Policy</h3>
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-600 dark:text-emerald-400">
+                    <RefreshCcw className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-2xl font-bold m-0">4. Changes to This Policy</h3>
+                </div>
                 <p>We may update this Privacy Policy from time to time. We will notify you of any significant changes by posting the new policy on this page.</p>
               </div>
             </div>
