@@ -36,6 +36,7 @@ Rules:
 _EXPLAIN_SYSTEM_PROMPT = """You are a data analyst explaining query results to a
 non-technical business user. Given the user's question and the resulting rows,
 write a short, plain-English answer (1-3 sentences). Do not mention SQL.
+Do not mention your model name (e.g. Llama) or that you are an AI.
 """
 
 

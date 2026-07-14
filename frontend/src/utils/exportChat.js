@@ -43,7 +43,10 @@ export function exportChatAsHtml(messages, datasetFilename) {
         : "";
 
       const warningHtml = m.warning
-        ? `<div class="warning">⚠️ ${escHtml(m.warning)}</div>`
+        ? `<div class="warning">
+             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+             ${escHtml(m.warning)}
+           </div>`
         : "";
 
       return `
@@ -67,7 +70,7 @@ export function exportChatAsHtml(messages, datasetFilename) {
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
            background: #f8fafc; color: #1e293b; padding: 32px 20px; }
     .report-header { max-width: 860px; margin: 0 auto 32px; }
-    .report-header h1 { font-size: 1.5rem; font-weight: 700; color: #0f172a; }
+    .report-header h1 { font-size: 1.5rem; font-weight: 700; color: #0f172a; display: flex; items-center; gap: 8px; }
     .report-header p { margin-top: 4px; font-size: 0.85rem; color: #64748b; }
     .chat { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
     .message { display: flex; flex-direction: column; }
@@ -100,7 +103,10 @@ export function exportChatAsHtml(messages, datasetFilename) {
 </head>
 <body>
   <div class="report-header">
-    <h1>📊 Chat Report — ${escHtml(datasetFilename)}</h1>
+    <h1>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg>
+      Chat Report — ${escHtml(datasetFilename)}
+    </h1>
     <p>Exported on ${escHtml(now)} · ${assistantMessages.length} query result${assistantMessages.length !== 1 ? "s" : ""}</p>
   </div>
   <div class="chat">

@@ -1,130 +1,150 @@
-# AI Data Analyst
+<div align="center">
+  <h1>✨ AI Data Analyst ✨</h1>
+  <p><i>Your intelligent, conversational data analysis assistant.</i></p>
 
-Upload structured data (CSV, Excel, SQLite, SQL dump) and analyze it in plain
-English — no SQL required. The backend runs queries through DuckDB with a strict
-read-only SQL whitelist; the frontend gives you manual chart building plus an
-AI chat mode powered by **Groq** (Llama 3.3 70B).
+  <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" alt="FastAPI" />
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/DuckDB-FFF000?style=for-the-badge&logo=duckdb&logoColor=black" alt="DuckDB" />
+  
+  <br/><br/>
+</div>
 
-## Project layout
+> **🚀 Analyze your structured data (CSV, Excel, SQLite, SQL dump) in plain English — no SQL required!**  
+> The backend runs queries securely through DuckDB with a strict read-only SQL whitelist, while the frontend provides manual chart building and an AI chat mode powered by **Groq** (Llama 3.3 70B).
 
-```
+## 📚 Documentation
+- 🏗️ [Architecture Overview](ARCHITECTURE.md)
+- ⚙️ [Backend README](backend/README.md)
+- 🎨 [Frontend README](frontend/README.md)
+- ⚖️ [MIT License](LICENSE)
+
+---
+
+## 📁 Project Layout
+
+```text
 ai-data-analyst/
-  backend/                  FastAPI + DuckDB service
+  backend/                  ⚙️ FastAPI + DuckDB service
     app/
-      api/routes/           upload, explore, chat, dataset, download endpoints
-      services/             file_loader, schema_service, llm_service, chart_service
-      validation/           sql_validator (whitelist-based SQL safety checks)
-      models/               Pydantic request/response schemas
-      db/                   DuckDBManager (per-dataset in-memory connections)
-      utils/                filename sanitizing, extension detection
-      main.py               FastAPI app + router wiring
-    requirements.txt
-    .env.example
-  frontend/                 React (Vite) + Tailwind + Plotly
+      api/routes/           🌐 upload, explore, chat, dataset, download endpoints
+      services/             🧠 file_loader, schema_service, llm_service, chart_service
+      validation/           🛡️ sql_validator (whitelist-based SQL safety checks)
+      models/               📦 Pydantic request/response schemas
+      db/                   🗄️ DuckDBManager (per-dataset in-memory connections)
+      utils/                🛠️ filename sanitizing, extension detection
+      main.py               🚀 FastAPI app + router wiring
+    requirements.txt        📝 Python dependencies
+    .env.example            🔐 Example environment variables
+  frontend/                 🎨 React (Vite) + Tailwind + Plotly
     src/
       components/
-        charts/             ResultChart, ResultTable, SqlViewer, DownloadButtons
-        chat/               ChatPanel (AI chat with export + clear)
-        explore/            ExplorePanel (manual column/aggregation builder)
-        layout/             Header, Sidebar
-        preview/            PreviewTable (AG Grid data preview)
-        upload/             UploadArea (drag-and-drop)
-      pages/                Dashboard.jsx
-      context/              DatasetContext (dataset + chat history state)
-      services/             api.js (Axios client)
-      utils/                exportChat.js (HTML report generator)
+        charts/             📈 ResultChart, ResultTable, SqlViewer, DownloadButtons
+        chat/               💬 ChatPanel (AI chat with export + clear)
+        explore/            🔍 ExplorePanel (manual column/aggregation builder)
+        layout/             🏗️ Header, Sidebar
+        preview/            👀 PreviewTable (AG Grid data preview)
+        upload/             ☁️ UploadArea (drag-and-drop)
+      pages/                🏠 Dashboard.jsx
+      context/              🧠 DatasetContext (dataset + chat history state)
+      services/             🔌 api.js (Axios client)
+      utils/                📄 exportChat.js (HTML report generator)
 ```
 
-## Backend setup
+---
+
+## 🛠️ Setup & Installation
+
+### ⚙️ Backend Setup
 
 ```bash
 cd backend
 python -m venv .venv && .venv\Scripts\activate   # Windows
 # python3 -m venv .venv && source .venv/bin/activate  # macOS/Linux
 pip install -r requirements.txt
-cp .env.example .env   # add your GROQ_API_KEY
+cp .env.example .env   # 🔑 Add your GROQ_API_KEY
 uvicorn app.main:app --reload --port 8000
 ```
+*API docs available at [http://localhost:8000/docs](http://localhost:8000/docs) once running.*
 
-API docs available at `http://localhost:8000/docs` once running.
-
-## Frontend setup
+### 🎨 Frontend Setup
 
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
+*The Vite dev server proxies `/api/*` to `http://localhost:8000`.*
 
-The Vite dev server proxies `/api/*` to `http://localhost:8000` (see
-`vite.config.js`), so run both servers together.
+---
 
-## Environment variables (`backend/.env`)
+## 🔐 Environment Variables (`backend/.env`)
 
 | Variable | Required | Description |
-|---|---|---|
-| `GROQ_API_KEY` | **Yes** | Groq API key for LLM features. Get one free at [console.groq.com/keys](https://console.groq.com/keys) |
-| `APP_ENV` | No | `development` (default) or `production` |
-| `MAX_UPLOAD_MB` | No | Max file size in MB (default: `200`) |
-| `UPLOAD_DIR` | No | Temp upload path (default: `./uploads`) |
-| `CORS_ORIGINS` | No | Comma-separated allowed origins (default: `http://localhost:5173`) |
+|---|:---:|---|
+| `GROQ_API_KEY` | 🟢 **Yes** | Groq API key for LLM features. Get one free at [console.groq.com/keys](https://console.groq.com/keys) |
+| `APP_ENV` | ⚪ No | `development` (default) or `production` |
+| `MAX_UPLOAD_MB` | ⚪ No | Max file size in MB (default: `200`) |
+| `UPLOAD_DIR` | ⚪ No | Temp upload path (default: `./uploads`) |
+| `CORS_ORIGINS` | ⚪ No | Comma-separated allowed origins (default: `http://localhost:5173`) |
 
-> The app works without a key for upload, preview, and explore. Only the AI chat
-> tab requires `GROQ_API_KEY`. A missing key returns HTTP 503 with a clear error.
+> 💡 **Tip:** The app works without an API key for upload, preview, and manual explore! Only the AI chat tab requires `GROQ_API_KEY`.
 
-## What's implemented
+---
 
-### Data ingestion
-- Drag-and-drop or click-to-upload for CSV, Excel (`.xlsx`/`.xls`), SQLite (`.db`/`.sqlite`), and SQL dump (`.sql`)
-- Format auto-detection → loaded into a per-session in-memory DuckDB database
-- The **uploaded filename becomes the SQL table name** (e.g. `sales_2024.csv` → table `sales_2024`), so the AI generates natural SQL using the real name. A `uploaded_data` view alias is also created for compatibility.
-- Schema extraction with dtype / missing-count / duplicate-count stats
+## ✨ Features Implemented
 
-### AI Chat (`/api/chat`)
-- Off-topic guard: a fast LLM classifier rejects non-data questions (shows a popup, does not pollute chat history)
-- On-topic flow: question → Groq Llama 3.3 70B generates SQL → whitelist validation → DuckDB execution → Groq explains results → deterministic chart selection
-- Chat history **persists across tab switches** (state is held in context, not the component)
-- **Clear chat** button wipes history
-- **Export Chat** button downloads the entire conversation as a styled, printable HTML report (all questions, answers, SQL, and full data tables — no backend call needed)
+### 📥 Data Ingestion
+- **Drag-and-drop** or click-to-upload for CSV, Excel (`.xlsx`/`.xls`), SQLite (`.db`/`.sqlite`), and SQL dump (`.sql`).
+- Format auto-detection → loaded into a per-session in-memory DuckDB database.
+- **Smart Naming**: The uploaded filename becomes the SQL table name (e.g. `sales_2024.csv` → table `sales_2024`), ensuring natural AI queries.
 
-### Manual Explore (`/api/explore`)
-- Pick X / Y columns, aggregation (sum / avg / count / min / max), and chart type
-- Plotly-rendered charts: bar, line, scatter, horizontal bar, KPI, heatmap, table
+### 🤖 AI Chat (`/api/chat`)
+- 🛡️ **Off-topic guard**: Fast LLM classifier rejects non-data questions without polluting chat history.
+- ⚡ **On-topic flow**: Question → Groq Llama 3.3 70B generates SQL → Whitelist validation → DuckDB execution → Groq explains results → Deterministic chart selection.
+- 💾 **Persistent Chat**: Chat history is preserved across tab switches.
+- 📄 **Export Chat**: Download the entire conversation as a styled, printable HTML report!
 
-### SQL safety
-- Whitelist-based validator rejects `DROP`, `DELETE`, `INSERT`, `UPDATE`, `ALTER`, `CREATE`, `TRUNCATE`, `ATTACH`, `DETACH`, `COPY`, `PRAGMA`, and more
-- Multi-statement detection, leading-keyword check, sqlparse-based parse tree validation
+### 🔍 Manual Explore (`/api/explore`)
+- Pick X / Y columns, aggregation (sum/avg/count/min/max), and chart type.
+- Plotly-rendered charts: bar, line, scatter, horizontal bar, KPI, heatmap, table.
 
-### Result display (in chat)
-- AI explanation text
-- Generated SQL (collapsible SQL viewer with copy button)
-- **Paginated data table** (20 rows/page, sticky headers, null highlighting)
-- Plotly chart (bar / line / scatter / KPI / heatmap / table fallback)
+### 🛡️ SQL Safety
+- Whitelist-based validator rejects destructive commands (`DROP`, `DELETE`, `INSERT`, `UPDATE`, etc.).
+- Multi-statement detection, leading-keyword check, and sqlparse-based parse tree validation.
 
-### Downloads
-- `/api/download/csv` and `/api/download/excel` — re-validates SQL before export
-- Chat-level **Export Chat** → full HTML report (printable to PDF via browser)
+### 📊 Result Display
+- 🗣️ AI explanation text in plain English.
+- 💻 Generated SQL (collapsible SQL viewer with copy button).
+- 📋 **Paginated data table** (sticky headers, null highlighting).
+- 📉 Plotly charts based on returned data.
 
-## LLM integration
+### 📥 Downloads
+- `/api/download/csv` and `/api/download/excel` with SQL re-validation before export.
 
-`llm_service.py` uses the **Groq Python SDK** (`groq` package) with model
-`llama-3.3-70b-versatile`. Three calls are made per chat turn:
+---
 
-1. **Off-topic classifier** — `max_tokens=10`, `temperature=0.0` → `DATA` or `OFF_TOPIC`
-2. **SQL generation** — `max_tokens=512`, `temperature=0.0` (deterministic)
-3. **Result explanation** — `max_tokens=256`, `temperature=0.3` (conversational)
+## 🧠 LLM Integration
 
-All Groq errors are wrapped as `LLMServiceError` and surfaced as HTTP 503 with a
-readable `detail` field — the rest of the app (upload, preview, explore) continues
-working even with an invalid or missing API key.
+`llm_service.py` uses the **Groq Python SDK** (`groq` package) with model `llama-3.3-70b-versatile`. Three calls are made per chat turn:
 
-## Not yet implemented (future features)
+1. 🚦 **Off-topic classifier**: `max_tokens=10`, `temperature=0.0` → `DATA` or `OFF_TOPIC`
+2. 📝 **SQL generation**: `max_tokens=512`, `temperature=0.0` (deterministic)
+3. 💬 **Result explanation**: `max_tokens=256`, `temperature=0.3` (conversational)
 
-- Auth and user sessions
-- Saved/named dashboards
-- Multi-turn conversation context (history passed to the LLM)
-- Multi-file joins
-- External DB connections (MySQL / Postgres / Snowflake)
-- PDF/PPTX export
-- Voice queries
-- Mobile-responsive layout
+---
+
+## 🔮 Future Roadmap
+
+- [ ] 🔐 Auth and user sessions
+- [ ] 📌 Saved/named dashboards
+- [ ] 🔄 Multi-turn conversation context (history passed to the LLM)
+- [ ] 🔗 Multi-file joins
+- [ ] 🐘 External DB connections (MySQL / Postgres / Snowflake)
+- [ ] 📄 PDF/PPTX export
+- [ ] 🎙️ Voice queries
+- [ ] 📱 Mobile-responsive layout
+
+<div align="center">
+  <i>Built with ❤️ for data analysts everywhere!</i>
+</div>

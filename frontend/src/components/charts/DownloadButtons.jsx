@@ -1,5 +1,6 @@
 import React from "react";
 import { downloadCsv, downloadExcel } from "../../services/api.js";
+import { Download } from "lucide-react";
 
 function saveBlob(blob, filename) {
   const url = window.URL.createObjectURL(blob);
@@ -24,12 +25,12 @@ export default function DownloadButtons({ datasetId, sql }) {
   };
 
   const btnClass =
-    "text-xs px-3 py-1.5 rounded-md border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800";
+    "flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-medium";
 
   return (
     <div className="flex gap-2">
-      <button onClick={handleCsv} className={btnClass}>⬇ CSV</button>
-      <button onClick={handleExcel} className={btnClass}>⬇ Excel</button>
+      <button onClick={handleCsv} className={btnClass}><Download size={14} /> CSV</button>
+      <button onClick={handleExcel} className={btnClass}><Download size={14} /> Excel</button>
     </div>
   );
 }

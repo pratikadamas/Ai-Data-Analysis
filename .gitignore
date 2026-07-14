@@ -17,7 +17,7 @@ backend/uploads/*
 !backend/uploads/.gitkeep
 
 # Frontend Config & Cache
-frontend/node_modules/
+node_modules/
 frontend/dist/
 frontend/.eslintcache
 
