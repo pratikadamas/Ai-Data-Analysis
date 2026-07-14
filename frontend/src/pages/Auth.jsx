@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useUser } from "../context/UserContext.jsx";
-import { Eye, EyeOff, X, Sparkles, Database, TrendingUp, MessageSquare } from "lucide-react";
+import { Eye, EyeOff, X, Sparkles, Database, TrendingUp, MessageSquare, ArrowLeft } from "lucide-react";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 export default function Auth() {
   const { login, register, verifyOtp, forgotPassword, resetPassword } = useUser();
@@ -17,8 +18,6 @@ export default function Auth() {
 
   const switchView = (newView) => {
     setView(newView);
-    // We intentionally don't clear email when switching views 
-    // so it can be passed from register -> verify or forgot -> reset
     setUsername("");
     setPassword("");
     setOtp("");
@@ -107,11 +106,11 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen w-full flex bg-slate-950 text-white overflow-hidden select-none">
+    <div className="min-h-screen w-full flex bg-white dark:bg-[#050505] text-slate-900 dark:text-white overflow-hidden select-none transition-colors duration-500">
       {/* Left side: Premium Brand & Feature Showcase (Hidden on Mobile) */}
-      <div className="hidden lg:flex lg:w-[50%] relative bg-slate-900/40 flex-col justify-between p-12 overflow-hidden border-r border-slate-900">
+      <div className="hidden lg:flex lg:w-[50%] relative bg-slate-50 dark:bg-slate-900/40 flex-col justify-between p-12 overflow-hidden border-r border-slate-200 dark:border-slate-800 transition-colors duration-500">
         {/* SVG Grid Overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_at_center,white,transparent_80%)] pointer-events-none" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_at_center,white,transparent_80%)] pointer-events-none transition-colors duration-500" />
         
         {/* Subtle moving glows */}
         <div className="absolute top-[-20%] left-[-20%] w-[70%] h-[70%] rounded-full bg-brand-500/10 blur-[120px] pointer-events-none animate-pulse duration-[6000ms]" />
@@ -122,20 +121,20 @@ export default function Auth() {
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-brand-500/20">
             <Sparkles className="w-5 h-5 text-white" />
           </div>
-          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
             AI Data Analyst
           </span>
         </div>
 
         {/* Feature List Container */}
         <div className="relative z-10 my-auto max-w-md">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-semibold mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-600 dark:text-brand-400 text-xs font-semibold mb-6">
             <Sparkles className="w-3.5 h-3.5" /> Intelligent Data Exploration
           </div>
           
           <h2 className="text-4xl font-extrabold tracking-tight leading-tight mb-8">
             The simplest way to <br />
-            <span className="bg-gradient-to-r from-brand-400 via-indigo-400 to-brand-300 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-brand-600 via-indigo-600 to-brand-500 dark:from-brand-400 dark:via-indigo-400 dark:to-brand-300 bg-clip-text text-transparent">
               explore & analyze
             </span> your data.
           </h2>
@@ -143,14 +142,14 @@ export default function Auth() {
           <div className="space-y-6">
             {/* Feature 1 */}
             <div className="flex gap-4 group">
-              <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center group-hover:bg-brand-500/10 group-hover:border-brand-500/30 transition-all duration-300">
-                <Database className="w-5 h-5 text-brand-400" />
+              <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center group-hover:bg-brand-500/10 group-hover:border-brand-500/30 transition-all duration-300 shadow-sm">
+                <Database className="w-5 h-5 text-brand-500 dark:text-brand-400" />
               </div>
               <div>
-                <h4 className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">
+                <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                   Multi-Format Data Loader
                 </h4>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                   Seamlessly drop CSV, Excel, or JSON files. Automatic column detection, clean mappings, and ready in seconds.
                 </p>
               </div>
@@ -158,14 +157,14 @@ export default function Auth() {
 
             {/* Feature 2 */}
             <div className="flex gap-4 group">
-              <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center group-hover:bg-brand-500/10 group-hover:border-brand-500/30 transition-all duration-300">
-                <TrendingUp className="w-5 h-5 text-indigo-400" />
+              <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center group-hover:bg-brand-500/10 group-hover:border-brand-500/30 transition-all duration-300 shadow-sm">
+                <TrendingUp className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
               </div>
               <div>
-                <h4 className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">
+                <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                   Interactive Plotly Charts
                 </h4>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                   Interact with dynamic scatter, line, bar, or pie charts. Zoom, pan, filter, and export high-resolution assets instantly.
                 </p>
               </div>
@@ -173,14 +172,14 @@ export default function Auth() {
 
             {/* Feature 3 */}
             <div className="flex gap-4 group">
-              <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center group-hover:bg-brand-500/10 group-hover:border-brand-500/30 transition-all duration-300">
-                <MessageSquare className="w-5 h-5 text-teal-400" />
+              <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center group-hover:bg-brand-500/10 group-hover:border-brand-500/30 transition-all duration-300 shadow-sm">
+                <MessageSquare className="w-5 h-5 text-purple-500 dark:text-purple-400" />
               </div>
               <div>
-                <h4 className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors">
+                <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                   Conversational Insights
                 </h4>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                   Ask natural questions about your dataset. Our AI system writes backend Python code, handles processing, and replies in real-time.
                 </p>
               </div>
@@ -189,40 +188,46 @@ export default function Auth() {
         </div>
 
         {/* Left Side Footer */}
-        <div className="relative z-10 flex justify-between items-center text-xs text-slate-600">
+        <div className="relative z-10 flex justify-between items-center text-xs text-slate-500 dark:text-slate-600">
           <span>&copy; {new Date().getFullYear()} AI Data Analyst. All rights reserved.</span>
           <span>v2.1.0</span>
         </div>
       </div>
 
       {/* Right side: Auth Form container */}
-      <div className="w-full lg:w-[50%] flex items-center justify-center p-6 sm:p-12 relative bg-slate-950">
+      <div className="w-full lg:w-[50%] flex items-center justify-center p-6 sm:p-12 relative bg-white dark:bg-[#050505] transition-colors duration-500">
+        
+        {/* Back to Home Button */}
+        <Link to="/" className="absolute top-6 left-6 sm:top-10 sm:left-10 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center text-sm font-medium transition-colors z-20">
+          <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
+        </Link>
+
         {/* Glow circles for mobile/tablet background */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,#1e293b,transparent_70%)] opacity-20 lg:hidden pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.02),transparent_70%)] dark:bg-[radial-gradient(ellipse_at_center,#1e293b,transparent_70%)] opacity-20 lg:hidden pointer-events-none transition-colors duration-500" />
         <div className="absolute top-10 left-10 w-64 h-64 rounded-full bg-brand-500/5 blur-[120px] lg:hidden pointer-events-none" />
         <div className="absolute bottom-10 right-10 w-64 h-64 rounded-full bg-indigo-500/5 blur-[120px] lg:hidden pointer-events-none" />
 
         <div className="w-full max-w-[400px] relative z-10">
           {/* Logo for mobile only */}
-          <div className="flex items-center gap-2.5 mb-8 lg:hidden justify-center">
+          <div className="flex items-center gap-2.5 mb-8 lg:hidden justify-center mt-8 sm:mt-0">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-brand-500/25">
               <Sparkles className="w-4.5 h-4.5 text-white" />
             </div>
-            <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+            <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
               AI Data Analyst
             </span>
           </div>
 
           {/* Form Header */}
-          <div className="mb-8 text-center lg:text-left">
-            <h2 className="text-3xl font-extrabold tracking-tight text-white mb-2">
+          <div className="mb-8 text-center lg:text-left mt-8 lg:mt-0">
+            <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-2 transition-colors duration-500">
               {view === "login" && "Welcome back"}
               {view === "register" && "Create an account"}
               {view === "verify" && "Verify account"}
               {view === "forgot" && "Forgot password?"}
               {view === "reset" && "Reset password"}
             </h2>
-            <p className="text-slate-400 text-xs sm:text-sm font-medium">
+            <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-medium transition-colors duration-500">
               {view === "login" && "Sign in to manage and analyze your datasets"}
               {view === "register" && "Enter your details to register and get started"}
               {view === "verify" && "Confirm your identity via OTP validation"}
@@ -235,7 +240,7 @@ export default function Auth() {
           {view === "login" && (
             <form onSubmit={handleLogin} className="space-y-5" autoComplete="off">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider transition-colors duration-500">
                   Email Address
                 </label>
                 <div className="relative">
@@ -246,13 +251,13 @@ export default function Auth() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
                     autoComplete="off"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-900/40 border border-slate-800 hover:border-slate-700 focus:border-brand-500 focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-white placeholder-slate-600 outline-none transition-all duration-200 pr-10"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none transition-all duration-200 pr-10"
                   />
                   {email && (
                     <button
                       type="button"
                       onClick={() => setEmail("")}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-white transition-colors"
                     >
                       <X size={16} />
                     </button>
@@ -262,13 +267,13 @@ export default function Auth() {
 
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                  <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider transition-colors duration-500">
                     Password
                   </label>
                   <button
                     type="button"
                     onClick={() => switchView("forgot")}
-                    className="text-xs font-semibold text-brand-400 hover:text-brand-300 transition-colors hover:underline hover:underline-offset-4"
+                    className="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-500 dark:hover:text-brand-300 transition-colors hover:underline hover:underline-offset-4"
                   >
                     Forgot password?
                   </button>
@@ -281,14 +286,14 @@ export default function Auth() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
                     autoComplete="new-password"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-900/40 border border-slate-800 hover:border-slate-700 focus:border-brand-500 focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-white placeholder-slate-600 outline-none transition-all duration-200 pr-16"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none transition-all duration-200 pr-16"
                   />
                   <div className="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-2">
                     {password && (
                       <button
                         type="button"
                         onClick={() => setPassword("")}
-                        className="text-slate-500 hover:text-white transition-colors"
+                        className="text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-white transition-colors"
                       >
                         <X size={16} />
                       </button>
@@ -296,7 +301,7 @@ export default function Auth() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="text-slate-500 hover:text-white transition-colors"
+                      className="text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-white transition-colors"
                     >
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -317,11 +322,11 @@ export default function Auth() {
               </button>
 
               <div className="text-center mt-6">
-                <span className="text-xs text-slate-400">Don't have an account? </span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 transition-colors duration-500">Don't have an account? </span>
                 <button
                   type="button"
                   onClick={() => switchView("register")}
-                  className="text-xs font-bold text-brand-400 hover:text-brand-300 transition-colors hover:underline hover:underline-offset-4"
+                  className="text-xs font-bold text-brand-600 dark:text-brand-400 hover:text-brand-500 dark:hover:text-brand-300 transition-colors hover:underline hover:underline-offset-4"
                 >
                   Create account
                 </button>
@@ -332,7 +337,7 @@ export default function Auth() {
           {view === "register" && (
             <form onSubmit={handleRegister} className="space-y-5" autoComplete="off">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider transition-colors duration-500">
                   Username
                 </label>
                 <div className="relative">
@@ -343,13 +348,13 @@ export default function Auth() {
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="Pick a username"
                     autoComplete="off"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-900/40 border border-slate-800 hover:border-slate-700 focus:border-brand-500 focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-white placeholder-slate-600 outline-none transition-all duration-200 pr-10"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none transition-all duration-200 pr-10"
                   />
                   {username && (
                     <button
                       type="button"
                       onClick={() => setUsername("")}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-white transition-colors"
                     >
                       <X size={16} />
                     </button>
@@ -358,7 +363,7 @@ export default function Auth() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider transition-colors duration-500">
                   Email Address
                 </label>
                 <div className="relative">
@@ -369,13 +374,13 @@ export default function Auth() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
                     autoComplete="off"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-900/40 border border-slate-800 hover:border-slate-700 focus:border-brand-500 focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-white placeholder-slate-600 outline-none transition-all duration-200 pr-10"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none transition-all duration-200 pr-10"
                   />
                   {email && (
                     <button
                       type="button"
                       onClick={() => setEmail("")}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-white transition-colors"
                     >
                       <X size={16} />
                     </button>
@@ -384,7 +389,7 @@ export default function Auth() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider transition-colors duration-500">
                   Password
                 </label>
                 <div className="relative">
@@ -395,14 +400,14 @@ export default function Auth() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Choose a strong password"
                     autoComplete="new-password"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-900/40 border border-slate-800 hover:border-slate-700 focus:border-brand-500 focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-white placeholder-slate-600 outline-none transition-all duration-200 pr-16"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none transition-all duration-200 pr-16"
                   />
                   <div className="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-2">
                     {password && (
                       <button
                         type="button"
                         onClick={() => setPassword("")}
-                        className="text-slate-500 hover:text-white transition-colors"
+                        className="text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-white transition-colors"
                       >
                         <X size={16} />
                       </button>
@@ -410,7 +415,7 @@ export default function Auth() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="text-slate-500 hover:text-white transition-colors"
+                      className="text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-white transition-colors"
                     >
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -431,11 +436,11 @@ export default function Auth() {
               </button>
 
               <div className="text-center mt-6">
-                <span className="text-xs text-slate-400">Already have an account? </span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 transition-colors duration-500">Already have an account? </span>
                 <button
                   type="button"
                   onClick={() => switchView("login")}
-                  className="text-xs font-bold text-brand-400 hover:text-brand-300 transition-colors hover:underline hover:underline-offset-4"
+                  className="text-xs font-bold text-brand-600 dark:text-brand-400 hover:text-brand-500 dark:hover:text-brand-300 transition-colors hover:underline hover:underline-offset-4"
                 >
                   Sign In
                 </button>
@@ -446,19 +451,19 @@ export default function Auth() {
           {view === "verify" && (
             <form onSubmit={handleVerifyOtp} className="space-y-5">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider transition-colors duration-500">
                   Email Address
                 </label>
                 <input
                   type="email"
                   readOnly
                   value={email}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-900/20 border border-slate-900 text-sm text-slate-500 cursor-not-allowed outline-none"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-900/20 border border-slate-200 dark:border-slate-900 text-sm text-slate-400 dark:text-slate-500 cursor-not-allowed outline-none transition-colors duration-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider transition-colors duration-500">
                   6-Digit OTP Code
                 </label>
                 <input
@@ -468,7 +473,7 @@ export default function Auth() {
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
                   placeholder="&bull;&bull;&bull;&bull;&bull;&bull;"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-900/40 border border-slate-800 focus:border-brand-500 focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-white placeholder-slate-600 outline-none tracking-widest text-center font-bold transition-all duration-200"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none tracking-widest text-center font-bold transition-all duration-200"
                 />
               </div>
 
@@ -488,14 +493,14 @@ export default function Auth() {
                 <button
                   type="button"
                   onClick={() => switchView("register")}
-                  className="text-slate-500 hover:text-white transition-colors"
+                  className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
                 >
                   &larr; Back to Sign Up
                 </button>
                 <button
                   type="button"
                   onClick={() => switchView("login")}
-                  className="font-bold text-brand-400 hover:text-brand-300 transition-colors"
+                  className="font-bold text-brand-600 dark:text-brand-400 hover:text-brand-500 dark:hover:text-brand-300 transition-colors"
                 >
                   Sign In Instead
                 </button>
@@ -506,7 +511,7 @@ export default function Auth() {
           {view === "forgot" && (
             <form onSubmit={handleForgotPassword} className="space-y-5">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider transition-colors duration-500">
                   Email Address
                 </label>
                 <div className="relative">
@@ -517,13 +522,13 @@ export default function Auth() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="registered-email@example.com"
                     autoComplete="off"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-900/40 border border-slate-800 hover:border-slate-700 focus:border-brand-500 focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-white placeholder-slate-600 outline-none transition-all duration-200 pr-10"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none transition-all duration-200 pr-10"
                   />
                   {email && (
                     <button
                       type="button"
                       onClick={() => setEmail("")}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-white transition-colors"
                     >
                       <X size={16} />
                     </button>
@@ -547,7 +552,7 @@ export default function Auth() {
                 <button
                   type="button"
                   onClick={() => switchView("login")}
-                  className="text-xs font-bold text-brand-400 hover:text-brand-300 transition-colors hover:underline hover:underline-offset-4"
+                  className="text-xs font-bold text-brand-600 dark:text-brand-400 hover:text-brand-500 dark:hover:text-brand-300 transition-colors hover:underline hover:underline-offset-4"
                 >
                   &larr; Back to Login
                 </button>
@@ -558,19 +563,19 @@ export default function Auth() {
           {view === "reset" && (
             <form onSubmit={handleResetPassword} className="space-y-5" autoComplete="off">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider transition-colors duration-500">
                   Email Address
                 </label>
                 <input
                   type="email"
                   readOnly
                   value={email}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-900/20 border border-slate-900 text-sm text-slate-500 cursor-not-allowed outline-none"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-900/20 border border-slate-200 dark:border-slate-900 text-sm text-slate-400 dark:text-slate-500 cursor-not-allowed outline-none transition-colors duration-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider transition-colors duration-500">
                   New Password
                 </label>
                 <div className="relative">
@@ -581,14 +586,14 @@ export default function Auth() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter new password"
                     autoComplete="new-password"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-900/40 border border-slate-800 hover:border-slate-700 focus:border-brand-500 focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-white placeholder-slate-600 outline-none transition-all duration-200 pr-16"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none transition-all duration-200 pr-16"
                   />
                   <div className="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-2">
                     {password && (
                       <button
                         type="button"
                         onClick={() => setPassword("")}
-                        className="text-slate-500 hover:text-white transition-colors"
+                        className="text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-white transition-colors"
                       >
                         <X size={16} />
                       </button>
@@ -596,7 +601,7 @@ export default function Auth() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="text-slate-500 hover:text-white transition-colors"
+                      className="text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-white transition-colors"
                     >
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -605,7 +610,7 @@ export default function Auth() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider transition-colors duration-500">
                   Reset OTP Code
                 </label>
                 <input
@@ -616,7 +621,7 @@ export default function Auth() {
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
                   placeholder="&bull;&bull;&bull;&bull;&bull;&bull;"
                   autoComplete="off"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-900/40 border border-slate-800 focus:border-brand-500 focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-white placeholder-slate-600 outline-none tracking-widest text-center font-bold transition-all duration-200"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none tracking-widest text-center font-bold transition-all duration-200"
                 />
               </div>
 
@@ -636,7 +641,7 @@ export default function Auth() {
                 <button
                   type="button"
                   onClick={() => switchView("login")}
-                  className="text-xs font-bold text-brand-400 hover:text-brand-300 transition-colors hover:underline hover:underline-offset-4"
+                  className="text-xs font-bold text-brand-600 dark:text-brand-400 hover:text-brand-500 dark:hover:text-brand-300 transition-colors hover:underline hover:underline-offset-4"
                 >
                   Cancel and Login
                 </button>

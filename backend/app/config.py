@@ -18,9 +18,12 @@ class Settings:
     app_env: str = os.getenv("APP_ENV", "development")
     groq_api_key: str = os.getenv("GROQ_API_KEY", "")
     max_upload_mb: int = int(os.getenv("MAX_UPLOAD_MB", "200"))
-    # Resolve upload_dir relative to backend root so it works regardless of cwd
-    upload_dir: str = str(
-        (_BACKEND_ROOT / os.getenv("UPLOAD_DIR", "uploads").lstrip("./")).resolve()
+    # Resolve upload_dir; if it's absolute (like /tmp), use it directly, otherwise make it relative to backend root
+    upload_dir: str = field(
+        default_factory=lambda: str(
+            Path(os.getenv("UPLOAD_DIR", "uploads")).resolve() if Path(os.getenv("UPLOAD_DIR", "uploads")).is_absolute() 
+            else (_BACKEND_ROOT / os.getenv("UPLOAD_DIR", "uploads").lstrip("./")).resolve()
+        )
     )
     cors_origins: list[str] = field(
         default_factory=lambda: os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
