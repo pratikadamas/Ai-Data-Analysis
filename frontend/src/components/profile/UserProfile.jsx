@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useUser } from "../../context/UserContext.jsx";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, CheckCircle } from "lucide-react";
 import { toast } from "react-toastify";
 
 export default function UserProfile() {
@@ -73,7 +73,7 @@ export default function UserProfile() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* Profile Detail Card */}
-        <div className="md:col-span-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 shadow-sm flex flex-col items-center justify-center text-center">
+        <div className="md:col-span-1 glass-panel rounded-xl p-6 flex flex-col items-center justify-center text-center">
           
           {/* Avatar Icon */}
           <div className="w-24 h-24 rounded-full bg-gradient-to-br from-brand-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-extrabold shadow-md mb-4 border border-brand-400/20">
@@ -87,7 +87,7 @@ export default function UserProfile() {
             <div>
               <span className="block text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Verification</span>
               <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 mt-1">
-                ✔ Active Verified
+                <CheckCircle size={12} strokeWidth={2.5} /> Active Verified
               </span>
             </div>
             <div>
@@ -100,7 +100,7 @@ export default function UserProfile() {
         </div>
 
         {/* Change Password Card */}
-        <div className="md:col-span-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 shadow-sm">
+        <div className="md:col-span-2 glass-panel rounded-xl p-6">
           <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1">Update Password</h3>
           <p className="text-xs text-gray-500 dark:text-gray-400 mb-5">
             Ensure your account uses a secure password to prevent unauthorized access.
@@ -118,12 +118,12 @@ export default function UserProfile() {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="Enter current password"
-                  className="w-full px-3.5 py-2 rounded-lg bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm text-gray-900 dark:text-white outline-none transition-all duration-200 pr-10"
+                  className="w-full px-3.5 py-2.5 rounded-lg bg-white/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm text-gray-900 dark:text-white outline-none transition-all duration-200 pr-10 shadow-sm"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-500 transition-colors"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -140,12 +140,12 @@ export default function UserProfile() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Enter new password (min. 6 chars)"
-                  className="w-full px-3.5 py-2 rounded-lg bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm text-gray-900 dark:text-white outline-none transition-all duration-200 pr-10"
+                  className="w-full px-3.5 py-2.5 rounded-lg bg-white/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm text-gray-900 dark:text-white outline-none transition-all duration-200 pr-10 shadow-sm"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-500 transition-colors"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -162,12 +162,12 @@ export default function UserProfile() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Verify new password"
-                  className="w-full px-3.5 py-2 rounded-lg bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm text-gray-900 dark:text-white outline-none transition-all duration-200 pr-10"
+                  className="w-full px-3.5 py-2.5 rounded-lg bg-white/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm text-gray-900 dark:text-white outline-none transition-all duration-200 pr-10 shadow-sm"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-500 transition-colors"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -178,7 +178,7 @@ export default function UserProfile() {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-5 py-2 bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white font-semibold text-xs rounded-lg transition-colors flex items-center gap-2 shadow-sm"
+                className="px-5 py-2.5 bg-gradient-to-r from-brand-500 to-indigo-600 hover:from-brand-600 hover:to-indigo-700 disabled:opacity-50 text-white font-semibold text-xs rounded-lg transition-all flex items-center gap-2 shadow-md hover:shadow-lg active:scale-95"
               >
                 {loading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : "Save Changes"}
               </button>

@@ -7,17 +7,19 @@ import ExplorePanel from "../components/explore/ExplorePanel.jsx";
 import ChatPanel from "../components/chat/ChatPanel.jsx";
 import UserProfile from "../components/profile/UserProfile.jsx";
 import { useDataset } from "../context/DatasetContext.jsx";
+import { RefreshCw } from "lucide-react";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("preview");
   const { dataset, clearDataset } = useDataset();
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col relative">
+      {/* Optional ambient background glows could go here, but using the global styles for now */}
       <Header />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar active={activeTab} onSelect={setActiveTab} />
-        <main className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50 dark:bg-gray-950">
+        <main className="flex-1 overflow-y-auto p-6 space-y-6">
           {activeTab === "profile" ? (
             <UserProfile />
           ) : (
@@ -29,12 +31,13 @@ export default function Dashboard() {
               {dataset && activeTab === "chat" && <ChatPanel />}
 
               {dataset && (
-                <div className="pt-2">
+                <div className="pt-2 flex justify-center">
                   <button
                     onClick={clearDataset}
-                    className="text-xs text-gray-500 hover:text-red-500 hover:underline transition-colors"
+                    className="flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-red-500 transition-colors"
                   >
-                    🔄 Upload a different dataset
+                    <RefreshCw size={14} className="hover:animate-spin" />
+                    Upload a different dataset
                   </button>
                 </div>
               )}

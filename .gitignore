@@ -17,10 +17,15 @@ backend/uploads/*
 !backend/uploads/.gitkeep
 
 # Frontend Config & Cache
-frontend/node_modules/
+node_modules/
 frontend/dist/
 frontend/.eslintcache
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Agent Artifacts
+implementation_plan.md
+task.md
+walkthrough.md
