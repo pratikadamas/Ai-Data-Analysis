@@ -85,3 +85,28 @@ h1, h2, h3, h4, h5, h6 {
 html {
   scroll-behavior: smooth;
 }
+
+@layer utilities {
+  .shadow-glow {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+  }
+  .shadow-glow-lg {
+    box-shadow: 0 0 40px rgba(99, 102, 241, 0.5);
+  }
+  .glassmorphism-deep {
+    @apply bg-white/10 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800/60 shadow-xl;
+  }
+  .animate-gradient-x {
+    background-size: 200% 200%;
+    animation: gradient-x 4s ease infinite;
+  }
+}
+
+@keyframes gradient-x {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}

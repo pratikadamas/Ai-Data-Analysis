@@ -13,6 +13,7 @@
     "ag-grid-community": "^32.2.0",
     "ag-grid-react": "^32.2.0",
     "axios": "^1.7.7",
+    "framer-motion": "^12.42.2",
     "lucide-react": "^1.24.0",
     "plotly.js": "^2.35.2",
     "react": "^18.3.1",

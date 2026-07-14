@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { 
   Database, 
   LineChart, 
@@ -67,180 +68,253 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-[#fafafa] dark:bg-[#050505] text-gray-900 dark:text-gray-100 font-sans transition-colors duration-500 overflow-x-hidden selection:bg-brand-500/30">
       
       {/* Navigation */}
-      <nav className="fixed w-full z-50 glass-panel border-b border-gray-200 dark:border-gray-800">
+      <motion.nav 
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="fixed w-full z-50 glass-panel border-b border-white/20 dark:border-gray-800/40 bg-white/70 dark:bg-[#0a0a0a]/70"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-brand-500 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                <Database className="w-5 h-5" />
+          <div className="flex justify-between h-20 items-center">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-brand-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-glow">
+                <Database className="w-6 h-6" />
               </div>
-              <span className="font-bold text-xl tracking-tight">AI Data Analyst</span>
+              <span className="font-bold text-2xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">
+                AI Data Analyst
+              </span>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-6">
               <ThemeToggle />
               <Link to="/login" className="text-gray-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-brand-400 font-medium transition-colors">
                 Sign In
               </Link>
-              <Link to="/login" className="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2 rounded-full font-medium transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-                Get Started
-              </Link>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Link to="/login" className="relative group inline-flex items-center justify-center px-6 py-2.5 rounded-full text-white font-medium bg-gradient-to-r from-brand-600 to-indigo-600 overflow-hidden shadow-glow hover:shadow-glow-lg transition-all">
+                  <span className="absolute w-0 h-0 transition-all duration-500 ease-out bg-white rounded-full group-hover:w-56 group-hover:h-56 opacity-10"></span>
+                  <span className="relative">Get Started</span>
+                </Link>
+              </motion.div>
             </div>
           </div>
         </div>
-      </nav>
+      </motion.nav>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-        {/* Background Gradients */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-brand-500/10 to-transparent blur-3xl -z-10 dark:from-brand-500/5"></div>
+      <section className="relative pt-40 pb-32 lg:pt-56 lg:pb-40 overflow-hidden">
+        {/* Deep Space Gradients */}
+        <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[120%] h-[800px] bg-gradient-to-b from-brand-500/20 via-indigo-500/10 to-transparent blur-[120px] -z-10 dark:from-brand-500/20 dark:via-purple-500/10 rounded-[100%] pointer-events-none"></div>
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in-up">
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6">
-            The simplest way to <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-500 dark:from-brand-400 dark:to-indigo-400">
-              explore & analyze
-            </span> your data.
-          </h1>
-          <p className="mt-4 max-w-2xl mx-auto text-xl text-gray-500 dark:text-gray-400 mb-10">
-            Upload any dataset and start asking questions in plain English. 
-            Get instant insights, interactive charts, and intelligent SQL generation.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <Link to="/login" className="w-full sm:w-auto bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center">
-              Start Analyzing for Free <ArrowRight className="ml-2 w-5 h-5" />
-            </Link>
-            <a href="#workflow" className="w-full sm:w-auto px-8 py-4 rounded-full font-semibold text-lg text-gray-700 dark:text-gray-200 border-2 border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all">
-              See how it works
-            </a>
-          </div>
-          
-          {/* Dashboard Preview Image (Placeholder styling) */}
-          <div className="mt-16 relative mx-auto max-w-5xl animate-fade-in delay-200">
-            <div className="rounded-2xl border border-gray-200 dark:border-gray-800 shadow-2xl overflow-hidden bg-white dark:bg-gray-900 glass-panel animate-float">
-              <div className="h-8 border-b border-gray-200 dark:border-gray-800 flex items-center px-4 space-x-2 bg-gray-50 dark:bg-gray-950">
-                <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
-                <div className="w-3 h-3 rounded-full bg-green-400"></div>
-              </div>
-              <div className="aspect-[16/9] bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 p-8 flex items-center justify-center">
-                <div className="text-gray-400 dark:text-gray-600 font-medium text-lg flex flex-col items-center">
-                  <LineChart className="w-16 h-16 mb-4 opacity-50" />
-                  Interactive Dashboard Preview
-                </div>
-              </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col lg:flex-row items-center gap-16">
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1, delay: 0.2 }}
+            className="flex-1 text-center lg:text-left"
+          >
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="inline-block mb-6 px-4 py-1.5 rounded-full border border-brand-500/30 bg-brand-500/10 text-brand-700 dark:text-brand-300 font-medium text-sm tracking-wide shadow-glow backdrop-blur-md"
+            >
+              🚀 The Next Generation of Data Analysis
+            </motion.div>
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight mb-8 leading-[1.1]">
+              Talk to your <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 via-indigo-500 to-purple-500 animate-gradient-x">
+                Data Context.
+              </span>
+            </h1>
+            <p className="mt-4 max-w-2xl mx-auto lg:mx-0 text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-10 leading-relaxed">
+              Upload any dataset and start asking questions in plain English. 
+              Get instant insights, interactive charts, and intelligent SQL generation powered by AI.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center lg:justify-start items-center space-y-4 sm:space-y-0 sm:space-x-6">
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Link to="/login" className="w-full sm:w-auto bg-white dark:bg-white text-gray-900 px-8 py-4 rounded-full font-bold text-lg transition-all shadow-[0_0_40px_rgba(255,255,255,0.3)] dark:shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] flex items-center justify-center">
+                  Start Analyzing <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8, rotateY: 15 }}
+            animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+            transition={{ duration: 1.5, delay: 0.4, type: "spring" }}
+            className="flex-1 w-full relative perspective-[1000px]"
+          >
+            <motion.div 
+              animate={{ y: [0, -20, 0] }}
+              transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+              className="relative rounded-3xl overflow-hidden glassmorphism-deep border border-white/20 dark:border-gray-700/50 shadow-2xl"
+            >
+              <div className="absolute inset-0 bg-gradient-to-tr from-brand-500/10 to-purple-500/10 z-10 pointer-events-none mix-blend-overlay"></div>
+              <img src="/assets/hero_data_abstract.png" alt="Data Analytics Illustration" className="w-full h-auto object-cover opacity-90 scale-105" />
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-gray-50 dark:bg-gray-900/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Everything you need for data analysis</h2>
-            <p className="mt-4 text-lg text-gray-500 dark:text-gray-400">Built for speed, accuracy, and ease of use.</p>
-          </div>
+      <section id="features" className="py-32 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-20"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">Everything you need for analysis</h2>
+            <p className="text-xl text-gray-500 dark:text-gray-400 max-w-3xl mx-auto">Built for speed, accuracy, and mind-blowing ease of use.</p>
+          </motion.div>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, idx) => (
-              <div key={idx} className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 bg-brand-50 dark:bg-brand-900/20 rounded-xl flex items-center justify-center mb-6">
+              <motion.div 
+                key={idx} 
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
+                whileHover={{ y: -10 }}
+                className="group relative bg-white/50 dark:bg-gray-900/40 backdrop-blur-lg p-8 rounded-3xl shadow-lg border border-gray-200/50 dark:border-gray-800/50 overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-500/0 to-purple-500/0 group-hover:from-brand-500/5 group-hover:to-purple-500/5 transition-colors duration-500 -z-10"></div>
+                <div className="w-14 h-14 bg-brand-50 dark:bg-brand-900/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-sm">
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-                <p className="text-gray-500 dark:text-gray-400 leading-relaxed">{feature.description}</p>
-              </div>
+                <h3 className="text-2xl font-bold mb-4">{feature.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">{feature.description}</p>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Workflow Section */}
-      <section id="workflow" className="py-24">
+      <section id="workflow" className="py-32 bg-gray-50 dark:bg-[#0a0a0a] relative border-y border-gray-200 dark:border-gray-800/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">How it works</h2>
-            <p className="mt-4 text-lg text-gray-500 dark:text-gray-400">Three simple steps to unlock your data.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
-            {/* Connecting Line (Desktop only) */}
-            <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gradient-to-r from-gray-200 via-brand-300 to-gray-200 dark:from-gray-800 dark:via-brand-700 dark:to-gray-800 -z-10"></div>
-            
-            <div className="text-center">
-              <div className="w-24 h-24 mx-auto bg-white dark:bg-gray-900 border-4 border-white dark:border-gray-950 rounded-full shadow-xl flex items-center justify-center text-3xl font-bold text-brand-600 dark:text-brand-400 mb-6 relative z-10">
-                1
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center mb-24"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">How it works</h2>
+            <p className="text-xl text-gray-500 dark:text-gray-400">Three simple steps to unlock your data.</p>
+          </motion.div>
+
+          <div className="space-y-32">
+            {/* Step 1 */}
+            <motion.div 
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              className="flex flex-col md:flex-row items-center gap-16"
+            >
+              <div className="flex-1 order-2 md:order-1">
+                <div className="text-brand-500 font-bold text-xl mb-2">Step 1</div>
+                <h3 className="text-4xl font-bold mb-6">Upload Your Data</h3>
+                <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Securely drag and drop your CSV, Excel, or JSON files into the workspace. Our engine instantly processes and maps the schema.
+                </p>
               </div>
-              <h3 className="text-xl font-bold mb-3">Upload Data</h3>
-              <p className="text-gray-500 dark:text-gray-400">Drag and drop your files into our secure workspace.</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-24 h-24 mx-auto bg-white dark:bg-gray-900 border-4 border-white dark:border-gray-950 rounded-full shadow-xl flex items-center justify-center text-3xl font-bold text-brand-600 dark:text-brand-400 mb-6 relative z-10">
-                2
+              <div className="flex-1 order-1 md:order-2">
+                <img src="/assets/workflow_upload.png" alt="Upload illustration" className="rounded-3xl shadow-glow-lg border border-white/10" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Ask Questions</h3>
-              <p className="text-gray-500 dark:text-gray-400">Type your questions in plain English, just like talking to an analyst.</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-24 h-24 mx-auto bg-white dark:bg-gray-900 border-4 border-white dark:border-gray-950 rounded-full shadow-xl flex items-center justify-center text-3xl font-bold text-brand-600 dark:text-brand-400 mb-6 relative z-10">
-                3
+            </motion.div>
+
+            {/* Step 2 */}
+            <motion.div 
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              className="flex flex-col md:flex-row items-center gap-16"
+            >
+              <div className="flex-1">
+                <img src="/assets/workflow_charts.png" alt="Charts illustration" className="rounded-3xl shadow-glow-lg border border-white/10" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Get Insights</h3>
-              <p className="text-gray-500 dark:text-gray-400">Instantly receive clear answers, SQL queries, and beautiful interactive charts.</p>
-            </div>
+              <div className="flex-1">
+                <div className="text-indigo-500 font-bold text-xl mb-2">Step 2</div>
+                <h3 className="text-4xl font-bold mb-6">Ask & Visualize</h3>
+                <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Type questions naturally. The AI generates the precise SQL, executes it, and renders gorgeous, interactive charts instantly.
+                </p>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-24 bg-gray-50 dark:bg-gray-900/50">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight">Frequently Asked Questions</h2>
-          </div>
-          <div className="space-y-4">
+      <section id="faq" className="py-32 relative">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl font-bold tracking-tight">Frequently Asked Questions</h2>
+          </motion.div>
+          
+          <div className="space-y-6">
             {faqs.map((faq, idx) => (
-              <div key={idx} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden transition-all duration-200">
+              <motion.div 
+                key={idx} 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className="bg-white/50 dark:bg-gray-900/40 backdrop-blur-md rounded-2xl shadow-sm border border-gray-200/50 dark:border-gray-800/50 overflow-hidden"
+              >
                 <button 
-                  className="w-full px-6 py-4 text-left font-semibold flex justify-between items-center focus:outline-none"
+                  className="w-full px-8 py-6 text-left font-bold flex justify-between items-center focus:outline-none"
                   onClick={() => toggleFaq(idx)}
                 >
-                  <span className="text-lg">{faq.question}</span>
-                  {openFaq === idx ? (
-                    <ChevronUp className="w-5 h-5 text-gray-500" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-gray-500" />
-                  )}
+                  <span className="text-xl">{faq.question}</span>
+                  <motion.div
+                    animate={{ rotate: openFaq === idx ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <ChevronDown className="w-6 h-6 text-gray-400" />
+                  </motion.div>
                 </button>
-                <div 
-                  className={`px-6 overflow-hidden transition-all duration-300 ease-in-out ${
-                    openFaq === idx ? 'max-h-48 pb-4 opacity-100' : 'max-h-0 opacity-0'
-                  }`}
+                <motion.div 
+                  initial={false}
+                  animate={{ height: openFaq === idx ? "auto" : 0, opacity: openFaq === idx ? 1 : 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="overflow-hidden"
                 >
-                  <p className="text-gray-500 dark:text-gray-400">{faq.answer}</p>
-                </div>
-              </div>
+                  <p className="px-8 pb-6 text-lg text-gray-600 dark:text-gray-400 leading-relaxed">{faq.answer}</p>
+                </motion.div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800 py-12">
+      <footer className="bg-white dark:bg-[#050505] border-t border-gray-200 dark:border-gray-800/50 py-16 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-center space-x-2 mb-4 md:mb-0">
-            <Database className="w-6 h-6 text-brand-600 dark:text-brand-500" />
-            <span className="font-bold text-lg">AI Data Analyst</span>
+          <div className="flex items-center space-x-3 mb-6 md:mb-0">
+            <div className="w-8 h-8 bg-gradient-to-br from-brand-500 to-indigo-600 rounded-lg flex items-center justify-center text-white">
+              <Database className="w-4 h-4" />
+            </div>
+            <span className="font-bold text-xl">AI Data Analyst</span>
           </div>
           
-          <div className="flex space-x-6 text-sm text-gray-500 dark:text-gray-400 mb-4 md:mb-0">
-            <a href="#features" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Features</a>
-            <a href="#faq" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">FAQ</a>
-            <a href="#" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Terms of Service</a>
+          <div className="flex space-x-8 text-sm font-medium text-gray-500 dark:text-gray-400 mb-6 md:mb-0">
+            <a href="#features" className="hover:text-brand-600 dark:hover:text-white transition-colors">Features</a>
+            <a href="#workflow" className="hover:text-brand-600 dark:hover:text-white transition-colors">How it works</a>
+            <a href="#faq" className="hover:text-brand-600 dark:hover:text-white transition-colors">FAQ</a>
+            <a href="#" className="hover:text-brand-600 dark:hover:text-white transition-colors">Terms & Privacy</a>
           </div>
           
           <div className="flex space-x-4">
@@ -252,11 +326,7 @@ export default function LandingPage() {
             </a>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 text-center text-sm text-gray-400 dark:text-gray-600">
-          &copy; {new Date().getFullYear()} AI Data Analyst. All rights reserved.
-        </div>
       </footer>
-
     </div>
   );
 }
