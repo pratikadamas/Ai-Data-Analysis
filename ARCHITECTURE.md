@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=28&pause=1000&color=8B5CF6&center=true&vCenter=true&width=800&lines=System+Architecture;How+Everything+Connects" alt="Typing SVG" />
+</div>
+
 # 🏗️ System Architecture
 
 This document describes the high-level architecture of the **AI Data Analyst** application.

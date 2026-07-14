@@ -1,4 +1,8 @@
 <div align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=32&pause=1000&color=3B82F6&center=true&vCenter=true&width=800&lines=AI+Data+Analyst;Your+Intelligent+Data+Assistant" alt="Typing SVG" />
+</div>
+
+<div align="center">
   <h1>✨ AI Data Analyst ✨</h1>
   <p><i>Your intelligent, conversational data analysis assistant.</i></p>
 
@@ -14,6 +18,7 @@
 > The backend runs queries securely through DuckDB with a strict read-only SQL whitelist, while the frontend provides manual chart building and an AI chat mode powered by **Groq** (Llama 3.3 70B).
 
 ## 📚 Documentation
+- 📖 [Project Instructions & Codebase Guide](INSTRUCTIONS.md)
 - 🏗️ [Architecture Overview](ARCHITECTURE.md)
 - ⚙️ [Backend README](backend/README.md)
 - 🎨 [Frontend README](frontend/README.md)
