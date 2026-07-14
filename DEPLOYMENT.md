@@ -16,8 +16,11 @@ There are two primary ways to deploy this application: the **Split Architecture*
 Vercel *can* host both the React frontend and the Python FastAPI backend in a single deployment using a `vercel.json` configuration file at the root of your project.
 
 1. Ensure the `vercel.json` file is present in your root directory. It contains the configuration needed to map `/api/*` routes to your Python backend and the rest to your Vite frontend.
-2. Import the project into Vercel.
-3. Vercel will automatically build the frontend and set up the Python environment for the backend based on `backend/requirements.txt`.
+2. Import the project into Vercel. Leave the **Root Directory** as `./`.
+3. In the **Build and Output Settings** section, enable the overrides and set them to build the frontend:
+   - **Build Command**: `cd frontend && npm run build`
+   - **Output Directory**: `frontend/dist`
+   - **Install Command**: `cd frontend && npm install`
 4. Ensure you add your environment variables (`GROQ_API_KEY`, `MONGODB_URI`, etc.) in the Vercel project settings.
 
 ---
