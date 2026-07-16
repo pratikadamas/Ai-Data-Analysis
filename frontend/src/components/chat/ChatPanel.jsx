@@ -6,7 +6,7 @@ import ResultTable from "../charts/ResultTable.jsx";
 import SqlViewer from "../charts/SqlViewer.jsx";
 import { exportChatAsHtml } from "../../utils/exportChat.js";
 import { toast } from "react-toastify";
-import { AlertTriangle, Download, Trash2, Send } from "lucide-react";
+import { AlertTriangle, Download, Trash2, Send, MessageSquare } from "lucide-react";
 
 const EXAMPLE_QUESTIONS = [
   "Which category has the highest total?",
@@ -34,6 +34,13 @@ export default function ChatPanel() {
     const t = setTimeout(() => setPopup(null), 4000);
     return () => clearTimeout(t);
   }, [popup]);
+
+  // Show toast when no dataset
+  useEffect(() => {
+    if (!dataset) {
+      toast.warning("Please upload a valid file", { toastId: "no-dataset-chat" });
+    }
+  }, [dataset]);
 
   const send = async (question) => {
     const q = question ?? input;
@@ -85,7 +92,21 @@ export default function ChatPanel() {
   };
 
   if (!dataset) {
-    return <p className="text-sm text-gray-500">Upload a dataset to start asking questions.</p>;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-4">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500/20 to-indigo-500/20 flex items-center justify-center">
+          <MessageSquare size={32} className="text-brand-500" />
+        </div>
+        <div>
+          <p className="font-semibold text-lg text-gray-800 dark:text-gray-200">
+            No Dataset Loaded
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Upload a file to start asking AI questions about your data
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (

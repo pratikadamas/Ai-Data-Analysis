@@ -5,6 +5,7 @@ import UploadArea from "../components/upload/UploadArea.jsx";
 import PreviewTable from "../components/preview/PreviewTable.jsx";
 import ExplorePanel from "../components/explore/ExplorePanel.jsx";
 import ChatPanel from "../components/chat/ChatPanel.jsx";
+import SqlEditorPanel from "../components/sql-editor/SqlEditorPanel.jsx";
 import UserProfile from "../components/profile/UserProfile.jsx";
 import { useDataset } from "../context/DatasetContext.jsx";
 import { RefreshCw } from "lucide-react";
@@ -24,11 +25,17 @@ export default function Dashboard() {
             <UserProfile />
           ) : (
             <>
-              {!dataset && <UploadArea />}
+              {!dataset && activeTab === "preview" && <UploadArea />}
 
-              {dataset && activeTab === "preview" && <PreviewTable />}
-              {dataset && activeTab === "explore" && <ExplorePanel />}
-              {dataset && activeTab === "chat" && <ChatPanel />}
+              {activeTab === "preview" && dataset && <PreviewTable />}
+              {activeTab === "explore" && <ExplorePanel />}
+              {activeTab === "chat" && <ChatPanel />}
+              {activeTab === "sql-editor" && <SqlEditorPanel />}
+
+              {/* Show upload area inline when on a tab that needs data but none is loaded */}
+              {!dataset && (activeTab === "explore" || activeTab === "chat" || activeTab === "sql-editor") && (
+                <UploadArea />
+              )}
 
               {dataset && (
                 <div className="pt-2 flex justify-center">

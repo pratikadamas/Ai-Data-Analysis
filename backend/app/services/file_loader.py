@@ -29,6 +29,7 @@ class FileLoader:
         conn: duckdb.DuckDBPyConnection,
         file_path: Path,
         filename: str,
+        create_alias: bool = True,
     ) -> str:
         """Load *file_path* into *conn* and return the table name used."""
         file_type = detect_file_type(filename)
@@ -47,8 +48,11 @@ class FileLoader:
         loader(conn, file_path, table_name)
 
         # Create a backward-compatible alias view named 'uploaded_data'.
-        if table_name != "uploaded_data":
-            conn.execute(f'CREATE VIEW uploaded_data AS SELECT * FROM "{table_name}"')
+        if create_alias and table_name != "uploaded_data":
+            try:
+                conn.execute(f'CREATE OR REPLACE VIEW uploaded_data AS SELECT * FROM "{table_name}"')
+            except Exception:
+                pass  # Ignore if already exists from another file
 
         return table_name
 

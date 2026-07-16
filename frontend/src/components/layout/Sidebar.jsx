@@ -1,10 +1,11 @@
 import React from "react";
-import { Table, LineChart, MessageSquare, User } from "lucide-react";
+import { Table, LineChart, MessageSquare, User, Code2 } from "lucide-react";
 
 const NAV_ITEMS = [
   { key: "preview", label: "Data Preview", icon: Table },
   { key: "explore", label: "Explore", icon: LineChart },
   { key: "chat", label: "Ask AI", icon: MessageSquare },
+  { key: "sql-editor", label: "SQL Editor", icon: Code2 },
   { key: "profile", label: "User Profile", icon: User },
 ];
 

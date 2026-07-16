@@ -39,15 +39,32 @@ class DatasetSchema(BaseModel):
     duplicate_row_count: int = 0
 
 
-class UploadResponse(BaseModel):
-    dataset_id: str
+class FileInfo(BaseModel):
     filename: str
     file_type: str
+    table_name: str
     schema_: DatasetSchema = Field(alias="schema")
     preview_rows: list[dict[str, Any]]
 
     class Config:
         populate_by_name = True
+
+
+class UploadResponse(BaseModel):
+    dataset_id: str
+    files: list[FileInfo]
+
+
+class SqlQueryRequest(BaseModel):
+    dataset_id: str
+    sql: str
+
+
+class SqlQueryResponse(BaseModel):
+    sql: str
+    columns: list[str] = []
+    rows: list[dict[str, Any]] = []
+    error: str | None = None
 
 
 class ExploreRequest(BaseModel):
@@ -56,6 +73,7 @@ class ExploreRequest(BaseModel):
     y_column: str | None = None
     aggregation: Literal["sum", "avg", "count", "min", "max", "none"] = "none"
     chart_type: ChartType = "bar"
+    table_name: str | None = None  # optional: specify which table in multi-file datasets
 
 
 class ChatRequest(BaseModel):

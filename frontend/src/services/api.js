@@ -16,9 +16,13 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-export const uploadDataset = (file) => {
+export const uploadDataset = (files) => {
   const formData = new FormData();
-  formData.append("file", file);
+  // Support both single file and array of files
+  const fileList = Array.isArray(files) ? files : [files];
+  fileList.forEach((file) => {
+    formData.append("files", file);
+  });
   return api.post("/upload", formData);
 };
 
@@ -44,5 +48,11 @@ export const downloadExcel = (datasetId, sql) =>
     { dataset_id: datasetId, sql },
     { responseType: "blob" }
   );
+
+export const runSqlQuery = (datasetId, sql) =>
+  api.post("/sql-editor", { dataset_id: datasetId, sql });
+
+export const getTableList = (datasetId) =>
+  api.get(`/sql-editor/${datasetId}/tables`);
 
 export default api;

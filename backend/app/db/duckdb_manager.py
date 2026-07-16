@@ -30,16 +30,20 @@ class DuckDBManager:
 
     def __init__(self) -> None:
         self._connections: dict[str, duckdb.DuckDBPyConnection] = {}
-        self._table_names: dict[str, str] = {}          # dataset_id -> table name
+        self._table_names: dict[str, list[str]] = {}    # dataset_id -> list of table names
         self._lock = threading.Lock()
 
     def create_connection(
         self, dataset_id: str, table_name: str = TABLE_NAME
     ) -> duckdb.DuckDBPyConnection:
         with self._lock:
+            if dataset_id in self._connections:
+                # Connection already exists; just add the table name
+                self._table_names[dataset_id].append(table_name)
+                return self._connections[dataset_id]
             conn = duckdb.connect(database=":memory:")
             self._connections[dataset_id] = conn
-            self._table_names[dataset_id] = table_name
+            self._table_names[dataset_id] = [table_name]
             return conn
 
     def get_connection(self, dataset_id: str) -> duckdb.DuckDBPyConnection:
@@ -49,8 +53,13 @@ class DuckDBManager:
         return conn
 
     def get_table_name(self, dataset_id: str) -> str:
-        """Return the DuckDB table name for this dataset (defaults to 'uploaded_data')."""
-        return self._table_names.get(dataset_id, self.TABLE_NAME)
+        """Return the first DuckDB table name for this dataset (backward compat)."""
+        names = self._table_names.get(dataset_id, [self.TABLE_NAME])
+        return names[0] if names else self.TABLE_NAME
+
+    def get_table_names(self, dataset_id: str) -> list[str]:
+        """Return all DuckDB table names for this dataset."""
+        return list(self._table_names.get(dataset_id, []))
 
     def drop_connection(self, dataset_id: str) -> None:
         with self._lock:
