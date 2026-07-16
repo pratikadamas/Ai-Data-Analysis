@@ -26,8 +26,14 @@ export default function Header() {
           AI Data Analyst
         </span>
         {dataset && (
-          <span className="text-xs text-gray-500 dark:text-gray-400 ml-3 bg-gray-100/50 dark:bg-gray-800/50 px-2 py-0.5 rounded backdrop-blur-sm">
-            {dataset.filename} · {dataset.schema?.row_count?.toLocaleString()} rows
+          <span
+            className="text-xs text-gray-500 dark:text-gray-400 ml-3 bg-gray-100/50 dark:bg-gray-800/50 px-2 py-0.5 rounded backdrop-blur-sm"
+            title={dataset.files?.map(f => f.filename).join(", ") || dataset.filename}
+          >
+            {dataset.files?.length > 1
+              ? `${dataset.files.length} files · ${dataset.files.reduce((sum, f) => sum + (f.schema?.row_count || 0), 0).toLocaleString()} total rows`
+              : `${dataset.filename} · ${dataset.schema?.row_count?.toLocaleString()} rows`
+            }
           </span>
         )}
       </div>

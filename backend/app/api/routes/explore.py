@@ -8,7 +8,6 @@ from fastapi import APIRouter, HTTPException
 from app.db.duckdb_manager import duckdb_manager
 from app.models.schemas import ExploreRequest
 from app.services.chart_service import build_chart_spec
-from app.services.schema_service import extract_schema
 
 router = APIRouter(prefix="/api/explore", tags=["explore"])
 
@@ -28,15 +27,26 @@ async def explore(req: ExploreRequest) -> dict:
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="Dataset not found or expired.") from exc
 
-    schema = extract_schema(conn, req.dataset_id)
-    valid_columns = {col.name for col in schema.columns}
+    # Use specified table_name or fall back to default (first table)
+    if req.table_name:
+        # Validate that the requested table exists in this dataset
+        available_tables = duckdb_manager.get_table_names(req.dataset_id)
+        if req.table_name not in available_tables:
+            raise HTTPException(status_code=400, detail=f"Unknown table: {req.table_name}")
+        target_table = req.table_name
+    else:
+        target_table = duckdb_manager.get_table_name(req.dataset_id)
+
+    # Get columns for the specific target table
+    describe_rows = conn.execute(f'DESCRIBE "{target_table}"').fetchall()
+    valid_columns = {row[0] for row in describe_rows}
 
     if req.x_column not in valid_columns:
         raise HTTPException(status_code=400, detail=f"Unknown column: {req.x_column}")
     if req.y_column and req.y_column not in valid_columns:
         raise HTTPException(status_code=400, detail=f"Unknown column: {req.y_column}")
 
-    table = f'"{duckdb_manager.get_table_name(req.dataset_id)}"'
+    table = f'"{target_table}"'
 
     if req.aggregation != "none" and req.y_column:
         agg_fn = _AGG_SQL[req.aggregation]
