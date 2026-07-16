@@ -34,14 +34,7 @@ def send_otp_email(to_email: str, username: str, otp: str, purpose: str = "regis
     </html>
     """
 
-    # Print to console for immediate development access
-    print(f"\n==========================================")
-    print(f"[OTP MAIL SIMULATOR] To: {to_email}")
-    print(f"Username: {username}")
-    print(f"Purpose: {purpose}")
-    print(f"Generated OTP Code: {otp}")
-    print(f"==========================================\n")
-    logger.info(f"Generated {purpose} OTP for {to_email}: {otp}")
+  
 
     # If mail configuration is empty, skip actual SMTP sending
     if not settings.mail_username or not settings.mail_password:
