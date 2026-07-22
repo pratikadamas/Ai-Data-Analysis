@@ -28,6 +28,8 @@ export const uploadDataset = (files) => {
 
 export const getSchema = (datasetId) => api.get(`/dataset/${datasetId}/schema`);
 
+export const getDatasetPreview = (datasetId) => api.get(`/dataset/${datasetId}/preview`);
+
 export const deleteDataset = (datasetId) => api.delete(`/dataset/${datasetId}`);
 
 export const askQuestion = (datasetId, question, conversationId = null) =>

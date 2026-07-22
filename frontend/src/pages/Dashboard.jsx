@@ -12,7 +12,7 @@ import { RefreshCw } from "lucide-react";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("preview");
-  const { dataset, clearDataset } = useDataset();
+  const { dataset, clearDataset, sessionVerified } = useDataset();
 
   return (
     <div className="h-screen flex flex-col relative">
@@ -21,7 +21,16 @@ export default function Dashboard() {
       <div className="flex flex-1 overflow-hidden">
         <Sidebar active={activeTab} onSelect={setActiveTab} />
         <main className="flex-1 overflow-y-auto p-6 space-y-6">
-          {activeTab === "profile" ? (
+          {/* While verifying restored session against the backend, show a spinner
+              so we don't flash the upload screen for users whose session is still valid */}
+          {!sessionVerified ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="flex flex-col items-center gap-3 text-gray-400 dark:text-gray-500">
+                <div className="w-8 h-8 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                <span className="text-sm font-medium">Restoring session…</span>
+              </div>
+            </div>
+          ) : activeTab === "profile" ? (
             <UserProfile />
           ) : (
             <>
