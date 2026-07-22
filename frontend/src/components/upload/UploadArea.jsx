@@ -87,7 +87,7 @@ export default function UploadArea() {
           setIsDragging(false);
           addFiles(e.dataTransfer.files);
         }}
-        className={`border-2 border-dashed rounded-xl p-10 text-center transition-all duration-300 glass-panel flex flex-col items-center justify-center min-h-[240px] ${
+        className={`upload-zone border-2 border-dashed rounded-xl p-10 text-center transition-all duration-300 glass-panel flex flex-col items-center justify-center min-h-[240px] ${
           isDragging
             ? "border-brand-500 bg-brand-50/50 dark:bg-brand-700/20 scale-[1.02] shadow-brand-500/20 shadow-lg"
             : "border-gray-300 dark:border-gray-700 hover:border-brand-400 hover:bg-gray-50/50 dark:hover:bg-gray-800/30"
@@ -96,10 +96,10 @@ export default function UploadArea() {
         <div className={`mb-4 text-brand-500 transition-transform duration-500 ${isDragging ? 'scale-125' : 'animate-float'}`}>
           <UploadCloud size={56} strokeWidth={1.5} />
         </div>
-        <p className="font-semibold text-lg mb-1 tracking-wide text-gray-800 dark:text-gray-200">
+        <p className="upload-zone-title font-semibold text-lg mb-1 tracking-wide text-gray-800 dark:text-gray-200">
           Drag & drop your datasets here
         </p>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1 font-medium">
+        <p className="upload-zone-subtitle text-sm text-gray-500 dark:text-gray-400 mb-1 font-medium">
           CSV, Excel (.xlsx/.xls), SQLite (.db/.sqlite), or SQL dump (.sql)
         </p>
         <p className="text-xs text-gray-400 dark:text-gray-500 mb-5">

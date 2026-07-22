@@ -22,12 +22,12 @@ export default function Header() {
   return (
     <header className="h-14 flex items-center justify-between px-6 border-b border-white/20 dark:border-gray-800/50 glass-panel select-none relative z-50">
       <div className="flex items-center gap-2">
-        <span className="text-lg font-semibold bg-gradient-to-r from-brand-500 to-indigo-600 bg-clip-text text-transparent">
+        <span className="header-title text-lg font-semibold bg-gradient-to-r from-brand-500 to-indigo-600 bg-clip-text text-transparent">
           AI Data Analyst
         </span>
         {dataset && (
           <span
-            className="text-xs text-gray-500 dark:text-gray-400 ml-3 bg-gray-100/50 dark:bg-gray-800/50 px-2 py-0.5 rounded backdrop-blur-sm"
+            className="header-dataset-pill text-xs text-gray-500 dark:text-gray-400 ml-3 bg-gray-100/50 dark:bg-gray-800/50 px-2 py-0.5 rounded backdrop-blur-sm"
             title={dataset.files?.map(f => f.filename).join(", ") || dataset.filename}
           >
             {dataset.files?.length > 1

@@ -12,7 +12,7 @@ const NAV_ITEMS = [
 export default function Sidebar({ active, onSelect }) {
   return (
     <aside className="w-56 shrink-0 border-r border-white/20 dark:border-gray-800/50 glass-panel p-3">
-      <nav className="flex flex-col gap-1">
+      <nav className="sidebar-nav flex flex-col gap-1">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const isActive = active === item.key;
@@ -27,7 +27,7 @@ export default function Sidebar({ active, onSelect }) {
               }`}
             >
               <Icon size={18} className={isActive ? "text-white" : "opacity-70"} />
-              <span className="font-medium tracking-wide">{item.label}</span>
+              <span className="sidebar-label font-medium tracking-wide">{item.label}</span>
             </button>
           );
         })}

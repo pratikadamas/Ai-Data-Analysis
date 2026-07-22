@@ -8,7 +8,15 @@ import ChatPanel from "../components/chat/ChatPanel.jsx";
 import SqlEditorPanel from "../components/sql-editor/SqlEditorPanel.jsx";
 import UserProfile from "../components/profile/UserProfile.jsx";
 import { useDataset } from "../context/DatasetContext.jsx";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Table, LineChart, MessageSquare, User, Code2 } from "lucide-react";
+
+const NAV_ITEMS = [
+  { key: "preview",    label: "Preview",  icon: Table },
+  { key: "explore",   label: "Explore",  icon: LineChart },
+  { key: "chat",      label: "Ask AI",   icon: MessageSquare },
+  { key: "sql-editor",label: "SQL",      icon: Code2 },
+  { key: "profile",   label: "Profile",  icon: User },
+];
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("preview");
@@ -16,13 +24,13 @@ export default function Dashboard() {
 
   return (
     <div className="h-screen flex flex-col relative">
-      {/* Optional ambient background glows could go here, but using the global styles for now */}
       <Header />
       <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar — hidden on mobile via .sidebar-nav CSS class */}
         <Sidebar active={activeTab} onSelect={setActiveTab} />
-        <main className="flex-1 overflow-y-auto p-6 space-y-6">
-          {/* While verifying restored session against the backend, show a spinner
-              so we don't flash the upload screen for users whose session is still valid */}
+
+        {/* Main content */}
+        <main className="dashboard-main flex-1 overflow-y-auto p-6 space-y-6">
           {!sessionVerified ? (
             <div className="flex items-center justify-center h-full">
               <div className="flex flex-col items-center gap-3 text-gray-400 dark:text-gray-500">
@@ -41,7 +49,6 @@ export default function Dashboard() {
               {activeTab === "chat" && <ChatPanel />}
               {activeTab === "sql-editor" && <SqlEditorPanel />}
 
-              {/* Show upload area inline when on a tab that needs data but none is loaded */}
               {!dataset && (activeTab === "explore" || activeTab === "chat" || activeTab === "sql-editor") && (
                 <UploadArea />
               )}
@@ -61,6 +68,30 @@ export default function Dashboard() {
           )}
         </main>
       </div>
+
+      {/* ── Mobile bottom tab bar (hidden on desktop via CSS media query) ── */}
+      <nav className="bottom-tab-bar hidden">
+        {NAV_ITEMS.map(({ key, label, icon: Icon }) => {
+          const isActive = activeTab === key;
+          return (
+            <button
+              key={key}
+              onClick={() => setActiveTab(key)}
+              className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all ${
+                isActive
+                  ? "text-indigo-600 dark:text-indigo-400"
+                  : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+              }`}
+            >
+              <Icon size={20} strokeWidth={isActive ? 2.5 : 1.8} />
+              <span className="text-[10px] font-semibold tracking-wide">{label}</span>
+              {isActive && (
+                <span className="absolute bottom-1 w-1 h-1 rounded-full bg-indigo-500" />
+              )}
+            </button>
+          );
+        })}
+      </nav>
     </div>
   );
 }

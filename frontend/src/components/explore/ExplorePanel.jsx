@@ -120,7 +120,7 @@ export default function ExplorePanel() {
         </div>
       )}
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="explore-controls-grid grid grid-cols-2 md:grid-cols-4 gap-3">
         <Select label="X-axis" value={xColumn} onChange={setXColumn} options={["", ...columns]} />
         <Select label="Y-axis (optional)" value={yColumn} onChange={setYColumn} options={["", ...columns]} />
         <Select label="Aggregation" value={aggregation} onChange={setAggregation} options={AGGREGATIONS} />
