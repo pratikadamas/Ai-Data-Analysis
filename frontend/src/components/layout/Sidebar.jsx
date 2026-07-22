@@ -11,7 +11,7 @@ const NAV_ITEMS = [
 
 export default function Sidebar({ active, onSelect }) {
   return (
-    <aside className="w-56 shrink-0 border-r border-white/20 dark:border-gray-800/50 glass-panel p-3">
+    <aside className="sidebar-wrapper w-56 shrink-0 border-r border-white/20 dark:border-gray-800/50 glass-panel p-3">
       <nav className="sidebar-nav flex flex-col gap-1">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
