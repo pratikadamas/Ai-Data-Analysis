@@ -55,6 +55,10 @@ class ChangePasswordRequest(BaseModel):
     current_password: str
     new_password: str = Field(..., min_length=6)
 
+class ResendOTPRequest(BaseModel):
+    email: str
+    purpose: str = Field(default="registration")  # "registration" or "reset"
+
 # --- Helper Functions ---
 
 def generate_otp() -> str:
@@ -160,6 +164,86 @@ async def verify_otp(payload: VerifyOTPRequest):
     )
     
     return {"status": "success", "message": "Email verified successfully. You can now log in."}
+
+
+OTP_RESEND_COOLDOWN_SECONDS = 60  # Users must wait 60 s between resend requests
+
+@router.post("/resend-otp")
+async def resend_otp(payload: ResendOTPRequest):
+    """Resend OTP for registration verification or password reset."""
+    users_col = db["users"]
+    user = users_col.find_one({"email": payload.email.strip().lower()})
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No account found with that email address."
+        )
+
+    now = datetime.utcnow()
+
+    if payload.purpose == "registration":
+        if user.get("is_verified"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Account is already verified. Please sign in."
+            )
+        col = db["email_verifications"]
+        email_purpose = "registration"
+    elif payload.purpose == "reset":
+        col = db["password_resets"]
+        email_purpose = "forgot password"
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid purpose. Must be 'registration' or 'reset'."
+        )
+
+    # Check cooldown: find most recent OTP for this user (used or not)
+    last_doc = col.find_one(
+        {"user_id": user["_id"]},
+        sort=[("created_at", -1)]
+    )
+
+    if last_doc:
+        elapsed = (now - last_doc["created_at"]).total_seconds()
+        if elapsed < OTP_RESEND_COOLDOWN_SECONDS:
+            wait_seconds = int(OTP_RESEND_COOLDOWN_SECONDS - elapsed)
+            next_allowed_at = last_doc["created_at"] + timedelta(seconds=OTP_RESEND_COOLDOWN_SECONDS)
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=f"Please wait {wait_seconds} second(s) before requesting another OTP.",
+                headers={"X-Next-Allowed-At": next_allowed_at.isoformat()}
+            )
+
+    # Invalidate all old unused OTPs for this user
+    col.update_many(
+        {"user_id": user["_id"], "used": False},
+        {"$set": {"used": True}}
+    )
+
+    # Generate fresh OTP
+    otp = generate_otp()
+    otp_hash = hash_password(otp)
+    otp_expiry = now + timedelta(minutes=10)
+
+    col.insert_one({
+        "user_id": user["_id"],
+        "otp_hash": otp_hash,
+        "expires_at": otp_expiry,
+        "used": False,
+        "created_at": now
+    })
+
+    send_otp_email(user["email"], user["username"], otp, purpose=email_purpose)
+
+    next_allowed_at = now + timedelta(seconds=OTP_RESEND_COOLDOWN_SECONDS)
+    return {
+        "status": "success",
+        "message": "A new OTP has been sent to your email.",
+        "next_allowed_at": next_allowed_at.isoformat()
+    }
+
 
 @router.post("/login")
 async def login(payload: LoginRequest, request: Request):

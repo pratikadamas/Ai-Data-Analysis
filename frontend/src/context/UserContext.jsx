@@ -123,6 +123,21 @@ export function UserProvider({ children }) {
     }
   }, []);
 
+  const resendOtp = useCallback(async (email, purpose = "registration") => {
+    setError(null);
+    try {
+      const response = await api.post("/auth/resend-otp", { email, purpose });
+      // next_allowed_at is an ISO string from the server
+      return { success: true, nextAllowedAt: response.data.next_allowed_at };
+    } catch (err) {
+      const detail = parseError(err, "Failed to resend OTP.");
+      // Server may return X-Next-Allowed-At header on 429
+      const nextAllowedAt = err.response?.headers?.["x-next-allowed-at"] || null;
+      setError(detail);
+      return { success: false, error: detail, nextAllowedAt };
+    }
+  }, []);
+
   const changePassword = useCallback(async (currentPassword, newPassword) => {
     setError(null);
     try {
@@ -157,6 +172,7 @@ export function UserProvider({ children }) {
         verifyOtp,
         forgotPassword,
         resetPassword,
+        resendOtp,
         changePassword,
         logout,
         setError,

@@ -1,12 +1,84 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useUser } from "../context/UserContext.jsx";
-import { Eye, EyeOff, X, Sparkles, Database, TrendingUp, MessageSquare, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, X, Sparkles, Database, TrendingUp, MessageSquare, ArrowLeft, RefreshCw, Clock } from "lucide-react";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 
+// ── Countdown-timer hook ──────────────────────────────────────────────
+// Returns: { secondsLeft, isActive, startCountdown }
+// startCountdown(seconds | isoString)  — pass remaining seconds OR an ISO date string
+function useOtpCountdown() {
+  const [secondsLeft, setSecondsLeft] = useState(0);
+  const timerRef = useRef(null);
+
+  const clearTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  const startCountdown = useCallback((secondsOrIso) => {
+    clearTimer();
+    let remaining;
+    if (typeof secondsOrIso === "string") {
+      // ISO date from server → compute remaining ms
+      remaining = Math.max(0, Math.round((new Date(secondsOrIso + "Z") - Date.now()) / 1000));
+    } else {
+      remaining = Math.max(0, Math.round(secondsOrIso));
+    }
+    setSecondsLeft(remaining);
+    if (remaining <= 0) return;
+    timerRef.current = setInterval(() => {
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          clearTimer();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => () => clearTimer(), []);
+
+  return { secondsLeft, isActive: secondsLeft > 0, startCountdown };
+}
+
+// Circular SVG ring around the countdown number
+const RING_R = 18;
+const RING_CIRCUMFERENCE = 2 * Math.PI * RING_R;
+function CountdownRing({ secondsLeft, total = 60 }) {
+  const progress = Math.max(0, Math.min(1, secondsLeft / total));
+  const dashOffset = RING_CIRCUMFERENCE * (1 - progress);
+  return (
+    <svg width="44" height="44" viewBox="0 0 44 44" className="absolute -top-0.5 -left-0.5" style={{ transform: "rotate(-90deg)" }}>
+      {/* Track */}
+      <circle cx="22" cy="22" r={RING_R} fill="none" stroke="currentColor" strokeWidth="2" className="text-slate-200 dark:text-slate-800" />
+      {/* Progress */}
+      <circle
+        cx="22" cy="22" r={RING_R}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeDasharray={RING_CIRCUMFERENCE}
+        strokeDashoffset={dashOffset}
+        strokeLinecap="round"
+        className="text-brand-500 transition-all duration-1000 ease-linear"
+      />
+    </svg>
+  );
+}
+
 export default function Auth() {
-  const { login, register, verifyOtp, forgotPassword, resetPassword } = useUser();
+  const { login, register, verifyOtp, forgotPassword, resetPassword, resendOtp } = useUser();
   const [view, setView] = useState("login"); // login | register | verify | forgot | reset
+
+  // Countdown timer (shared between verify + reset views)
+  const { secondsLeft, isActive: timerActive, startCountdown } = useOtpCountdown();
+  const [resendLoading, setResendLoading] = useState(false);
+  const OTP_COOLDOWN = 60; // seconds
   
   // Form states
   const [username, setUsername] = useState("");
@@ -22,6 +94,10 @@ export default function Auth() {
     setPassword("");
     setOtp("");
     setShowPassword(false);
+    // Start cooldown when entering OTP views so the button is disabled immediately
+    if (newView === "verify" || newView === "reset") {
+      startCountdown(OTP_COOLDOWN);
+    }
   };
 
   const handleLogin = async (e) => {
@@ -102,6 +178,25 @@ export default function Auth() {
       toast.success(statusMsg);
     } else {
       toast.error(result.error);
+    }
+  };
+
+  // ── Resend OTP handler ─────────────────────────────────────────────
+  const handleResendOtp = async (purpose) => {
+    if (timerActive || resendLoading) return;
+    setResendLoading(true);
+    const result = await resendOtp(email, purpose);
+    setResendLoading(false);
+    if (result.success) {
+      setOtp("");
+      startCountdown(result.nextAllowedAt || OTP_COOLDOWN);
+      toast.success("A new OTP has been sent to your email!");
+    } else {
+      // Even on error, if server gave a cooldown timestamp, respect it
+      if (result.nextAllowedAt) {
+        startCountdown(result.nextAllowedAt);
+      }
+      toast.error(result.error || "Failed to resend OTP.");
     }
   };
 
@@ -489,7 +584,52 @@ export default function Auth() {
                 )}
               </button>
 
-              <div className="text-center mt-6 flex justify-between items-center px-1 text-xs">
+              {/* ── Resend OTP Row ── */}
+              <div className="flex items-center justify-between px-1 pt-1">
+                <div className="text-xs text-slate-500 dark:text-slate-400">
+                  {timerActive ? (
+                    <span className="flex items-center gap-1.5">
+                      <Clock size={12} className="text-brand-500" />
+                      Resend available in{" "}
+                      <span className="font-bold text-slate-700 dark:text-slate-200 tabular-nums">
+                        {String(Math.floor(secondsLeft / 60)).padStart(1, "0")}:{String(secondsLeft % 60).padStart(2, "0")}
+                      </span>
+                    </span>
+                  ) : (
+                    <span className="text-slate-400 dark:text-slate-500">Didn't receive the code?</span>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  disabled={timerActive || resendLoading}
+                  onClick={() => handleResendOtp("registration")}
+                  className={[
+                    "relative flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200",
+                    timerActive || resendLoading
+                      ? "text-slate-400 dark:text-slate-600 cursor-not-allowed"
+                      : "text-brand-600 dark:text-brand-400 hover:bg-brand-500/10 hover:text-brand-700 dark:hover:text-brand-300 cursor-pointer"
+                  ].join(" ")}
+                >
+                  {/* Animated ring shown while timer is active */}
+                  {timerActive && (
+                    <span className="relative inline-flex items-center justify-center w-[42px] h-[42px]">
+                      <CountdownRing secondsLeft={secondsLeft} total={OTP_COOLDOWN} />
+                      <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 tabular-nums leading-none">
+                        {secondsLeft}
+                      </span>
+                    </span>
+                  )}
+                  {resendLoading ? (
+                    <div className="w-3.5 h-3.5 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    !timerActive && <RefreshCw size={13} />
+                  )}
+                  {!timerActive && (resendLoading ? "Sending…" : "Resend OTP")}
+                </button>
+              </div>
+
+              <div className="text-center mt-2 flex justify-between items-center px-1 text-xs">
                 <button
                   type="button"
                   onClick={() => switchView("register")}
@@ -637,7 +777,51 @@ export default function Auth() {
                 )}
               </button>
 
-              <div className="text-center mt-6">
+              {/* ── Resend OTP Row for reset view ── */}
+              <div className="flex items-center justify-between px-1 pt-1">
+                <div className="text-xs text-slate-500 dark:text-slate-400">
+                  {timerActive ? (
+                    <span className="flex items-center gap-1.5">
+                      <Clock size={12} className="text-brand-500" />
+                      Resend available in{" "}
+                      <span className="font-bold text-slate-700 dark:text-slate-200 tabular-nums">
+                        {String(Math.floor(secondsLeft / 60)).padStart(1, "0")}:{String(secondsLeft % 60).padStart(2, "0")}
+                      </span>
+                    </span>
+                  ) : (
+                    <span className="text-slate-400 dark:text-slate-500">Didn't receive the code?</span>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  disabled={timerActive || resendLoading}
+                  onClick={() => handleResendOtp("reset")}
+                  className={[
+                    "relative flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200",
+                    timerActive || resendLoading
+                      ? "text-slate-400 dark:text-slate-600 cursor-not-allowed"
+                      : "text-brand-600 dark:text-brand-400 hover:bg-brand-500/10 hover:text-brand-700 dark:hover:text-brand-300 cursor-pointer"
+                  ].join(" ")}
+                >
+                  {timerActive && (
+                    <span className="relative inline-flex items-center justify-center w-[42px] h-[42px]">
+                      <CountdownRing secondsLeft={secondsLeft} total={OTP_COOLDOWN} />
+                      <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 tabular-nums leading-none">
+                        {secondsLeft}
+                      </span>
+                    </span>
+                  )}
+                  {resendLoading ? (
+                    <div className="w-3.5 h-3.5 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    !timerActive && <RefreshCw size={13} />
+                  )}
+                  {!timerActive && (resendLoading ? "Sending…" : "Resend OTP")}
+                </button>
+              </div>
+
+              <div className="text-center mt-2">
                 <button
                   type="button"
                   onClick={() => switchView("login")}
