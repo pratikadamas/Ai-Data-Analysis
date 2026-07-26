@@ -8,6 +8,12 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
+# Import the Bloom Filter singleton.
+# load_from_db() is called inside init_db() — after the connection is verified —
+# so the filter is seeded exactly once before the first request is ever handled.
+# pyrefly: ignore [missing-import]
+from app.utils.bloom_filter import username_bloom_filter  # noqa: E402
+
 # Lazy initialization of pymongo client
 client = MongoClient(settings.mongodb_uri)
 db = client[settings.database_name]
@@ -35,6 +41,13 @@ def init_db():
         password_resets.create_index("expires_at", expireAfterSeconds=300)
         
         logger.info("MongoDB unique and TTL indexes initialized successfully.")
+
+        # ── Seed the Bloom Filter ──────────────────────────────────────────────
+        # One-time bulk read of all existing usernames. After this point, every
+        # registration attempt checks the filter first — only querying MongoDB
+        # when the filter indicates a potential collision (~0.1% of new users).
+        username_bloom_filter.load_from_db()
+
     except Exception as e:
         logger.error(f"Failed to initialize MongoDB connection or indexes: {e}")
 

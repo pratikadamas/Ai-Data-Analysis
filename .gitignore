@@ -26,6 +26,5 @@ frontend/.eslintcache
 Thumbs.db
 
 # Agent Artifacts
-implementation_plan.md
-task.md
-walkthrough.md
+*.md
+!README.md

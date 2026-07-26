@@ -20,6 +20,8 @@ from app.utils.auth import (
     verify_password,
 )
 # pyrefly: ignore [missing-import]
+from app.utils.bloom_filter import username_bloom_filter
+# pyrefly: ignore [missing-import]
 from app.utils.mail import send_otp_email
 # pyrefly: ignore [missing-import]
 from app.utils.rate_limit import login_limiter
@@ -70,13 +72,29 @@ def generate_otp() -> str:
 @router.post("/register")
 async def register(payload: RegisterRequest):
     users_col = db["users"]
-    
-    # Check if username or email already exists
-    if users_col.find_one({"username": payload.username.strip()}):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username is already taken. Please try another username."
-        )
+    username_clean = payload.username.strip()
+
+    # ── STEP 1: Bloom Filter pre-check (zero DB I/O) ──────────────────────────
+    #
+    # The Bloom Filter answers in O(k) in-memory bit-reads.
+    #
+    #   might_exist() == False  →  username DEFINITELY does not exist.
+    #                              Skip the MongoDB query entirely. ✅
+    #
+    #   might_exist() == True   →  username POSSIBLY exists (real duplicate
+    #                              OR a ~0.1% false positive).
+    #                              Proceed to Step 2 to confirm.
+    #
+    if username_bloom_filter.might_exist(username_clean):
+        # ── STEP 2: DB confirmation (only reached ~0.1% of the time) ──────────
+        if users_col.find_one({"username": username_clean}):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Username already exists. Please choose another username."
+            )
+    # If might_exist() returned False, we skip Step 2 entirely — no DB read.
+
+    # Email uniqueness always requires a direct DB check (no email filter)
     if users_col.find_one({"email": payload.email.strip().lower()}):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -85,7 +103,7 @@ async def register(payload: RegisterRequest):
         
     # Create the user document (unverified by default)
     user_doc = {
-        "username": payload.username.strip(),
+        "username": username_clean,
         "email": payload.email.strip().lower(),
         "hashed_password": hash_password(payload.password),
         "role": "user",
@@ -96,6 +114,11 @@ async def register(payload: RegisterRequest):
     
     result = users_col.insert_one(user_doc)
     user_id = result.inserted_id
+
+    # ── STEP 3: Keep the Bloom Filter in sync ─────────────────────────────────
+    # Add the new username immediately so the next registration attempt for
+    # this same username is caught at the filter level without a DB query.
+    username_bloom_filter.add(username_clean)
     
     # Generate and store OTP
     otp = generate_otp()
