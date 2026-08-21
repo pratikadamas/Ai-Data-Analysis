@@ -8,7 +8,7 @@ import { Sun, Moon } from "lucide-react";
 export default function Header() {
   const [isDark, setIsDark] = useDarkMode();
   const { dataset, clearDataset } = useDataset();
-  const { user, logout } = useUser();
+  const { user, profilePic, logout } = useUser();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const initials = user?.username ? user.username.substring(0, 2).toUpperCase() : "US";
@@ -54,9 +54,17 @@ export default function Header() {
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="flex items-center gap-2 outline-none focus:ring-2 focus:ring-brand-500/20 rounded-full transition-transform hover:scale-105"
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-sm border border-brand-400/20 cursor-pointer">
-              {initials}
-            </div>
+            {profilePic ? (
+              <img
+                src={profilePic}
+                alt="Profile Avatar"
+                className="w-8 h-8 rounded-full object-cover border border-brand-500/40 shadow-sm cursor-pointer"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-sm border border-brand-400/20 cursor-pointer">
+                {initials}
+              </div>
+            )}
           </button>
 
           {dropdownOpen && (

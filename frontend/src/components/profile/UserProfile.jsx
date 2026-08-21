@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useUser } from "../../context/UserContext.jsx";
-import { Eye, EyeOff, CheckCircle } from "lucide-react";
+import { Eye, EyeOff, CheckCircle, Camera, Upload, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 
 export default function UserProfile() {
-  const { user, changePassword } = useUser();
+  const { user, profilePic, updateProfilePic, removeProfilePic, changePassword } = useUser();
   
   // Password change states
   const [currentPassword, setCurrentPassword] = useState("");
@@ -22,6 +22,31 @@ export default function UserProfile() {
         day: "numeric",
       })
     : "Recently";
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload a valid image file (JPEG, PNG, WebP).");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image file size must be less than 5MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      updateProfilePic(reader.result);
+      toast.success("Profile picture updated!");
+    };
+    reader.onerror = () => {
+      toast.error("Failed to read image file.");
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleChangePasswordSubmit = async (e) => {
     e.preventDefault();
@@ -75,9 +100,58 @@ export default function UserProfile() {
         {/* Profile Detail Card */}
         <div className="md:col-span-1 glass-panel rounded-xl p-6 flex flex-col items-center justify-center text-center">
           
-          {/* Avatar Icon */}
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-brand-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-extrabold shadow-md mb-4 border border-brand-400/20">
-            {initials}
+          {/* Profile Picture Avatar */}
+          <div className="relative group mb-3">
+            {profilePic ? (
+              <img
+                src={profilePic}
+                alt="Profile Avatar"
+                className="w-24 h-24 rounded-full object-cover shadow-md border-2 border-brand-500/40"
+              />
+            ) : (
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-brand-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-extrabold shadow-md border border-brand-400/20">
+                {initials}
+              </div>
+            )}
+            <label
+              htmlFor="profile-pic-input"
+              className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white cursor-pointer transition-opacity backdrop-blur-[2px]"
+              title="Upload Profile Picture"
+            >
+              <Camera size={24} />
+            </label>
+            <input
+              id="profile-pic-input"
+              type="file"
+              accept="image/png, image/jpeg, image/webp, image/gif"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </div>
+
+          {/* Photo Actions */}
+          <div className="flex items-center gap-2 mb-4">
+            <label
+              htmlFor="profile-pic-input"
+              className="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline cursor-pointer flex items-center gap-1"
+            >
+              <Upload size={12} /> {profilePic ? "Change Photo" : "Upload Photo"}
+            </label>
+            {profilePic && (
+              <>
+                <span className="text-gray-300 dark:text-gray-700">·</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    removeProfilePic();
+                    toast.info("Profile picture removed.");
+                  }}
+                  className="text-xs font-semibold text-red-500 hover:underline flex items-center gap-1"
+                >
+                  <Trash2 size={12} /> Remove
+                </button>
+              </>
+            )}
           </div>
           
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">{user?.username}</h2>

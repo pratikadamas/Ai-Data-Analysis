@@ -153,10 +153,50 @@ export function UserProvider({ children }) {
     }
   }, []);
 
+  const getPicKey = (u) => (u?.email ? `profile_pic_${u.email}` : "profile_pic");
+
+  const [profilePic, setProfilePicState] = useState(() => {
+    try {
+      return localStorage.getItem("profile_pic") || null;
+    } catch {
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    if (user) {
+      const key = getPicKey(user);
+      const stored = localStorage.getItem(key) || localStorage.getItem("profile_pic");
+      setProfilePicState(stored || null);
+    } else {
+      setProfilePicState(null);
+    }
+  }, [user]);
+
+  const updateProfilePic = useCallback((base64Url) => {
+    try {
+      const key = user ? getPicKey(user) : "profile_pic";
+      if (base64Url) {
+        localStorage.setItem(key, base64Url);
+        setProfilePicState(base64Url);
+      } else {
+        localStorage.removeItem(key);
+        setProfilePicState(null);
+      }
+    } catch (e) {
+      console.error("Failed to save profile pic to localStorage:", e);
+    }
+  }, [user]);
+
+  const removeProfilePic = useCallback(() => {
+    updateProfilePic(null);
+  }, [updateProfilePic]);
+
   const logout = useCallback(() => {
     localStorage.removeItem("token");
     setToken(null);
     setUser(null);
+    setProfilePicState(null);
     setError(null);
   }, []);
 
@@ -167,6 +207,9 @@ export function UserProvider({ children }) {
         token,
         loading,
         error,
+        profilePic,
+        updateProfilePic,
+        removeProfilePic,
         login,
         register,
         verifyOtp,
