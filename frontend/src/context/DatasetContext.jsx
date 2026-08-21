@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
-import { getSchema, getSchemas, getDatasetPreview } from "../services/api";
+import { getSchema, getSchemas, getDatasetPreview, deleteDataset } from "../services/api";
 
 const DatasetContext = createContext(null);
 
-// ─── sessionStorage key ───────────────────────────────────────────────────────
+// ─── sessionStorage keys & helpers ───────────────────────────────────────────
 const SESSION_KEY_ID = "ag_dataset_id";
+const RELOAD_KEY = "ag_is_reloading";
 
 function sessionReadId() {
   try { return sessionStorage.getItem(SESSION_KEY_ID) || null; } catch { return null; }
@@ -16,7 +17,10 @@ function sessionSaveId(datasetId) {
   } catch { /* ignore */ }
 }
 function sessionClear() {
-  try { sessionStorage.removeItem(SESSION_KEY_ID); } catch { /* ignore */ }
+  try {
+    sessionStorage.removeItem(SESSION_KEY_ID);
+    sessionStorage.removeItem(RELOAD_KEY);
+  } catch { /* ignore */ }
 }
 
 // ─── Provider ────────────────────────────────────────────────────────────────
@@ -76,11 +80,23 @@ export function DatasetProvider({ children }) {
       .catch(() => { sessionClear(); setSessionVerified(true); });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Tab-close cleanup (only triggers when closing tab/navigating away) ───
+  // ── Smart Tab-Close Cleanup (survives F5 refresh, cleans up on tab close) ───
   useEffect(() => {
+    // Set flag when page is being refreshed / reloaded
+    const handleBeforeUnload = () => {
+      try {
+        sessionStorage.setItem(RELOAD_KEY, "true");
+      } catch {
+        /* ignore */
+      }
+    };
+
     const handlePageHide = () => {
+      const isReloading = sessionStorage.getItem(RELOAD_KEY) === "true";
       const currentId = sessionReadId();
-      if (currentId) {
+
+      // If NOT a page refresh and a dataset exists, send beacon to clean up tab connection
+      if (!isReloading && currentId) {
         const baseUrl = import.meta.env.VITE_API_URL || "/api";
         try {
           navigator.sendBeacon(`${baseUrl}/dataset/${currentId}/cleanup`);
@@ -89,8 +105,24 @@ export function DatasetProvider({ children }) {
         }
       }
     };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
     window.addEventListener("pagehide", handlePageHide);
-    return () => window.removeEventListener("pagehide", handlePageHide);
+
+    // Reset reload flag shortly after mount
+    const timer = setTimeout(() => {
+      try {
+        sessionStorage.removeItem(RELOAD_KEY);
+      } catch {
+        /* ignore */
+      }
+    }, 1000);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("pagehide", handlePageHide);
+      clearTimeout(timer);
+    };
   }, []);
 
   // ── Persist ONLY the dataset_id whenever it changes ──────────────────────
@@ -141,11 +173,15 @@ export function DatasetProvider({ children }) {
 
   // ── Public clearDataset ───────────────────────────────────────────────────
   const clearDataset = useCallback(() => {
+    const currentId = dataset?.dataset_id;
+    if (currentId) {
+      deleteDataset(currentId).catch(() => {});
+    }
     setDatasetRaw(null);
     setChatMessages([]);
     setActiveFileIndex(0);
     sessionClear();
-  }, []);
+  }, [dataset]);
 
   // ── Public clearChat ──────────────────────────────────────────────────────
   const clearChat = useCallback(() => setChatMessages([]), []);
