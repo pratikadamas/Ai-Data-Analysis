@@ -39,6 +39,17 @@ export function UserProvider({ children }) {
     }
   }, [token, fetchProfile]);
 
+  useEffect(() => {
+    const handleExpired = () => {
+      localStorage.removeItem("token");
+      setToken(null);
+      setUser(null);
+      setProfilePicState(null);
+    };
+    window.addEventListener("auth_token_expired", handleExpired);
+    return () => window.removeEventListener("auth_token_expired", handleExpired);
+  }, []);
+
   // Helper to parse FastAPI/Pydantic validation errors
   const parseError = (err, defaultMsg) => {
     if (err.response?.data?.detail) {

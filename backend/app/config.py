@@ -38,7 +38,7 @@ class Settings:
     # JWT Config
     secret_key: str = os.getenv("SECRET_KEY", "your-secret-key")
     algorithm: str = os.getenv("ALGORITHM", "HS256")
-    access_token_expire_minutes: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
+    access_token_expire_minutes: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "10080"))
 
     # Mail Config (SMTP)
     mail_username: str = os.getenv("MAIL_USERNAME", "")

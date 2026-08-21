@@ -16,6 +16,20 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      const isLogin = error.config?.url?.includes("/auth/login");
+      if (!isLogin) {
+        localStorage.removeItem("token");
+        window.dispatchEvent(new CustomEvent("auth_token_expired"));
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const uploadDataset = (files, datasetId = null) => {
   const formData = new FormData();
   // Support both single file and array of files
