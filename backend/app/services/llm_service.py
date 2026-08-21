@@ -105,33 +105,86 @@ class LLMService:
             raise last_exc
         raise LLMServiceError("No valid Groq LLM model found.")
 
-    def is_off_topic(self, question: str) -> bool:
-        """Return True if the question is not related to data analysis / the uploaded dataset."""
+    def analyze_intent(self, question: str) -> tuple[str, str]:
+        """Analyze user input intent.
+        Returns tuple of (intent_type, message_reply)
+        intent_type is one of: "GREETING", "DATA_QUERY", "OFF_TOPIC"
+        """
+        clean_q = question.strip().lower()
+
+        # 1. Fast local pattern match for common greetings, compliments, and small talk
+        greetings_map = {
+            "hi": "Hello! 👋 How can I help you analyze your data today?",
+            "hello": "Hello! 👋 Feel free to ask any question about your uploaded dataset.",
+            "hey": "Hey there! 👋 What insights would you like to explore in your data?",
+            "hola": "¡Hola! How can I assist with your data analysis today?",
+            "good morning": "Good morning! ☀️ Ready to analyze your data?",
+            "good afternoon": "Good afternoon! How can I help with your data today?",
+            "good evening": "Good evening! Let me know what data questions you have.",
+            "how are you": "I'm doing great, thank you! How can I assist you with your data today?",
+            "how r u": "I'm doing well! How can I help you with your dataset?",
+            "who are you": "I am your AI Data Analyst. I can query your data, summarize metrics, generate tables, and create charts for you!",
+            "what can you do": "You can ask me questions about your uploaded dataset in natural language, and I'll generate SQL queries, fetch results, and build charts for you!",
+            "thanks": "You're very welcome! Let me know if you have any more questions about your data.",
+            "thank you": "You're welcome! Happy to help with your data analysis.",
+            "thank u": "You're welcome! Let me know if you need anything else.",
+            "thx": "You're welcome!",
+            "i love u": "Thank you so much for the kind words! 😊 How can I help you analyze your dataset today?",
+            "i love you": "Thank you so much! 😊 Feel free to ask any questions about your uploaded data.",
+            "nice": "Thank you! What else would you like to discover in your dataset?",
+            "awesome": "Thanks! Let me know what question you'd like to ask next.",
+            "cool": "Glad you like it! What data would you like to analyze?",
+            "great": "Thank you! Feel free to ask another question about your data.",
+        }
+
+        if clean_q in greetings_map:
+            return ("GREETING", greetings_map[clean_q])
+
+        # Check partial phrase matches for short messages (<= 25 chars)
+        if len(clean_q) <= 25:
+            if any(phrase in clean_q for phrase in ["love u", "love you", "love ya"]):
+                return ("GREETING", "Thank you so much for the kind words! 😊 How can I help you analyze your dataset today?")
+            if clean_q.startswith(("hi ", "hello ", "hey ", "good morning", "good evening", "good afternoon")):
+                if not any(kw in clean_q for kw in ["select", "show", "count", "sum", "avg", "total", "top", "where", "list", "how many", "which", "find"]):
+                    return ("GREETING", "Hello! 👋 How can I help you analyze your data today?")
+
+        # 2. LLM intent classifier for complex / ambiguous queries
         try:
             response = self._create_completion(
                 messages=[
                     {
                         "role": "system",
                         "content": (
-                            "You are a classifier. The user is using a data analyst tool "
-                            "that can only answer questions about an uploaded dataset using SQL. "
-                            "Classify the user's question as either DATA or OFF_TOPIC.\n"
-                            "DATA = questions about the data, statistics, trends, aggregations, "
-                            "filtering, or anything that could be answered with a SQL query.\n"
-                            "OFF_TOPIC = anything else (greetings, general knowledge, coding "
-                            "help, jokes, opinions, etc.).\n"
-                            "Reply with exactly one word: DATA or OFF_TOPIC."
+                            "You are an intent classifier for an AI Data Analyst app.\n"
+                            "Categorize the user prompt into ONE of:\n"
+                            "- GREETING: greetings, compliments, small talk, or polite conversation.\n"
+                            "- DATA_QUERY: questions asking about data, numbers, statistics, columns, rows, trends, aggregations, or filters.\n"
+                            "- OFF_TOPIC: general knowledge, programming help, recipes, or topics completely unrelated to data analysis.\n\n"
+                            "Reply in strict JSON format:\n"
+                            '{"intent": "GREETING" | "DATA_QUERY" | "OFF_TOPIC", "reply": "a short polite response if GREETING or OFF_TOPIC"}'
                         ),
                     },
                     {"role": "user", "content": question},
                 ],
                 temperature=0.0,
-                max_tokens=10,
+                max_tokens=150,
             )
-            label = (response.choices[0].message.content or "").strip().upper()
-            return label == "OFF_TOPIC"
-        except Exception:  # noqa: BLE001 — on any error, assume on-topic to avoid blocking
-            return False
+            raw = (response.choices[0].message.content or "").strip()
+            match = re.search(r"\{.*\}", raw, re.DOTALL)
+            if match:
+                data = json.loads(match.group(0))
+                intent = str(data.get("intent", "DATA_QUERY")).upper()
+                reply = str(data.get("reply", "Hello! How can I help with your data analysis?"))
+                return (intent, reply)
+        except Exception:
+            pass
+
+        return ("DATA_QUERY", "")
+
+    def is_off_topic(self, question: str) -> bool:
+        """Backward compatibility wrapper for is_off_topic."""
+        intent, _ = self.analyze_intent(question)
+        return intent == "OFF_TOPIC"
 
     def generate_sql(
         self,

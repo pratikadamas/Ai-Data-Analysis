@@ -27,17 +27,22 @@ async def chat(req: ChatRequest) -> ChatResponse:
 
     schemas = extract_all_schemas(conn, req.dataset_id)
 
-    # --- Off-topic guard ---------------------------------------------------
+    # --- Intent Guard (Greetings / Small Talk / Data Query / Off-Topic) ---
     try:
-        is_off_topic = llm_service.is_off_topic(req.question)
+        intent_type, direct_reply = llm_service.analyze_intent(req.question)
     except LLMServiceError as exc:
-        logger.error(f"Off-topic check failed: {exc}", exc_info=True)
-        raise HTTPException(status_code=503, detail=str(exc)) from exc
+        logger.error(f"Intent analysis failed: {exc}", exc_info=True)
+        intent_type, direct_reply = "DATA_QUERY", ""
 
-    if is_off_topic:
+    if intent_type in ("GREETING", "OFF_TOPIC"):
         return ChatResponse(
-            answer="I can only help with questions about your uploaded data.",
-            off_topic=True,
+            answer=direct_reply or "Hello! 👋 How can I help you analyze your data today?",
+            sql=None,
+            columns=[],
+            rows=[],
+            chart_type=None,
+            chart_spec=None,
+            off_topic=(intent_type == "OFF_TOPIC"),
         )
     # -----------------------------------------------------------------------
 

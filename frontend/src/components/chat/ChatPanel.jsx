@@ -57,8 +57,8 @@ export default function ChatPanel() {
     try {
       const { data } = await askQuestion(targetDatasetId, q, null, targetTableName);
 
-      // Off-topic: show popup, don't add to chat history
-      if (data.off_topic) {
+      // Off-topic without specific answer: show popup
+      if (data.off_topic && !data.answer) {
         // Remove the user message we just added
         setChatMessages((prev) => prev.slice(0, -1));
         const warnMsg = "I can only help with questions about your uploaded data.";
