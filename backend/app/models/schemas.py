@@ -80,6 +80,7 @@ class ChatRequest(BaseModel):
     dataset_id: str
     question: str
     conversation_id: str | None = None
+    table_name: str | None = None
 
 
 class ChatResponse(BaseModel):

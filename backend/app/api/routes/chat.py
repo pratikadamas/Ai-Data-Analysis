@@ -3,14 +3,17 @@ validated + executed query -> plain-English explanation + chart.
 """
 from __future__ import annotations
 
+import logging
 from fastapi import APIRouter, HTTPException
 
 from app.db.duckdb_manager import duckdb_manager
 from app.models.schemas import ChatRequest, ChatResponse
 from app.services.chart_service import build_chart_spec, select_chart_type
 from app.services.llm_service import LLMServiceError, llm_service
-from app.services.schema_service import extract_schema
+from app.services.schema_service import extract_all_schemas
 from app.validation.sql_validator import SQLValidationError, validate_sql
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
 
@@ -22,12 +25,13 @@ async def chat(req: ChatRequest) -> ChatResponse:
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="Dataset not found or expired.") from exc
 
-    schema = extract_schema(conn, req.dataset_id)
+    schemas = extract_all_schemas(conn, req.dataset_id)
 
     # --- Off-topic guard ---------------------------------------------------
     try:
         is_off_topic = llm_service.is_off_topic(req.question)
     except LLMServiceError as exc:
+        logger.error(f"Off-topic check failed: {exc}", exc_info=True)
         raise HTTPException(status_code=503, detail=str(exc)) from exc
 
     if is_off_topic:
@@ -38,10 +42,12 @@ async def chat(req: ChatRequest) -> ChatResponse:
     # -----------------------------------------------------------------------
 
     try:
-        raw_sql = llm_service.generate_sql(req.question, schema)
+        raw_sql = llm_service.generate_sql(req.question, schemas, target_table=req.table_name)
     except LLMServiceError as exc:
+        logger.error(f"SQL generation failed: {exc}", exc_info=True)
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     except Exception as exc:  # noqa: BLE001 — catch any unexpected SDK errors
+        logger.error(f"Unexpected error during SQL generation: {exc}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail=f"Unexpected error during SQL generation: {exc}",

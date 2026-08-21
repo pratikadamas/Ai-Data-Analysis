@@ -1,11 +1,13 @@
 """FastAPI application entrypoint."""
 from __future__ import annotations
 
-from fastapi import FastAPI, Depends
+from fastapi import APIRouter, FastAPI, Depends, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import chat, dataset, download, explore, upload, auth, sql_editor
 from app.config import settings
+from app.db.duckdb_manager import duckdb_manager
+from app.services.schema_service import invalidate_schema_cache
 from app.utils.auth import get_current_user
 
 app = FastAPI(
@@ -22,6 +24,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ── Public (no-auth) routes ──────────────────────────────────────────────────
+# navigator.sendBeacon() cannot attach Authorization headers, so the cleanup
+# endpoint must be reachable without a JWT token.
+_public_dataset_router = APIRouter(prefix="/api/dataset", tags=["dataset"])
+
+
+@_public_dataset_router.post("/{dataset_id}/cleanup", status_code=204)
+async def cleanup_dataset(dataset_id: str) -> Response:
+    """Fire-and-forget cleanup called via navigator.sendBeacon() on tab close.
+
+    Returns 204 No Content so the browser does not need to read the response body.
+    Silently ignores unknown dataset_ids (beacon may arrive after a server restart).
+    """
+    if duckdb_manager.exists(dataset_id):
+        duckdb_manager.drop_connection(dataset_id)
+        invalidate_schema_cache(dataset_id)
+    return Response(status_code=204)
+
+
+app.include_router(_public_dataset_router)
+
+# ── Authenticated routes ─────────────────────────────────────────────────────
 app.include_router(auth.router)
 app.include_router(upload.router, dependencies=[Depends(get_current_user)])
 app.include_router(explore.router, dependencies=[Depends(get_current_user)])

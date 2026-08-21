@@ -1,21 +1,15 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { useDataset } from "../../context/DatasetContext.jsx";
-import { Database } from "lucide-react";
+import DatasetSelector from "../shared/DatasetSelector.jsx";
 
 export default function PreviewTable() {
-  const { dataset } = useDataset();
-  const [selectedFileIndex, setSelectedFileIndex] = useState(0);
+  const { dataset, activeFile } = useDataset();
 
-  const files = dataset?.files || [];
-  const hasMultipleFiles = files.length > 1;
-
-  // Get the active file data
-  const activeFile = files[selectedFileIndex] || files[0];
-  const schema = activeFile?.schema || dataset?.schema;
-  const previewRows = activeFile?.preview_rows || dataset?.preview_rows || [];
+  const schema = activeFile?.schema ?? dataset?.schema;
+  const previewRows = activeFile?.preview_rows ?? dataset?.preview_rows ?? [];
 
   const columnDefs = useMemo(
     () =>
@@ -33,26 +27,8 @@ export default function PreviewTable() {
 
   return (
     <div className="space-y-4">
-      {/* Dataset selector dropdown — only shown for multi-file uploads */}
-      {hasMultipleFiles && (
-        <div className="flex items-center gap-3 p-3 glass-panel rounded-xl">
-          <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider shrink-0">
-            <Database size={14} className="text-brand-500" />
-            Select Dataset
-          </div>
-          <select
-            value={selectedFileIndex}
-            onChange={(e) => setSelectedFileIndex(Number(e.target.value))}
-            className="flex-1 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm font-medium text-gray-800 dark:text-gray-200 outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all cursor-pointer"
-          >
-            {files.map((f, idx) => (
-              <option key={f.table_name} value={idx}>
-                {f.filename} — {f.table_name} ({f.schema?.row_count?.toLocaleString()} rows, {f.schema?.column_count} cols)
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+      {/* Dataset selector — shown when multiple files are loaded */}
+      <DatasetSelector />
 
       {/* Stats cards */}
       {schema && (

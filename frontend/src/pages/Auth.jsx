@@ -87,6 +87,10 @@ export default function Auth() {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [emailError, setEmailError] = useState("");
+
+  // Email format validator
+  const validateEmail = (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
 
   const switchView = (newView) => {
     setView(newView);
@@ -94,6 +98,7 @@ export default function Auth() {
     setPassword("");
     setOtp("");
     setShowPassword(false);
+    setEmailError("");
     // Start cooldown when entering OTP views so the button is disabled immediately
     if (newView === "verify" || newView === "reset") {
       startCountdown(OTP_COOLDOWN);
@@ -123,6 +128,11 @@ export default function Auth() {
   const handleRegister = async (e) => {
     e.preventDefault();
     if (!username || !email || !password) return;
+    if (!validateEmail(email)) {
+      setEmailError("Enter a valid Email");
+      return;
+    }
+    setEmailError("");
     setLoading(true);
     const result = await register(username, email, password);
     setLoading(false);
@@ -154,6 +164,11 @@ export default function Auth() {
   const handleForgotPassword = async (e) => {
     e.preventDefault();
     if (!email) return;
+    if (!validateEmail(email)) {
+      setEmailError("Enter a valid Email");
+      return;
+    }
+    setEmailError("");
     setLoading(true);
     const result = await forgotPassword(email);
     setLoading(false);
@@ -466,21 +481,28 @@ export default function Auth() {
                     type="email"
                     required
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => { setEmail(e.target.value); if (emailError) setEmailError(""); }}
+                    onBlur={() => { if (email && !validateEmail(email)) setEmailError("Enter a valid Email"); else setEmailError(""); }}
                     placeholder="you@example.com"
                     autoComplete="off"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none transition-all duration-200 pr-10"
+                    className={`w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border hover:border-slate-300 dark:hover:border-slate-700 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none transition-all duration-200 pr-10 ${emailError ? "border-red-400 dark:border-red-500 focus:border-red-400 focus:ring-red-400/10" : "border-slate-200 dark:border-slate-800 focus:border-brand-500"}`}
                   />
                   {email && (
                     <button
                       type="button"
-                      onClick={() => setEmail("")}
+                      onClick={() => { setEmail(""); setEmailError(""); }}
                       className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-white transition-colors"
                     >
                       <X size={16} />
                     </button>
                   )}
                 </div>
+                {emailError && (
+                  <p className="mt-1.5 text-xs font-medium text-red-500 dark:text-red-400 flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-1 13a1 1 0 1 0 2 0v-4a1 1 0 1 0-2 0v4zm1-8a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" clipRule="evenodd" /></svg>
+                    {emailError}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -659,21 +681,28 @@ export default function Auth() {
                     type="email"
                     required
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => { setEmail(e.target.value); if (emailError) setEmailError(""); }}
+                    onBlur={() => { if (email && !validateEmail(email)) setEmailError("Enter a valid Email"); else setEmailError(""); }}
                     placeholder="registered-email@example.com"
                     autoComplete="off"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 focus:border-brand-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none transition-all duration-200 pr-10"
+                    className={`w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/40 border hover:border-slate-300 dark:hover:border-slate-700 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-brand-500/10 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none transition-all duration-200 pr-10 ${emailError ? "border-red-400 dark:border-red-500 focus:border-red-400 focus:ring-red-400/10" : "border-slate-200 dark:border-slate-800 focus:border-brand-500"}`}
                   />
                   {email && (
                     <button
                       type="button"
-                      onClick={() => setEmail("")}
+                      onClick={() => { setEmail(""); setEmailError(""); }}
                       className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-white transition-colors"
                     >
                       <X size={16} />
                     </button>
                   )}
                 </div>
+                {emailError && (
+                  <p className="mt-1.5 text-xs font-medium text-red-500 dark:text-red-400 flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-1 13a1 1 0 1 0 2 0v-4a1 1 0 1 0-2 0v4zm1-8a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" clipRule="evenodd" /></svg>
+                    {emailError}
+                  </p>
+                )}
               </div>
 
               <button

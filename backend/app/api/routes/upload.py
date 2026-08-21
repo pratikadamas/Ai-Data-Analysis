@@ -4,9 +4,9 @@ DuckDB as separate tables, and returns schema + preview for each.
 from __future__ import annotations
 
 import logging
-from typing import List
+from typing import List, Optional
 
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ from app.config import settings
 from app.db.duckdb_manager import duckdb_manager, filename_to_table_name
 from app.models.schemas import DatasetSchema, FileInfo, UploadResponse
 from app.services.file_loader import UnsupportedFileError, file_loader
-from app.services.schema_service import extract_schema
+from app.services.schema_service import extract_table_schema
 from app.utils.file_utils import (
     is_allowed_extension,
     new_dataset_id,
@@ -28,7 +28,10 @@ router = APIRouter(prefix="/api/upload", tags=["upload"])
 
 
 @router.post("", response_model=UploadResponse)
-async def upload_dataset(files: List[UploadFile] = File(...)) -> UploadResponse:
+async def upload_dataset(
+    files: List[UploadFile] = File(...),
+    dataset_id: Optional[str] = Form(None),
+) -> UploadResponse:
     if not files:
         raise HTTPException(status_code=400, detail="No files provided.")
 
@@ -38,10 +41,11 @@ async def upload_dataset(files: List[UploadFile] = File(...)) -> UploadResponse:
             detail=f"Too many files. Maximum {MAX_FILES} files allowed per upload.",
         )
 
-    dataset_id = new_dataset_id()
+    if not dataset_id or not duckdb_manager.exists(dataset_id):
+        dataset_id = new_dataset_id()
+
     file_infos: list[FileInfo] = []
     conn = None
-    is_multi = len(files) > 1
 
     for idx, file in enumerate(files):
         if not file.filename:
@@ -66,19 +70,24 @@ async def upload_dataset(files: List[UploadFile] = File(...)) -> UploadResponse:
 
         safe_name = sanitize_filename(file.filename)
         dest_path = upload_path_for(dataset_id, safe_name)
-        table_name = filename_to_table_name(safe_name)
+        base_table_name = filename_to_table_name(safe_name)
+        table_name = base_table_name
+
+        existing_tables = duckdb_manager.get_table_names(dataset_id)
+        if table_name in existing_tables:
+            counter = 2
+            while f"{base_table_name}_{counter}" in existing_tables:
+                counter += 1
+            table_name = f"{base_table_name}_{counter}"
 
         try:
             dest_path.write_bytes(contents)
 
             conn = duckdb_manager.create_connection(dataset_id, table_name=table_name)
-            # For multi-file uploads, skip the legacy alias view to avoid conflicts
+            is_multi = len(files) > 1 or len(existing_tables) > 0
             file_loader.load(conn, dest_path, safe_name, create_alias=not is_multi)
 
-            schema: DatasetSchema = extract_schema(conn, dataset_id)
-            # For multi-file, we need per-table schema, so extract for this specific table
-            if is_multi:
-                schema = _extract_table_schema(conn, dataset_id, table_name)
+            schema: DatasetSchema = extract_table_schema(conn, dataset_id, table_name)
 
             preview_rows = conn.execute(
                 f'SELECT * FROM "{table_name}" LIMIT 100'
@@ -95,11 +104,13 @@ async def upload_dataset(files: List[UploadFile] = File(...)) -> UploadResponse:
             )
 
         except UnsupportedFileError as exc:
-            duckdb_manager.drop_connection(dataset_id)
+            if len(duckdb_manager.get_table_names(dataset_id)) == 0:
+                duckdb_manager.drop_connection(dataset_id)
             logger.warning("Unsupported file: %s", exc)
             raise HTTPException(status_code=422, detail=str(exc)) from exc
         except Exception as exc:  # noqa: BLE001 - surfaced as a clean 400 to the client
-            duckdb_manager.drop_connection(dataset_id)
+            if len(duckdb_manager.get_table_names(dataset_id)) == 0:
+                duckdb_manager.drop_connection(dataset_id)
             logger.exception("File processing failed for %s: %s", safe_name, exc)
             raise HTTPException(status_code=400, detail=f"Failed to process file '{safe_name}': {exc}") from exc
         finally:

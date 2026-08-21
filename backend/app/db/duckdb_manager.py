@@ -38,8 +38,9 @@ class DuckDBManager:
     ) -> duckdb.DuckDBPyConnection:
         with self._lock:
             if dataset_id in self._connections:
-                # Connection already exists; just add the table name
-                self._table_names[dataset_id].append(table_name)
+                # Connection already exists; just add the table name if not present
+                if table_name not in self._table_names[dataset_id]:
+                    self._table_names[dataset_id].append(table_name)
                 return self._connections[dataset_id]
             conn = duckdb.connect(database=":memory:")
             self._connections[dataset_id] = conn

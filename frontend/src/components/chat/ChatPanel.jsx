@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { askQuestion } from "../../services/api.js";
 import { useDataset } from "../../context/DatasetContext.jsx";
+import DatasetSelector from "../shared/DatasetSelector.jsx";
 import ResultChart from "../charts/ResultChart.jsx";
 import ResultTable from "../charts/ResultTable.jsx";
 import SqlViewer from "../charts/SqlViewer.jsx";
@@ -17,7 +18,7 @@ const EXAMPLE_QUESTIONS = [
 ];
 
 export default function ChatPanel() {
-  const { dataset, chatMessages, setChatMessages, clearChat } = useDataset();
+  const { dataset, activeFile, chatMessages, setChatMessages, clearChat } = useDataset();
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [popup, setPopup] = useState(null); // off-topic popup message
@@ -46,12 +47,15 @@ export default function ChatPanel() {
     const q = question ?? input;
     if (!q.trim() || !dataset) return;
 
+    const targetDatasetId = dataset.dataset_id;
+    const targetTableName = activeFile?.table_name || null;
+
     setChatMessages((prev) => [...prev, { role: "user", content: q }]);
     setInput("");
     setIsLoading(true);
 
     try {
-      const { data } = await askQuestion(dataset.dataset_id, q);
+      const { data } = await askQuestion(targetDatasetId, q, null, targetTableName);
 
       // Off-topic: show popup, don't add to chat history
       if (data.off_topic) {
@@ -72,7 +76,7 @@ export default function ChatPanel() {
       } else if (httpStatus === 404) {
         errMsg = "Dataset session expired — please re-upload your file to continue.";
       } else if (httpStatus === 503) {
-        errMsg = "AI service is temporarily unavailable. Please try again in a moment.";
+        errMsg = err?.response?.data?.detail || "AI service is temporarily unavailable. Please try again in a moment.";
       } else {
         errMsg = err?.response?.data?.detail || "Something went wrong. Please try again.";
       }
@@ -111,6 +115,9 @@ export default function ChatPanel() {
 
   return (
     <div className="flex flex-col h-[70vh] relative">
+      {/* Dataset selector — shown when multiple files are loaded */}
+      <DatasetSelector allowAll />
+
       {/* Off-topic popup */}
       {popup && (
         <div className="absolute top-0 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg bg-yellow-50/90 dark:bg-yellow-900/90 backdrop-blur-md border border-yellow-300 dark:border-yellow-600 text-yellow-800 dark:text-yellow-200 text-sm font-medium animate-fade-in">
@@ -127,9 +134,12 @@ export default function ChatPanel() {
       )}
 
       {/* Chat header with Export + Clear buttons */}
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-2 mt-3">
         <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-          Ask AI about <span className="font-semibold text-gray-800 dark:text-gray-200">{dataset.filename}</span>
+          Ask AI about{" "}
+          <span className="font-semibold text-gray-800 dark:text-gray-200">
+            {activeFile ? activeFile.filename : "All Datasets (Combined)"}
+          </span>
         </span>
         <div className="flex items-center gap-2">
           {chatMessages.some((m) => m.role === "assistant" && m.sql) && (

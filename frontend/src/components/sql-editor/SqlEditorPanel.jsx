@@ -59,7 +59,15 @@ export default function SqlEditorPanel() {
         toast.success(`Query returned ${data.rows?.length || 0} rows`);
       }
     } catch (err) {
-      const msg = err?.response?.data?.detail || "Query execution failed.";
+      const httpStatus = err?.response?.status;
+      let msg;
+      if (httpStatus === 401 || httpStatus === 403) {
+        msg = "Your session has expired. Please log out and log in again.";
+      } else if (httpStatus === 404) {
+        msg = "Dataset session expired — please re-upload your file to continue.";
+      } else {
+        msg = err?.response?.data?.detail || "Query execution failed.";
+      }
       setError(msg);
       toast.error(msg);
     } finally {

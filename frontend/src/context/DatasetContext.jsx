@@ -1,200 +1,170 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
-import { getSchema, getDatasetPreview } from "../services/api";
+import { getSchema, getSchemas, getDatasetPreview } from "../services/api";
 
 const DatasetContext = createContext(null);
 
 // ─── sessionStorage key ───────────────────────────────────────────────────────
-// We store ONLY the dataset_id (a 12-char hex string, ~12 bytes).
-// preview_rows (can be MBs) and chatMessages are kept in React memory only and
-// are intentionally NOT persisted — they are re-fetched from the backend on
-// page refresh, so sessionStorage never grows large.
 const SESSION_KEY_ID = "ag_dataset_id";
 
-/** Read a raw string from sessionStorage safely. Returns null on any error. */
 function sessionReadId() {
-  try {
-    return sessionStorage.getItem(SESSION_KEY_ID) || null;
-  } catch {
-    return null;
-  }
+  try { return sessionStorage.getItem(SESSION_KEY_ID) || null; } catch { return null; }
 }
-
-/** Write the dataset_id string to sessionStorage safely. */
 function sessionSaveId(datasetId) {
   try {
-    if (datasetId) {
-      sessionStorage.setItem(SESSION_KEY_ID, datasetId);
-    } else {
-      sessionStorage.removeItem(SESSION_KEY_ID);
-    }
-  } catch {
-    // sessionStorage unavailable — silently continue
-  }
+    if (datasetId) sessionStorage.setItem(SESSION_KEY_ID, datasetId);
+    else sessionStorage.removeItem(SESSION_KEY_ID);
+  } catch { /* ignore */ }
 }
-
-/** Clear all keys written by this context. */
 function sessionClear() {
-  try {
-    sessionStorage.removeItem(SESSION_KEY_ID);
-  } catch {
-    // ignore
-  }
+  try { sessionStorage.removeItem(SESSION_KEY_ID); } catch { /* ignore */ }
 }
 
 // ─── Provider ────────────────────────────────────────────────────────────────
-
 export function DatasetProvider({ children }) {
-  // dataset shape: { dataset_id, files: [{ filename, file_type, table_name, schema, preview_rows }] }
-  // or null when nothing is uploaded.
+  // dataset shape:
+  //   {
+  //     dataset_id,          ← latest upload's id (used by AI chat)
+  //     files: [             ← ALL files uploaded across ALL uploads
+  //       { filename, file_type, table_name, schema, preview_rows, dataset_id }
+  //     ],
+  //     filename, schema, preview_rows  ← derived from activeFileIndex
+  //   }
   const [dataset, setDatasetRaw] = useState(null);
 
-  // Chat messages live in memory only — not stored in sessionStorage.
-  // They are cleared on every page load/refresh (intentional, keeps storage small).
+  // Which file index is currently "active" (used in Preview & Chat)
+  const [activeFileIndex, setActiveFileIndex] = useState(0);
+
   const [chatMessages, setChatMessages] = useState([]);
-
-  // false while we're doing the async backend-verify + preview re-fetch on restore.
   const [sessionVerified, setSessionVerified] = useState(false);
-
-  // Prevent double-verify on React StrictMode double-mount in development.
   const verifyCalledRef = useRef(false);
 
-  // ── On first mount: restore from the stored dataset_id ──────────────────
+  // ── Derived active file ───────────────────────────────────────────────────
+  const activeFile = activeFileIndex === -1 ? null : (dataset?.files?.[activeFileIndex] ?? dataset?.files?.[0] ?? null);
+
+  // ── On first mount: restore from the stored dataset_id ───────────────────
   useEffect(() => {
     if (verifyCalledRef.current) return;
     verifyCalledRef.current = true;
 
     const storedId = sessionReadId();
-    if (!storedId) {
-      // No previous session — go straight to upload screen.
-      setSessionVerified(true);
-      return;
-    }
+    if (!storedId) { setSessionVerified(true); return; }
 
-    // Verify the backend still has this session (it won't after a server restart).
-    // On success, also fetch fresh schema + preview rows so we never store large
-    // data in sessionStorage.
-    Promise.all([
-      getSchema(storedId),
-      getDatasetPreview(storedId),
-    ])
-      .then(([schemaRes, previewRes]) => {
-        const schemaData = schemaRes.data;        // DatasetSchema for primary table
-        const previewMap = previewRes.data;       // { table_name: [rows] }
-
-        // Reconstruct the dataset object from fresh server data.
-        // schemaData contains dataset_id, table_name, columns, row_count, etc.
-        setDatasetRaw({
-          dataset_id: storedId,
-          // Minimal file info — we don't know original filenames after restore,
-          // so we use table_name as a fallback display name.
-          files: [{
-            filename: schemaData.table_name,
-            file_type: "",
-            table_name: schemaData.table_name,
-            schema: schemaData,
-            preview_rows: previewMap[schemaData.table_name] ?? [],
-          }],
+    Promise.all([getSchemas(storedId), getDatasetPreview(storedId)])
+      .then(([schemasRes, previewRes]) => {
+        const schemasList = schemasRes.data || [];
+        const previewMap = previewRes.data || {};
+        const files = schemasList.map((schemaData) => ({
           filename: schemaData.table_name,
+          file_type: "",
+          table_name: schemaData.table_name,
           schema: schemaData,
           preview_rows: previewMap[schemaData.table_name] ?? [],
-        });
+          dataset_id: storedId,
+        }));
 
+        if (files.length > 0) {
+          setDatasetRaw({
+            dataset_id: storedId,
+            files,
+            filename: files.length === 1 ? files[0].filename : `${files.length} files`,
+            schema: files[0]?.schema,
+            preview_rows: files[0]?.preview_rows || [],
+          });
+        }
         setSessionVerified(true);
       })
-      .catch(() => {
-        // Backend lost the session — clear the stored id and show upload screen.
-        sessionClear();
-        setSessionVerified(true);
-      });
+      .catch(() => { sessionClear(); setSessionVerified(true); });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Tab-close cleanup ────────────────────────────────────────────────────
-  //
-  // visibilitychange + 5-second timer approach:
-  //   - Tab hidden → start timer
-  //   - Tab visible again before 5 s (F5 / window switch) → cancel timer, no cleanup
-  //   - Tab stays hidden 5 s → it's truly gone →
-  //       • Clear sessionStorage (belt-and-suspenders; browser already wipes it on close)
-  //       • Fire sendBeacon to free the DuckDB connection on the backend
+  // ── Tab-close cleanup (only triggers when closing tab/navigating away) ───
   useEffect(() => {
-    let cleanupTimer = null;
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "hidden") {
-        cleanupTimer = setTimeout(() => {
-          const currentId = sessionReadId();
-
-          // Clear our sessionStorage entry explicitly.
-          sessionClear();
-
-          // Notify the backend to free the in-memory DuckDB connection.
-          if (currentId) {
-            const baseUrl = import.meta.env.VITE_API_URL || "/api";
-            try {
-              navigator.sendBeacon(`${baseUrl}/dataset/${currentId}/cleanup`);
-            } catch {
-              // sendBeacon not available (very old browser) — silently skip.
-            }
-          }
-
-          cleanupTimer = null;
-        }, 5000); // 5 s is well beyond any F5 reload time
-      } else {
-        // Tab became visible again → cancel pending cleanup.
-        if (cleanupTimer !== null) {
-          clearTimeout(cleanupTimer);
-          cleanupTimer = null;
+    const handlePageHide = () => {
+      const currentId = sessionReadId();
+      if (currentId) {
+        const baseUrl = import.meta.env.VITE_API_URL || "/api";
+        try {
+          navigator.sendBeacon(`${baseUrl}/dataset/${currentId}/cleanup`);
+        } catch {
+          /* ignore */
         }
       }
     };
+    window.addEventListener("pagehide", handlePageHide);
+    return () => window.removeEventListener("pagehide", handlePageHide);
+  }, []);
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-      if (cleanupTimer !== null) clearTimeout(cleanupTimer);
-    };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // ── Persist ONLY the dataset_id whenever it changes ─────────────────────
+  // ── Persist ONLY the dataset_id whenever it changes ──────────────────────
   useEffect(() => {
-    if (!sessionVerified) return; // don't write until restore is complete
+    if (!sessionVerified) return;
     sessionSaveId(dataset?.dataset_id ?? null);
   }, [dataset, sessionVerified]);
 
-  // ── Public setDataset ─────────────────────────────────────────────────────
+  // ── Public setDataset (replaces everything — used on first upload) ────────
   const setDataset = useCallback((data) => {
-    if (!data) {
-      setDatasetRaw(null);
-      return;
-    }
-    if (data.files) {
-      setDatasetRaw({
-        dataset_id: data.dataset_id,
-        files: data.files,
-        filename: data.files.length === 1
-          ? data.files[0].filename
-          : `${data.files.length} files`,
-        schema: data.files[0]?.schema,
-        preview_rows: data.files[0]?.preview_rows || [],
-      });
-    } else {
-      setDatasetRaw(data);
-    }
+    if (!data) { setDatasetRaw(null); return; }
+    const files = (data.files || []).map((f) => ({ ...f, dataset_id: data.dataset_id }));
+    setDatasetRaw({
+      dataset_id: data.dataset_id,
+      files,
+      filename: files.length === 1 ? files[0].filename : `${files.length} files`,
+      schema: files[0]?.schema,
+      preview_rows: files[0]?.preview_rows || [],
+    });
+    setActiveFileIndex(0);
   }, []);
 
-  // ── Public clearDataset ──────────────────────────────────────────────────
+  // ── appendDataset: merges a new upload into existing files list ────────────
+  // Used when uploading individual files one-by-one so we don't lose earlier ones.
+  const appendDataset = useCallback((data) => {
+    if (!data) return;
+    const newFiles = (data.files || []).map((f) => ({ ...f, dataset_id: data.dataset_id }));
+    setDatasetRaw((prev) => {
+      const existing = prev?.files || [];
+      const merged = [...existing];
+      for (const nf of newFiles) {
+        const idx = merged.findIndex((f) => f.table_name === nf.table_name);
+        if (idx >= 0) {
+          merged[idx] = nf;
+        } else {
+          merged.push(nf);
+        }
+      }
+      return {
+        dataset_id: data.dataset_id, // latest upload id
+        files: merged,
+        filename: merged.length === 1 ? merged[0].filename : `${merged.length} files`,
+        schema: merged[0]?.schema,
+        preview_rows: merged[0]?.preview_rows || [],
+      };
+    });
+  }, []);
+
+  // ── Public clearDataset ───────────────────────────────────────────────────
   const clearDataset = useCallback(() => {
     setDatasetRaw(null);
     setChatMessages([]);
+    setActiveFileIndex(0);
     sessionClear();
   }, []);
 
-  // ── Public clearChat ─────────────────────────────────────────────────────
+  // ── Public clearChat ──────────────────────────────────────────────────────
   const clearChat = useCallback(() => setChatMessages([]), []);
 
   return (
     <DatasetContext.Provider
-      value={{ dataset, setDataset, clearDataset, chatMessages, setChatMessages, clearChat, sessionVerified }}
+      value={{
+        dataset,
+        setDataset,
+        appendDataset,
+        clearDataset,
+        activeFile,
+        activeFileIndex,
+        setActiveFileIndex,
+        chatMessages,
+        setChatMessages,
+        clearChat,
+        sessionVerified,
+      }}
     >
       {children}
     </DatasetContext.Provider>

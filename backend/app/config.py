@@ -17,6 +17,7 @@ _BACKEND_ROOT = Path(__file__).resolve().parent.parent
 class Settings:
     app_env: str = os.getenv("APP_ENV", "development")
     groq_api_key: str = os.getenv("GROQ_API_KEY", "")
+    groq_model: str = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
     max_upload_mb: int = int(os.getenv("MAX_UPLOAD_MB", "200"))
     # Resolve upload_dir; if it's absolute (like /tmp), use it directly, otherwise make it relative to backend root
     upload_dir: str = field(

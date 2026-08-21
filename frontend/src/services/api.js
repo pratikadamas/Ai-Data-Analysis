@@ -16,24 +16,34 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-export const uploadDataset = (files) => {
+export const uploadDataset = (files, datasetId = null) => {
   const formData = new FormData();
   // Support both single file and array of files
   const fileList = Array.isArray(files) ? files : [files];
   fileList.forEach((file) => {
     formData.append("files", file);
   });
+  if (datasetId) {
+    formData.append("dataset_id", datasetId);
+  }
   return api.post("/upload", formData);
 };
 
 export const getSchema = (datasetId) => api.get(`/dataset/${datasetId}/schema`);
 
+export const getSchemas = (datasetId) => api.get(`/dataset/${datasetId}/schemas`);
+
 export const getDatasetPreview = (datasetId) => api.get(`/dataset/${datasetId}/preview`);
 
 export const deleteDataset = (datasetId) => api.delete(`/dataset/${datasetId}`);
 
-export const askQuestion = (datasetId, question, conversationId = null) =>
-  api.post("/chat", { dataset_id: datasetId, question, conversation_id: conversationId });
+export const askQuestion = (datasetId, question, conversationId = null, tableName = null) =>
+  api.post("/chat", {
+    dataset_id: datasetId,
+    question,
+    conversation_id: conversationId,
+    table_name: tableName || null,
+  });
 
 export const explore = (payload) => api.post("/explore", payload);
 

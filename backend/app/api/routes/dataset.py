@@ -3,11 +3,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, HTTPException
 
 from app.db.duckdb_manager import duckdb_manager
 from app.models.schemas import DatasetSchema
-from app.services.schema_service import extract_schema, invalidate_schema_cache
+from app.services.schema_service import extract_all_schemas, extract_schema, invalidate_schema_cache
 
 router = APIRouter(prefix="/api/dataset", tags=["dataset"])
 
@@ -19,6 +19,16 @@ async def get_schema(dataset_id: str) -> DatasetSchema:
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="Dataset not found or expired.") from exc
     return extract_schema(conn, dataset_id)
+
+
+@router.get("/{dataset_id}/schemas", response_model=list[DatasetSchema])
+async def get_all_schemas(dataset_id: str) -> list[DatasetSchema]:
+    try:
+        conn = duckdb_manager.get_connection(dataset_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="Dataset not found or expired.") from exc
+    return extract_all_schemas(conn, dataset_id)
+
 
 
 @router.get("/{dataset_id}/preview")
@@ -54,14 +64,4 @@ async def delete_dataset(dataset_id: str) -> dict:
     return {"status": "deleted", "dataset_id": dataset_id}
 
 
-@router.post("/{dataset_id}/cleanup", status_code=204)
-async def cleanup_dataset(dataset_id: str) -> Response:
-    """Fire-and-forget cleanup called via navigator.sendBeacon() on tab close.
 
-    Returns 204 No Content so the browser does not need to read the response body.
-    Silently ignores unknown dataset_ids (beacon may arrive after a server restart).
-    """
-    if duckdb_manager.exists(dataset_id):
-        duckdb_manager.drop_connection(dataset_id)
-        invalidate_schema_cache(dataset_id)
-    return Response(status_code=204)

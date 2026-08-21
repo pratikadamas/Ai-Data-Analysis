@@ -6,6 +6,8 @@ from __future__ import annotations
 import json
 import re
 
+import httpx
+
 # pyrefly: ignore [missing-import]
 from groq import Groq
 
@@ -14,7 +16,17 @@ from app.config import settings
 # pyrefly: ignore [missing-import]
 from app.models.schemas import DatasetSchema
 # pyrefly: ignore [missing-import]
-from app.services.schema_service import schema_to_llm_prompt
+from app.services.schema_service import schema_to_llm_prompt, all_schemas_to_llm_prompt
+
+# Patch httpx.Client to handle legacy 'proxies' kwarg passed by older groq SDK versions in httpx 0.28+
+_orig_httpx_client_init = httpx.Client.__init__
+def _patched_httpx_client_init(self, *args, **kwargs):
+    if "proxies" in kwargs:
+        p = kwargs.pop("proxies")
+        if p and "proxy" not in kwargs:
+            kwargs["proxy"] = p
+    return _orig_httpx_client_init(self, *args, **kwargs)
+httpx.Client.__init__ = _patched_httpx_client_init
 
 # Model to use for both SQL generation and explanation.
 # llama-3.3-70b-versatile is Groq's most capable general-purpose model.
@@ -54,17 +66,49 @@ class LLMService:
                 "GROQ_API_KEY is not set. Add it to backend/.env to enable AI features."
             )
         if self._client is None:
-            import httpx
-            http_client = httpx.Client()
-            self._client = Groq(api_key=settings.groq_api_key, http_client=http_client)
+            self._client = Groq(api_key=settings.groq_api_key)
         return self._client
+
+    def _create_completion(self, messages: list[dict], temperature: float = 0.0, max_tokens: int = 512):
+        client = self._get_client()
+        candidate_models = [
+            settings.groq_model,
+            "openai/gpt-oss-120b",
+            "llama-3.3-70b-versatile",
+            "llama-3.1-70b-versatile",
+            "llama3-70b-8192",
+            "llama3-8b-8192",
+            "mixtral-8x7b-32768",
+        ]
+        
+        # Deduplicate candidates while preserving priority order
+        seen = set()
+        models = [m for m in candidate_models if m and not (m in seen or seen.add(m))]
+
+        last_exc = None
+        for model_name in models:
+            try:
+                response = client.chat.completions.create(
+                    model=model_name,
+                    messages=messages,
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                )
+                return response
+            except Exception as exc:
+                err_msg = str(exc)
+                if "model_not_found" in err_msg or "404" in err_msg or "does not exist" in err_msg:
+                    last_exc = exc
+                    continue
+                raise exc
+        if last_exc:
+            raise last_exc
+        raise LLMServiceError("No valid Groq LLM model found.")
 
     def is_off_topic(self, question: str) -> bool:
         """Return True if the question is not related to data analysis / the uploaded dataset."""
-        client = self._get_client()
         try:
-            response = client.chat.completions.create(
-                model=_GROQ_MODEL,
+            response = self._create_completion(
                 messages=[
                     {
                         "role": "system",
@@ -89,15 +133,23 @@ class LLMService:
         except Exception:  # noqa: BLE001 — on any error, assume on-topic to avoid blocking
             return False
 
-    def generate_sql(self, question: str, schema: DatasetSchema) -> str:
-        client = self._get_client()
+    def generate_sql(
+        self,
+        question: str,
+        schema: DatasetSchema | list[DatasetSchema],
+        target_table: str | None = None,
+    ) -> str:
         try:
+            if isinstance(schema, list):
+                schema_text = all_schemas_to_llm_prompt(schema, target_table)
+            else:
+                schema_text = schema_to_llm_prompt(schema)
+
             prompt = (
-                f"{schema_to_llm_prompt(schema)}\n\n"
+                f"{schema_text}\n\n"
                 f"Question: {question}\n\nSQL:"
             )
-            response = client.chat.completions.create(
-                model=_GROQ_MODEL,
+            response = self._create_completion(
                 messages=[
                     {"role": "system", "content": _SQL_SYSTEM_PROMPT},
                     {"role": "user", "content": prompt},
@@ -115,7 +167,6 @@ class LLMService:
             raise LLMServiceError(f"Groq API error during SQL generation: {exc}") from exc
 
     def explain_results(self, question: str, columns: list[str], rows: list[dict]) -> str:
-        client = self._get_client()
         try:
             preview = json.dumps(rows[:20], default=str)
             prompt = (
@@ -124,8 +175,7 @@ class LLMService:
                 f"Result rows (sample): {preview}\n\n"
                 "Plain-English answer:"
             )
-            response = client.chat.completions.create(
-                model=_GROQ_MODEL,
+            response = self._create_completion(
                 messages=[
                     {"role": "system", "content": _EXPLAIN_SYSTEM_PROMPT},
                     {"role": "user", "content": prompt},
