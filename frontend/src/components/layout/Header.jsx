@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import { useDarkMode } from "../../hooks/useDarkMode.js";
 import { useDataset } from "../../context/DatasetContext.jsx";
 import UserNavProfile from "./UserNavProfile.jsx";
-import { Sun, Moon, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Sun, Moon } from "lucide-react";
 
-export default function Header({ isSidebarOpen = true, onToggleSidebar }) {
+export default function Header() {
   const [isDark, setIsDark] = useDarkMode();
   const { dataset } = useDataset();
 
@@ -30,18 +30,6 @@ export default function Header({ isSidebarOpen = true, onToggleSidebar }) {
             className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29] hover:brightness-110 active:scale-95 transition-all shadow-[0_0_8px_rgba(39,201,63,0.35)] cursor-default" 
           />
         </div>
-
-        {/* Sidebar Toggle Icon Button */}
-        {onToggleSidebar && (
-          <button
-            onClick={onToggleSidebar}
-            className="p-1.5 rounded-lg text-[#515154] dark:text-[#a1a1a6] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] hover:text-[#0071e3] transition-colors cursor-pointer"
-            title={isSidebarOpen ? "Hide sidebar" : "Show sidebar"}
-            aria-label="Toggle Sidebar"
-          >
-            {isSidebarOpen ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
-          </button>
-        )}
 
         <Link 
           to="/" 
