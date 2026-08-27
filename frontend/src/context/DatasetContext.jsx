@@ -209,6 +209,20 @@ export function DatasetProvider({ children }) {
 
 export function useDataset() {
   const ctx = useContext(DatasetContext);
-  if (!ctx) throw new Error("useDataset must be used within a DatasetProvider");
+  if (!ctx) {
+    return {
+      dataset: null,
+      datasetId: null,
+      files: [],
+      activeFile: null,
+      activeFileIndex: 0,
+      setActiveFileIndex: () => {},
+      clearDataset: () => {},
+      chatMessages: [],
+      setChatMessages: () => {},
+      clearChat: () => {},
+      sessionVerified: false,
+    };
+  }
   return ctx;
 }
