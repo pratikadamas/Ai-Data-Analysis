@@ -152,181 +152,213 @@ export default function UploadArea() {
     uploadingAll || entries.some((e) => e.status === "uploading");
 
   return (
-    <div className="space-y-4">
-      {/* ── Drop zone ── */}
-      <div
-        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-        onDragLeave={() => setIsDragging(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setIsDragging(false);
-          addFiles(e.dataTransfer.files);
-        }}
-        className={`upload-zone border-2 border-dashed rounded-xl p-10 text-center transition-all duration-300 glass-panel flex flex-col items-center justify-center min-h-[240px] ${
-          isDragging
-            ? "border-brand-500 bg-brand-50/50 dark:bg-brand-700/20 scale-[1.02] shadow-brand-500/20 shadow-lg"
-            : "border-gray-300 dark:border-gray-700 hover:border-brand-400 hover:bg-gray-50/50 dark:hover:bg-gray-800/30"
-        }`}
-      >
-        <div className={`mb-4 text-brand-500 transition-transform duration-500 ${isDragging ? "scale-125" : "animate-float"}`}>
-          <UploadCloud size={56} strokeWidth={1.5} />
+    <div className="max-w-2xl mx-auto py-8 sm:py-12 px-2 animate-fade-in">
+      
+      {/* ── Apple Centered Glass Upload Container ── */}
+      <div className="relative rounded-3xl p-6 sm:p-10 bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.06] dark:border-white/[0.08] shadow-[0_16px_40px_rgba(0,0,0,0.04)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] backdrop-blur-2xl transition-all duration-300">
+        
+        {/* Subtle macOS Traffic Window Header */}
+        <div className="flex items-center justify-between pb-6 mb-6 border-b border-black/[0.04] dark:border-white/[0.06]">
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e] opacity-80" />
+            <span className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123] opacity-80" />
+            <span className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29] opacity-80" />
+          </div>
+          <span className="text-xs font-medium text-[#86868b] dark:text-[#a1a1a6] tracking-tight">
+            Import Dataset
+          </span>
+          <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] text-[#86868b] dark:text-[#a1a1a6]">
+            Max 10 files
+          </span>
         </div>
-        <p className="upload-zone-title font-semibold text-lg mb-1 tracking-wide text-gray-800 dark:text-gray-200">
-          Drag &amp; drop your datasets here
-        </p>
-        <p className="upload-zone-subtitle text-sm text-gray-500 dark:text-gray-400 mb-1 font-medium">
-          CSV, Excel (.xlsx/.xls), SQLite (.db/.sqlite), or SQL dump (.sql)
-        </p>
-        <p className="text-xs text-gray-400 dark:text-gray-500 mb-5">
-          Up to {MAX_FILES} files — upload each individually or all at once
-        </p>
 
-        <label className="inline-block px-6 py-2.5 rounded-lg bg-gradient-to-r from-brand-500 to-indigo-600 text-white text-sm font-semibold cursor-pointer hover:shadow-lg hover:shadow-brand-500/30 transition-all active:scale-95">
-          Browse files
-          <input
-            ref={inputRef}
-            type="file"
-            accept={ACCEPTED}
-            multiple
-            className="hidden"
-            disabled={anyUploading}
-            onChange={(e) => {
-              addFiles(e.target.files);
-              e.target.value = "";
-            }}
-          />
-        </label>
-      </div>
+        {/* ── Interactive Drop Zone ── */}
+        <div
+          onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+          onDragLeave={() => setIsDragging(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setIsDragging(false);
+            addFiles(e.dataTransfer.files);
+          }}
+          className={`relative border-2 border-dashed rounded-2xl p-8 sm:p-12 text-center transition-all duration-300 flex flex-col items-center justify-center min-h-[260px] ${
+            isDragging
+              ? "border-[#0071e3] bg-[#0071e3]/[0.06] dark:bg-[#0071e3]/[0.12] scale-[1.01] shadow-[0_0_30px_rgba(0,113,227,0.2)]"
+              : "border-black/[0.08] dark:border-white/[0.12] hover:border-[#0071e3]/50 hover:bg-black/[0.01] dark:hover:bg-white/[0.02]"
+          }`}
+        >
+          {/* Animated Glowing Cloud Icon */}
+          <div className={`mb-4 w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+            isDragging 
+              ? "bg-[#0071e3] text-white scale-110 shadow-[0_8px_20px_rgba(0,113,227,0.4)]" 
+              : "bg-[#0071e3]/10 text-[#0071e3] dark:bg-[#0071e3]/20 dark:text-blue-400"
+          }`}>
+            <UploadCloud size={30} strokeWidth={1.8} className={isDragging ? "animate-bounce" : ""} />
+          </div>
 
-      {/* ── File list ── */}
-      {entries.length > 0 && (
-        <div className="glass-panel rounded-xl p-4 space-y-3">
+          <h3 className="font-semibold text-lg sm:text-xl text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight mb-1.5">
+            Drop your dataset files here
+          </h3>
+          <p className="text-xs sm:text-sm text-[#86868b] dark:text-[#a1a1a6] max-w-sm mb-5 leading-relaxed">
+            Drag & drop tables or browse from your computer. DuckDB processes and joins your data with instant zero-lag memory speed.
+          </p>
 
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-              Selected Files ({entries.length}/{MAX_FILES})
-            </h3>
-            {!anyUploading && (
-              <button
-                onClick={() => setEntries([])}
-                className="text-xs text-gray-400 hover:text-red-500 transition-colors font-medium"
+          {/* Supported Format Pills */}
+          <div className="flex flex-wrap items-center justify-center gap-1.5 mb-6 max-w-md">
+            {["CSV", "Excel (.xlsx)", "SQLite (.db)", "SQL Dumps"].map((format) => (
+              <span 
+                key={format} 
+                className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.04] dark:border-white/[0.06] text-[#6e6e73] dark:text-[#a1a1a6]"
               >
-                Clear all
+                {format}
+              </span>
+            ))}
+          </div>
+
+          {/* Browse Files Button */}
+          <label className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-sm font-semibold cursor-pointer shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] active:scale-95 transition-all duration-200">
+            Browse Files
+            <input
+              ref={inputRef}
+              type="file"
+              accept={ACCEPTED}
+              multiple
+              className="hidden"
+              disabled={anyUploading}
+              onChange={(e) => {
+                addFiles(e.target.files);
+                e.target.value = "";
+              }}
+            />
+          </label>
+        </div>
+
+        {/* ── Selected File Queue List ── */}
+        {entries.length > 0 && (
+          <div className="mt-6 pt-6 border-t border-black/[0.04] dark:border-white/[0.06] space-y-3">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between px-1">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#6e6e73] dark:text-[#a1a1a6]">
+                Ready to Process ({entries.length}/{MAX_FILES})
+              </span>
+              {!anyUploading && (
+                <button
+                  onClick={() => setEntries([])}
+                  className="text-xs text-[#86868b] hover:text-red-500 transition-colors font-medium cursor-pointer"
+                >
+                  Clear Queue
+                </button>
+              )}
+            </div>
+
+            {/* File Rows */}
+            <div className="space-y-2 max-h-[260px] overflow-y-auto pr-1">
+              {entries.map((entry, idx) => {
+                const Icon = getFileIcon(entry.file.name);
+                const isPending = entry.status === "pending";
+                const isUploading = entry.status === "uploading";
+                const isDone = entry.status === "done";
+                const isError = entry.status === "error";
+
+                return (
+                  <div
+                    key={`${entry.file.name}-${idx}`}
+                    className={`flex items-center gap-3 p-3 rounded-2xl border transition-all duration-200 ${
+                      isDone
+                        ? "bg-emerald-500/[0.06] border-emerald-500/30 text-emerald-700 dark:text-emerald-300"
+                        : isError
+                        ? "bg-red-500/[0.06] border-red-500/30 text-red-700 dark:text-red-300"
+                        : isUploading
+                        ? "bg-[#0071e3]/[0.06] border-[#0071e3]/30"
+                        : "bg-black/[0.02] dark:bg-white/[0.03] border-black/[0.06] dark:border-white/[0.08]"
+                    }`}
+                  >
+                    {/* Icon */}
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                      isDone
+                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                        : isError
+                        ? "bg-red-500/10 text-red-600 dark:text-red-400"
+                        : "bg-[#0071e3]/10 text-[#0071e3] dark:text-blue-400"
+                    }`}>
+                      <Icon size={18} />
+                    </div>
+
+                    {/* Name + Size */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] truncate">
+                        {entry.file.name}
+                      </p>
+                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
+                        {formatFileSize(entry.file.size)}
+                        {isError && (
+                          <span className="ml-1 text-red-500 font-medium">— {entry.error}</span>
+                        )}
+                      </p>
+                    </div>
+
+                    {/* Action & Status */}
+                    <div className="flex items-center gap-2 shrink-0">
+                      {isUploading && (
+                        <Loader2 size={16} className="text-[#0071e3] animate-spin" />
+                      )}
+                      {isDone && (
+                        <CheckCircle2 size={16} className="text-emerald-500" />
+                      )}
+                      {isError && (
+                        <AlertCircle size={16} className="text-red-500" />
+                      )}
+
+                      {(isPending || isError) && !uploadingAll && (
+                        <button
+                          onClick={() => uploadOne(idx)}
+                          disabled={anyUploading}
+                          className="px-3 py-1.5 rounded-xl bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-semibold shadow-sm transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
+                        >
+                          {isError ? "Retry" : "Upload"}
+                        </button>
+                      )}
+
+                      {isPending && !anyUploading && (
+                        <button
+                          onClick={() => removeEntry(idx)}
+                          className="p-1.5 rounded-lg text-[#86868b] hover:text-red-500 hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors cursor-pointer"
+                          title="Remove file"
+                        >
+                          <X size={14} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Upload All Action Button */}
+            {!allDone && (
+              <button
+                onClick={handleUploadAll}
+                disabled={anyUploading || pendingCount === 0}
+                className="w-full py-3 rounded-2xl bg-[#0071e3] hover:bg-[#0077ed] text-white text-sm font-semibold shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] transition-all active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer mt-3"
+              >
+                {uploadingAll ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    Uploading files…
+                  </>
+                ) : (
+                  <>
+                    <UploadCloud size={16} />
+                    Upload All ({pendingCount} file{pendingCount !== 1 ? "s" : ""})
+                  </>
+                )}
               </button>
             )}
           </div>
+        )}
 
-          {/* File rows */}
-          <div className="space-y-2 max-h-[320px] overflow-y-auto custom-scrollbar pr-1">
-            {entries.map((entry, idx) => {
-              const Icon = getFileIcon(entry.file.name);
-              const isPending = entry.status === "pending";
-              const isUploading = entry.status === "uploading";
-              const isDone = entry.status === "done";
-              const isError = entry.status === "error";
-
-              return (
-                <div
-                  key={`${entry.file.name}-${idx}`}
-                  className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
-                    isDone
-                      ? "bg-emerald-50/60 dark:bg-emerald-900/20 border-emerald-200/60 dark:border-emerald-800/40"
-                      : isError
-                      ? "bg-red-50/60 dark:bg-red-900/20 border-red-200/60 dark:border-red-800/40"
-                      : isUploading
-                      ? "bg-brand-50/60 dark:bg-brand-900/20 border-brand-200/60 dark:border-brand-700/40"
-                      : "bg-gray-50/80 dark:bg-gray-800/60 border-gray-200/50 dark:border-gray-700/50"
-                  }`}
-                >
-                  {/* File type icon */}
-                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
-                    isDone
-                      ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-500"
-                      : isError
-                      ? "bg-red-100 dark:bg-red-900/40 text-red-500"
-                      : "bg-brand-50 dark:bg-brand-900/30 text-brand-500"
-                  }`}>
-                    <Icon size={17} />
-                  </div>
-
-                  {/* Name + size */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
-                      {entry.file.name}
-                    </p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">
-                      {formatFileSize(entry.file.size)}
-                      {isError && (
-                        <span className="ml-1 text-red-400">— {entry.error}</span>
-                      )}
-                    </p>
-                  </div>
-
-                  {/* Right side controls */}
-                  <div className="flex items-center gap-2 shrink-0">
-
-                    {/* Status icon */}
-                    {isUploading && (
-                      <Loader2 size={16} className="text-brand-500 animate-spin" />
-                    )}
-                    {isDone && (
-                      <CheckCircle2 size={16} className="text-emerald-500" />
-                    )}
-                    {isError && (
-                      <AlertCircle size={16} className="text-red-500" />
-                    )}
-
-                    {/* Per-file Upload button (only when pending or errored, not while uploadingAll) */}
-                    {(isPending || isError) && !uploadingAll && (
-                      <button
-                        onClick={() => uploadOne(idx)}
-                        disabled={anyUploading}
-                        className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-brand-500 to-indigo-600 text-white text-xs font-semibold hover:shadow-md hover:shadow-brand-500/30 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
-                      >
-                        <UploadCloud size={12} />
-                        {isError ? "Retry" : "Upload"}
-                      </button>
-                    )}
-
-                    {/* Remove button (only pending files when not uploading) */}
-                    {isPending && !anyUploading && (
-                      <button
-                        onClick={() => removeEntry(idx)}
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
-                        title="Remove"
-                      >
-                        <X size={14} />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* ── Upload All button ── */}
-          {!allDone && (
-            <button
-              onClick={handleUploadAll}
-              disabled={anyUploading || pendingCount === 0}
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-indigo-600 text-white text-sm font-semibold hover:shadow-lg hover:shadow-brand-500/30 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {uploadingAll ? (
-                <>
-                  <Loader2 size={15} className="animate-spin" />
-                  Uploading files one by one…
-                </>
-              ) : (
-                <>
-                  <UploadCloud size={15} />
-                  Upload All ({pendingCount} file{pendingCount !== 1 ? "s" : ""})
-                </>
-              )}
-            </button>
-          )}
-        </div>
-      )}
+      </div>
     </div>
   );
 }
