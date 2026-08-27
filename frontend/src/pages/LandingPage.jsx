@@ -201,14 +201,14 @@ export default function LandingPage() {
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className={`fixed left-0 right-0 z-50 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           isScrolled 
-            ? "top-3 max-w-5xl mx-auto px-4" 
-            : "top-0 w-full px-4 sm:px-8 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/75 dark:bg-[#161617]/75 backdrop-blur-2xl"
+            ? "top-3.5 max-w-7xl mx-auto px-4 sm:px-6" 
+            : "top-0 w-full px-4 sm:px-10 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-[#161617]/80 backdrop-blur-2xl"
         }`}
       >
         <div className={`flex items-center justify-between transition-all duration-300 ${
           isScrolled
-            ? "bg-white/70 dark:bg-[#1d1d1f]/75 backdrop-blur-2xl border border-black/[0.06] dark:border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] rounded-full px-6 h-15"
-            : "max-w-7xl mx-auto h-18 px-2"
+            ? "bg-white/80 dark:bg-[#1d1d1f]/85 backdrop-blur-2xl border border-black/[0.08] dark:border-white/[0.1] shadow-[0_12px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)] rounded-2xl sm:rounded-full px-6 sm:px-8 h-16"
+            : "max-w-7xl mx-auto h-20 px-2 sm:px-4"
         }`}>
           
           {/* Logo with Favicon */}
