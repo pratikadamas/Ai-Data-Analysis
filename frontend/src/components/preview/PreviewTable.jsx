@@ -43,14 +43,23 @@ export default function PreviewTable() {
         </div>
       )}
 
-      {/* Data grid */}
-      <div className="macos-card p-4 overflow-hidden">
-        <div className="ag-theme-quartz dark:ag-theme-quartz-dark rounded-xl overflow-hidden" style={{ height: 440, width: "100%" }}>
+      {/* Data grid in macOS Window Container */}
+      <div className="macos-card p-4 sm:p-5 overflow-hidden rounded-3xl bg-white/80 dark:bg-[#1c1c1e]/80 border border-black/[0.06] dark:border-white/[0.08] backdrop-blur-2xl shadow-sm">
+        <div className="ag-theme-quartz dark:ag-theme-quartz-dark rounded-2xl overflow-hidden w-full" style={{ height: 500 }}>
           <AgGridReact
             rowData={previewRows}
             columnDefs={columnDefs}
             pagination
             paginationPageSize={25}
+            defaultColDef={{
+              sortable: true,
+              filter: true,
+              resizable: true,
+              minWidth: 120,
+              flex: 1,
+            }}
+            animateRows={true}
+            rowSelection="single"
           />
         </div>
       </div>

@@ -54,6 +54,10 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    // Only run Lenis on landing page & docs/faq pages, not inside the fixed-height studio app
+    const isAppRoute = window.location.pathname.startsWith("/app");
+    if (isAppRoute) return;
+
     const lenis = new Lenis({
       duration: 1.1,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),

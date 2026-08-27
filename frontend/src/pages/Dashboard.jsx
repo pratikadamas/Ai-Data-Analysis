@@ -50,8 +50,8 @@ export default function Dashboard() {
           onToggle={() => setIsSidebarOpen((prev) => !prev)} 
         />
 
-        {/* Main content with 120Hz smooth scrolling physics */}
-        <main className="dashboard-main flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 scroll-smooth will-change-transform">
+        {/* Main content with natural high-refresh rate scrolling */}
+        <main className="dashboard-main flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 space-y-6 overscroll-contain">
           {!sessionVerified ? (
             <div className="flex items-center justify-center h-full">
               <SectionCircleLoader size="lg" text="Restoring workspace session…" />
