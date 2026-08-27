@@ -96,51 +96,53 @@ export default function UploadArea() {
     }
   }, [entries, dataset, appendDataset]);
 
-  // ── upload all pending / errored files together ────────────────────────
+  // ── upload all pending / errored files sequentially ──────────────────
   const handleUploadAll = useCallback(async () => {
-    const pendingEntries = entries.filter(
-      (e) => e.status === "pending" || e.status === "error"
-    );
+    const pendingIndices = [];
+    entries.forEach((e, idx) => {
+      if (e.status === "pending" || e.status === "error") {
+        pendingIndices.push({ file: e.file, idx });
+      }
+    });
 
-    if (pendingEntries.length === 0) {
+    if (pendingIndices.length === 0) {
       toast.info("All files are already uploaded.");
       return;
     }
 
     setUploadingAll(true);
-    setEntries((prev) =>
-      prev.map((e) =>
-        e.status === "pending" || e.status === "error"
-          ? { ...e, status: "uploading", error: null }
-          : e
-      )
-    );
+    let currentDatasetId = dataset?.dataset_id || null;
+    let successCount = 0;
 
-    try {
-      const filesToUpload = pendingEntries.map((e) => e.file);
-      const { data } = await uploadDataset(filesToUpload, dataset?.dataset_id);
+    for (const item of pendingIndices) {
       setEntries((prev) =>
-        prev.map((e) =>
-          e.status === "uploading" ? { ...e, status: "done", error: null } : e
-        )
+        prev.map((e, i) => (i === item.idx ? { ...e, status: "uploading", error: null } : e))
       );
-      appendDataset(data);
-      toast.success(
-        filesToUpload.length === 1
-          ? "File uploaded successfully!"
-          : `All ${filesToUpload.length} files uploaded successfully!`
-      );
-    } catch (err) {
-      const errMsg = err?.response?.data?.detail || "Upload failed. Please try again.";
-      setEntries((prev) =>
-        prev.map((e) =>
-          e.status === "uploading" ? { ...e, status: "error", error: errMsg } : e
-        )
-      );
-      toast.error(`Upload failed — ${errMsg}`);
-    } finally {
-      setUploadingAll(false);
+
+      try {
+        const { data } = await uploadDataset([item.file], currentDatasetId);
+        currentDatasetId = data.dataset_id;
+        appendDataset(data);
+        setEntries((prev) =>
+          prev.map((e, i) => (i === item.idx ? { ...e, status: "done", error: null } : e))
+        );
+        successCount++;
+      } catch (err) {
+        const errMsg = err?.response?.data?.detail || "Upload failed. Please check file format.";
+        setEntries((prev) =>
+          prev.map((e, i) => (i === item.idx ? { ...e, status: "error", error: errMsg } : e))
+        );
+        toast.error(`"${item.file.name}" — ${errMsg}`);
+      }
     }
+
+    if (successCount === pendingIndices.length) {
+      toast.success(`All ${successCount} files uploaded successfully!`);
+    } else if (successCount > 0) {
+      toast.info(`${successCount} of ${pendingIndices.length} files uploaded.`);
+    }
+
+    setUploadingAll(false);
   }, [entries, dataset, appendDataset]);
 
   // ── derived state ─────────────────────────────────────────────────────
@@ -166,25 +168,25 @@ export default function UploadArea() {
             setIsDragging(false);
             addFiles(e.dataTransfer.files);
           }}
-          className={`relative border-2 border-dashed rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 flex flex-col items-center justify-center min-h-[200px] ${
+          className={`relative border-2 border-dashed rounded-3xl p-6 sm:p-8 text-center transition-all duration-300 flex flex-col items-center justify-center min-h-[200px] ${
             isDragging
               ? "border-[#0071e3] bg-[#0071e3]/[0.06] dark:bg-[#0071e3]/[0.12] scale-[1.01] shadow-[0_0_30px_rgba(0,113,227,0.2)]"
               : "border-black/[0.08] dark:border-white/[0.12] hover:border-[#0071e3]/50 hover:bg-black/[0.01] dark:hover:bg-white/[0.02]"
           }`}
         >
           {/* Animated Glowing Cloud Icon */}
-          <div className={`mb-3 w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+          <div className={`mb-3 w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ${
             isDragging 
-              ? "bg-[#0071e3] text-white scale-110 shadow-[0_8px_20px_rgba(0,113,227,0.4)]" 
-              : "bg-[#0071e3]/10 text-[#0071e3] dark:bg-[#0071e3]/20 dark:text-blue-400"
+              ? "bg-gradient-to-tr from-[#0071e3] to-[#818cf8] text-white scale-110 shadow-[0_8px_25px_rgba(0,113,227,0.5)]" 
+              : "bg-gradient-to-tr from-[#0071e3]/10 to-[#818cf8]/15 text-[#0071e3] dark:text-blue-400 border border-[#0071e3]/20"
           }`}>
-            <UploadCloud size={24} strokeWidth={1.8} className={isDragging ? "animate-bounce" : ""} />
+            <UploadCloud size={26} strokeWidth={1.8} className={isDragging ? "animate-bounce" : ""} />
           </div>
 
-          <h3 className="font-semibold text-base sm:text-lg text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight mb-1">
+          <h3 className="font-outfit font-bold text-lg sm:text-xl bg-gradient-to-r from-[#1d1d1f] via-[#0071e3] to-[#4338ca] dark:from-[#f5f5f7] dark:via-[#38bdf8] dark:to-[#818cf8] bg-clip-text text-transparent tracking-tight mb-1">
             Drop your dataset files here
           </h3>
-          <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] max-w-sm mb-4 leading-relaxed">
+          <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] max-w-sm mb-4 leading-relaxed font-sans">
             Drag & drop tables or browse from your computer. DuckDB processes and joins your data with instant zero-lag memory speed.
           </p>
 
@@ -193,7 +195,7 @@ export default function UploadArea() {
             {["CSV", "Excel (.xlsx)", "SQLite (.db)", "SQL Dumps"].map((format) => (
               <span 
                 key={format} 
-                className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.04] dark:border-white/[0.06] text-[#6e6e73] dark:text-[#a1a1a6]"
+                className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-gradient-to-r from-black/[0.03] to-black/[0.06] dark:from-white/[0.04] dark:to-white/[0.08] border border-black/[0.04] dark:border-white/[0.08] text-[#515154] dark:text-[#a1a1a6]"
               >
                 {format}
               </span>
@@ -201,7 +203,7 @@ export default function UploadArea() {
           </div>
 
           {/* Browse Files Button */}
-          <label className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-semibold cursor-pointer shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] active:scale-95 transition-all duration-200">
+          <label className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#0071e3] via-[#3b82f6] to-[#6366f1] hover:from-[#0077ed] hover:to-[#4f46e5] text-white text-xs font-bold cursor-pointer shadow-[0_4px_16px_rgba(0,113,227,0.4)] hover:shadow-[0_6px_24px_rgba(0,113,227,0.5)] active:scale-95 transition-all duration-200">
             Browse Files
             <input
               ref={inputRef}
@@ -325,7 +327,7 @@ export default function UploadArea() {
               <button
                 onClick={handleUploadAll}
                 disabled={anyUploading || pendingCount === 0}
-                className="w-full py-3 rounded-2xl bg-[#0071e3] hover:bg-[#0077ed] text-white text-sm font-semibold shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] transition-all active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer mt-3"
+                className="w-full py-3 rounded-2xl bg-gradient-to-r from-[#0071e3] via-[#3b82f6] to-[#6366f1] hover:from-[#0077ed] hover:to-[#4f46e5] text-white text-sm font-bold shadow-[0_4px_16px_rgba(0,113,227,0.4)] hover:shadow-[0_6px_24px_rgba(0,113,227,0.5)] transition-all active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer mt-3"
               >
                 {uploadingAll ? (
                   <>

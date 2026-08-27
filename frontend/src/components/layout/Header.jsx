@@ -39,9 +39,9 @@ export default function Header() {
           <img 
             src="/favicon.webp" 
             alt="AI Data Analysis Logo" 
-            className="w-7 h-7 object-contain group-hover:scale-105 transition-transform duration-300"
+            className="w-7 h-7 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_2px_10px_rgba(0,113,227,0.3)]"
           />
-          <span className="header-title text-base font-semibold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7] group-hover:text-[#0071e3] transition-colors">
+          <span className="header-title text-base font-bold tracking-tight font-outfit bg-gradient-to-r from-[#0071e3] via-[#4338ca] to-[#a855f7] dark:from-[#38bdf8] dark:via-[#818cf8] dark:to-[#c084fc] bg-clip-text text-transparent group-hover:opacity-90 transition-opacity">
             AI Data Analysis
           </span>
         </Link>

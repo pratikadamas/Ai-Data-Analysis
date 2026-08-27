@@ -45,17 +45,17 @@ export default function Sidebar({ active, onSelect, isOpen = true, onToggle }) {
               <div key={item.key} className="relative group">
                 <button
                   onClick={() => onSelect(item.key)}
-                  className={`w-full flex items-center rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer ${
+                  className={`w-full flex items-center rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer ${
                     isOpen 
                       ? "gap-3 px-3 py-2 text-left" 
                       : "justify-center p-2.5"
                   } ${
                     isActive
-                      ? "bg-[#0071e3] text-white shadow-[0_2px_8px_rgba(0,113,227,0.35)]"
+                      ? "bg-gradient-to-r from-[#0071e3] to-[#4338ca] dark:from-[#0071e3] dark:to-[#6366f1] text-white shadow-[0_4px_14px_rgba(0,113,227,0.35)] scale-[1.02]"
                       : "text-[#515154] dark:text-[#a1a1a6] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7]"
                   }`}
                 >
-                  <Icon size={18} className={isActive ? "text-white shrink-0" : "opacity-80 shrink-0 group-hover:scale-110 transition-transform"} />
+                  <Icon size={18} className={isActive ? "text-white shrink-0 drop-shadow-sm" : "opacity-80 shrink-0 group-hover:scale-110 transition-transform"} />
                   {isOpen && (
                     <span className="sidebar-label tracking-tight truncate">{item.label}</span>
                   )}
