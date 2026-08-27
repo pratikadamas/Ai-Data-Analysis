@@ -39,7 +39,10 @@ def init_db():
         password_resets = db["password_resets"]
         password_resets.create_index("user_id")
         password_resets.create_index("expires_at", expireAfterSeconds=300)
-        
+
+        # Google OAuth users: sparse unique index on firebase_uid
+        users.create_index("firebase_uid", unique=True, sparse=True)
+
         logger.info("MongoDB unique and TTL indexes initialized successfully.")
 
         # ── Seed the Bloom Filter ──────────────────────────────────────────────

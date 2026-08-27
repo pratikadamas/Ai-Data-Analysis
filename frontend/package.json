@@ -14,6 +14,7 @@
     "ag-grid-react": "^32.2.0",
     "axios": "^1.7.7",
     "bloom-filters": "^3.0.4",
+    "firebase": "^12.18.0",
     "framer-motion": "^12.42.2",
     "lenis": "^1.3.26",
     "lucide-react": "^1.27.0",
@@ -21,7 +22,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-plotly.js": "^2.6.0",
-    "react-router-dom": "^6.26.2",
+    "react-router-dom": "^7.18.2",
     "react-toastify": "^10.0.5"
   },
   "devDependencies": {

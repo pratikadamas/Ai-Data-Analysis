@@ -49,5 +49,10 @@ class Settings:
     mail_starttls: bool = os.getenv("MAIL_STARTTLS", "True").lower() == "true"
     mail_ssl_tls: bool = os.getenv("MAIL_SSL_TLS", "False").lower() == "true"
 
+    # Firebase Admin SDK (for verifying Google OAuth ID tokens)
+    firebase_project_id: str = os.getenv("FIREBASE_PROJECT_ID", "")
+    firebase_client_email: str = os.getenv("FIREBASE_CLIENT_EMAIL", "")
+    firebase_private_key: str = os.getenv("FIREBASE_PRIVATE_KEY", "").replace("\\n", "\n")
+
 
 settings = Settings()

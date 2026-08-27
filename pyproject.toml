@@ -1,0 +1,80 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-data-analyst"
+version = "0.1.0"
+description = "AI-powered conversational data analysis platform built with FastAPI, React, DuckDB, MongoDB, and Groq LLM."
+readme = "README.md"
+requires-python = ">=3.10"
+
+authors = [
+    { name = "Pratik Giri" }
+]
+
+license = { text = "MIT" }
+
+keywords = [
+    "fastapi",
+    "react",
+    "duckdb",
+    "mongodb",
+    "groq",
+    "llm",
+    "ai",
+    "data-analysis",
+    "sql",
+    "analytics"
+]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Framework :: FastAPI",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]
+
+dependencies = [
+    # Web
+    "fastapi==0.115.0",
+    "uvicorn[standard]==0.30.6",
+    "python-multipart>=0.0.18",
+    # Data
+    "duckdb==1.0.0",
+    "pandas==2.2.2",
+    "openpyxl==3.1.5",
+    "xlrd==2.0.1",
+    "sqlparse==0.5.1",
+    # Visualization
+    "plotly==5.24.1",
+    # Config
+    "python-dotenv==1.0.1",
+    # AI
+    "groq>=0.15.0",
+    # Validation
+    "pydantic==2.9.2",
+    "email-validator==2.2.0",
+    # Database
+    "pymongo==4.17.0",
+    "certifi==2024.8.30",
+    # Authentication
+    "bcrypt==5.0.0",
+    "PyJWT==2.8.0",
+    # Security
+    "slowapi==0.1.9",
+    # Firebase Admin SDK (server-side Google OAuth token verification)
+    "firebase-admin>=6.5.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/your-username/ai-data-analyst"
+Repository = "https://github.com/your-username/ai-data-analyst"
+Issues = "https://github.com/your-username/ai-data-analyst/issues"
+
+[tool.setuptools]
+packages = ["app"]
+
+[tool.uv]
+package = false

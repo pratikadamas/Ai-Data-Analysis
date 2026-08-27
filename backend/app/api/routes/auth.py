@@ -22,6 +22,8 @@ from app.utils.auth import (
 # pyrefly: ignore [missing-import]
 from app.utils.bloom_filter import username_bloom_filter
 # pyrefly: ignore [missing-import]
+from app.utils.firebase_admin_sdk import verify_firebase_token
+# pyrefly: ignore [missing-import]
 from app.utils.mail import send_otp_email
 # pyrefly: ignore [missing-import]
 from app.utils.rate_limit import login_limiter
@@ -60,6 +62,9 @@ class ChangePasswordRequest(BaseModel):
 class ResendOTPRequest(BaseModel):
     email: str
     purpose: str = Field(default="registration")  # "registration" or "reset"
+
+class GoogleAuthRequest(BaseModel):
+    id_token: str  # Firebase ID token from the frontend
 
 # --- Helper Functions ---
 
@@ -405,3 +410,93 @@ async def change_password(payload: ChangePasswordRequest, current_user: dict = D
     )
     
     return {"status": "success", "message": "Password changed successfully"}
+
+
+@router.post("/google")
+async def google_auth(payload: GoogleAuthRequest):
+    """
+    Authenticate a user via Google OAuth.
+
+    Flow:
+      1. Frontend obtains a Firebase ID token after Google popup sign-in.
+      2. This endpoint verifies that token server-side with Firebase Admin SDK.
+      3. Looks up the user in MongoDB by firebase_uid.
+         - Found  → existing user, issue new session JWT.
+         - Missing → create a new user document (Google-only account) and issue JWT.
+      4. Returns the same shape as /login so the frontend can reuse the same handler.
+    """
+    # ── Verify the Firebase ID token ─────────────────────────────────────────
+    try:
+        firebase_user = verify_firebase_token(payload.id_token)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(exc)
+        )
+
+    uid = firebase_user["uid"]
+    email = firebase_user["email"].strip().lower()
+    name = firebase_user.get("name") or email.split("@")[0]  # fallback display name
+
+    if not email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Google account does not have a verified email address."
+        )
+
+    users_col = db["users"]
+
+    # ── Try to find existing user by firebase_uid (fastest path) ─────────────
+    user = users_col.find_one({"firebase_uid": uid})
+
+    if not user:
+        # ── Also try by email in case they registered before with email/password
+        user = users_col.find_one({"email": email})
+        if user:
+            # Merge: link their existing account to the Google provider
+            users_col.update_one(
+                {"_id": user["_id"]},
+                {
+                    "$set": {"firebase_uid": uid, "is_verified": True},
+                    "$addToSet": {"providers": "google"}
+                }
+            )
+            user = users_col.find_one({"_id": user["_id"]})
+        else:
+            # ── Brand-new Google-only user ────────────────────────────────────
+            # Build a unique username from their display name
+            base_username = name.replace(" ", "").lower()[:30] or "user"
+            username = base_username
+            suffix = 1
+            while users_col.find_one({"username": username}):
+                username = f"{base_username}{suffix}"
+                suffix += 1
+
+            user_doc = {
+                "username": username,
+                "email": email,
+                "hashed_password": None,          # Google-only: no password
+                "firebase_uid": uid,
+                "providers": ["google"],
+                "is_verified": True,              # Google already verified the email
+                "is_active": True,
+                "role": "user",
+                "created_at": datetime.utcnow(),
+            }
+            result = users_col.insert_one(user_doc)
+            user_doc["_id"] = result.inserted_id
+            username_bloom_filter.add(username)
+            user = user_doc
+
+    # ── Issue application JWT ─────────────────────────────────────────────────
+    access_token = create_access_token(data={"sub": user["username"]})
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "username": user["username"],
+            "email": user["email"],
+            "created_at": user.get("created_at"),
+        },
+    }

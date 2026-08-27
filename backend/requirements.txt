@@ -33,3 +33,6 @@ pyjwt==2.8.0                     # JWT access/refresh tokens
 
 # --- Rate Limiting ---
 slowapi==0.1.9                   # rate-limit OTP-send endpoint against abuse
+
+# --- Firebase Admin SDK (Google OAuth server-side token verification) ---
+firebase-admin>=6.5.0
