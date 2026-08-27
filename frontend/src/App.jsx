@@ -35,6 +35,15 @@ function ProtectedRoute({ children }) {
 export default function App() {
   const { user, loading } = useUser();
   const [initialAppReady, setInitialAppReady] = React.useState(false);
+  const [isMobile, setIsMobile] = React.useState(() => typeof window !== "undefined" ? window.innerWidth < 768 : false);
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener("resize", handleResize, { passive: true });
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   React.useEffect(() => {
     // Synchronize global HTML class with saved theme
@@ -121,7 +130,12 @@ export default function App() {
         {/* Fallback to home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      <ToastContainer position="bottom-right" autoClose={4000} theme="colored" />
+      <ToastContainer 
+        position={isMobile ? "top-center" : "bottom-right"} 
+        autoClose={4000} 
+        theme="colored" 
+        style={{ zIndex: 99999 }}
+      />
     </>
   );
 }
