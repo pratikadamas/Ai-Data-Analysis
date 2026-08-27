@@ -44,13 +44,15 @@ export default function PreviewTable() {
       )}
 
       {/* Data grid */}
-      <div className="ag-theme-quartz dark:ag-theme-quartz-dark" style={{ height: 420, width: "100%" }}>
-        <AgGridReact
-          rowData={previewRows}
-          columnDefs={columnDefs}
-          pagination
-          paginationPageSize={25}
-        />
+      <div className="macos-card p-4 overflow-hidden">
+        <div className="ag-theme-quartz dark:ag-theme-quartz-dark rounded-xl overflow-hidden" style={{ height: 440, width: "100%" }}>
+          <AgGridReact
+            rowData={previewRows}
+            columnDefs={columnDefs}
+            pagination
+            paginationPageSize={25}
+          />
+        </div>
       </div>
     </div>
   );
@@ -58,9 +60,9 @@ export default function PreviewTable() {
 
 function StatCard({ label, value }) {
   return (
-    <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
-      <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
-      <p className="text-xl font-semibold">{value}</p>
+    <div className="macos-card p-4 transition-transform hover:-translate-y-1 duration-200">
+      <p className="text-xs font-medium text-[#6e6e73] dark:text-[#a1a1a6] mb-1">{label}</p>
+      <p className="text-2xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">{value}</p>
     </div>
   );
 }
