@@ -131,7 +131,7 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <ToastContainer 
-        position={isMobile ? "top-center" : "bottom-right"} 
+        position="bottom-right" 
         autoClose={4000} 
         theme="colored" 
         style={{ zIndex: 99999 }}

@@ -305,31 +305,34 @@ html {
 
 /* ── Custom iOS / macOS Floating Toast Pill Styling ── */
 .Toastify__toast-container {
-  padding: 12px !important;
+  padding: 0 !important;
   width: auto !important;
-  max-width: 420px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
+  max-width: min(90vw, 360px) !important;
+  position: fixed !important;
+  bottom: 72px !important; /* Positioned just above the mobile bottom bar */
+  right: 12px !important;
+  left: auto !important;
+  transform: none !important;
   box-sizing: border-box;
+  z-index: 99999 !important;
 }
 
 @media (min-width: 768px) {
-  .Toastify__toast-container--bottom-right {
-    left: auto !important;
-    right: 16px !important;
-    bottom: 16px !important;
-    transform: none !important;
+  .Toastify__toast-container {
+    bottom: 20px !important;
+    right: 20px !important;
+    max-width: 420px !important;
   }
 }
 
 .Toastify__toast {
   border-radius: 18px !important;
   padding: 12px 18px !important;
-  min-height: 48px !important;
+  min-height: 46px !important;
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
   font-size: 13px !important;
   font-weight: 500 !important;
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.15), 0 4px 10px -2px rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.2), 0 4px 10px -2px rgba(0, 0, 0, 0.05) !important;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
