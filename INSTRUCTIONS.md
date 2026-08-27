@@ -91,8 +91,12 @@ Here is exactly how to get all the required keys for your `.env` file to get the
   - *The User Interface.* Renders the chat bubbles, handles user input, displays typing indicators, and manages the conversation history state.
 - **`frontend/src/components/charts/PlotlyChart.jsx`** 📊
   - *The Visualizer.* Takes the JSON data and layout configurations returned by the backend and renders beautiful, interactive graphs using Plotly.js.
-- **`frontend/src/context/AuthContext.jsx`** 🔐
-  - *The State Manager.* Globally manages whether the user is currently logged in, stores their JWT token securely, and handles logouts across the entire application.
+- **`frontend/src/context/UserContext.jsx`** 🔐
+  - *The State Manager.* Globally manages user authentication, stores JWT tokens, manages profile avatar state, and handles session expiration and logouts across the application.
+- **`frontend/src/components/layout/UserNavProfile.jsx`** 👤
+  - *The Profile Navigation Component.* Renders the active user pill on the floating navbar, shows user info/actions, and supports smooth outside-click modal dismissal.
+- **`frontend/src/components/shared/MainAppLoader.jsx` & `AppLoadingBar.jsx`** ⏳
+  - *The Experience Engines.* Delivers a branded splash screen on initial startup and responsive full-screen blurred loaders during in-app section transitions.
 
 ---
 

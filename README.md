@@ -67,10 +67,27 @@ ai-data-analyst/
 
 ```bash
 cd backend
-python -m venv .venv && .venv\Scripts\activate   # Windows
-# python3 -m venv .venv && source .venv/bin/activate  # macOS/Linux
+# 1. Create Python virtual environment
+python -m venv .venv
+
+# 2. Activate virtual environment:
+# 🔹 Git Bash (MINGW64 / Windows):
+source .venv/Scripts/activate
+
+# 🔹 PowerShell (Windows):
+.\.venv\Scripts\Activate.ps1
+
+# 🔹 Command Prompt (CMD / Windows):
+.venv\Scripts\activate.bat
+
+# 🔹 macOS / Linux:
+source .venv/bin/activate
+
+# 3. Install dependencies & configure environment:
 pip install -r requirements.txt
-cp .env.example .env   # 🔑 Add your GROQ_API_KEY
+cp .env.example .env   # 🔑 Add your GROQ_API_KEY, MONGODB_URI, and MAIL credentials
+
+# 4. Start the backend server:
 uvicorn app.main:app --reload --port 8000
 ```
 
@@ -134,32 +151,30 @@ npm run dev
 - 📋 **Paginated data table** (sticky headers, null highlighting).
 - 📉 Plotly charts based on returned data.
 
-### 📥 Downloads
+### 🔐 User Authentication & Profile (`/api/auth`)
 
-- `/api/download/csv` and `/api/download/excel` with SQL re-validation before export.
+- **Secure JWT Session Management**: Email verification with 6-digit OTPs, bcrypt hashed passwords, and password resets.
+- **Persistent Header Profile**: Real-time user avatar, username display, modal window with outside-click dismissal, and account settings.
 
----
+### 🎨 Modern Apple macOS Studio UI
 
-## 🧠 LLM Integration
-
-`llm_service.py` uses the **Groq Python SDK** (`groq` package) with model `llama-3.3-70b-versatile`. Three calls are made per chat turn:
-
-1. 🚦 **Off-topic classifier**: `max_tokens=10`, `temperature=0.0` → `DATA` or `OFF_TOPIC`
-2. 📝 **SQL generation**: `max_tokens=512`, `temperature=0.0` (deterministic)
-3. 💬 **Result explanation**: `max_tokens=256`, `temperature=0.3` (conversational)
+- **120Hz Smooth Inertia Scrolling**: Powered by Lenis with dynamic interactive spring animations.
+- **Frosted Glass Navigation**: Translucent floating navbar with instant light/dark mode switcher and Kaushan Script typography.
+- **MacBook Pro Window Aesthetics**: Realistic traffic light controls, bento grid layout, and backgroundless floating graphics.
 
 ---
 
 ## 🔮 Future Roadmap
 
-- [ ] 🔐 Auth and user sessions
+- [x] 🔐 Auth and user sessions with OTP email verification
+- [x] 🎨 Apple macOS / MacBook Pro design system with dark & light theme persistence
+- [x] ⚡ 120Hz Lenis smooth inertial scrolling
 - [ ] 📌 Saved/named dashboards
 - [ ] 🔄 Multi-turn conversation context (history passed to the LLM)
 - [ ] 🔗 Multi-file joins
 - [ ] 🐘 External DB connections (MySQL / Postgres / Snowflake)
 - [ ] 📄 PDF/PPTX export
 - [ ] 🎙️ Voice queries
-- [ ] 📱 Mobile-responsive layout
 
 <div align="center">
   <i>Built with ❤️ for data analysts everywhere! Happy Querying! 📊✨</i>
