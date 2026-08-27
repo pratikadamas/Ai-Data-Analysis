@@ -46,8 +46,27 @@ Render is ideal for the backend because it provides a persistent Web Service tha
 2. Click **Add New -> Project** and import your repository.
 3. In the configuration settings, set the **Root Directory** to `frontend`.
 4. Vercel will automatically detect Vite and set the build commands (`npm run build`).
-5. *Crucial Step:* You must configure your frontend to point to the new Render backend URL instead of `localhost:8000`. Set the Environment Variable `VITE_API_URL` to your Render URL.
+5. *Crucial Step:* Set the Environment Variable `VITE_API_URL` to your backend URL (e.g. your Render backend URL or `/api`).
 6. Click **Deploy**.
+
+---
+
+### 3. Firebase Google OAuth Configuration (Important for Vercel)
+
+When deploying the frontend to Vercel, Firebase will block Google Sign-In popup authentication until the Vercel domain is authorized:
+
+1. Open the [Firebase Console](https://console.firebase.google.com/).
+2. Select your Project.
+3. In the left navigation, click **Build** $\rightarrow$ **Authentication**.
+4. Go to the **Settings** tab $\rightarrow$ **Authorized domains**.
+5. Click **Add domain** and enter your Vercel domain:
+   - `ai-data-analyst-web-version.vercel.app` (and any custom domain you use).
+6. Click **Save**.
+
+> [!TIP]
+> Make sure all `VITE_FIREBASE_*` environment variables (`VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, etc.) are also added to your **Vercel Project Settings $\rightarrow$ Environment Variables**.
+
+---
 
 *Note: Once both are deployed, ensure your Render Web Service `CORS_ORIGINS` environment variable is updated to accept traffic from your new Vercel domain!*
 
