@@ -7,8 +7,15 @@ export default function AppLoadingBar() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
 
+  const prevPathnameRef = React.useRef(location.pathname);
+
   useEffect(() => {
-    // Trigger on every location/route navigation
+    // Only trigger full page loading animation when changing between distinct path routes (not on anchor hash scrolls)
+    if (prevPathnameRef.current === location.pathname) {
+      return;
+    }
+    prevPathnameRef.current = location.pathname;
+
     setLoading(true);
     setProgress(35);
 
@@ -21,14 +28,14 @@ export default function AppLoadingBar() {
       setTimeout(() => {
         setLoading(false);
         setProgress(0);
-      }, 300);
-    }, 500);
+      }, 250);
+    }, 450);
 
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
     };
-  }, [location.pathname, location.hash]);
+  }, [location.pathname]);
 
   return (
     <>
