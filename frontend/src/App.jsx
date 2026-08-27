@@ -37,6 +37,15 @@ export default function App() {
   const [initialAppReady, setInitialAppReady] = React.useState(false);
 
   React.useEffect(() => {
+    // Synchronize global HTML class with saved theme
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+
     // Show splash main loader on initial app load for a smooth brand intro
     const timer = setTimeout(() => {
       setInitialAppReady(true);
