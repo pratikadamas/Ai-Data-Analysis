@@ -35,40 +35,31 @@ function ProtectedRoute({ children }) {
 export default function App() {
   const { user, loading } = useUser();
   const [initialAppReady, setInitialAppReady] = React.useState(false);
+  const [isMobile, setIsMobile] = React.useState(() => typeof window !== "undefined" ? window.innerWidth < 768 : false);
 
   React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener("resize", handleResize, { passive: true });
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  React.useEffect(() => {
+    // Synchronize global HTML class with saved theme
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+
     // Show splash main loader on initial app load for a smooth brand intro
     const timer = setTimeout(() => {
       setInitialAppReady(true);
     }, 1200);
     return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.1,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: "vertical",
-      gestureOrientation: "vertical",
-      smoothWheel: true,
-      wheelMultiplier: 1.1,
-      touchMultiplier: 1.8,
-      infinite: false,
-      autoRaf: false,
-    });
-
-    let lastTime = 0;
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    const rafId = requestAnimationFrame(raf);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      lenis.destroy();
-    };
   }, []);
 
   if (!initialAppReady) {
@@ -100,9 +91,7 @@ export default function App() {
           path="/app" 
           element={
             <ProtectedRoute>
-              <DatasetProvider>
-                <Dashboard />
-              </DatasetProvider>
+              <Dashboard />
             </ProtectedRoute>
           } 
         />
@@ -110,7 +99,12 @@ export default function App() {
         {/* Fallback to home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      <ToastContainer position="bottom-right" autoClose={4000} theme="colored" />
+      <ToastContainer 
+        position="bottom-right" 
+        autoClose={4000} 
+        theme="colored" 
+        style={{ zIndex: 99999 }}
+      />
     </>
   );
 }

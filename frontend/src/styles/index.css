@@ -297,10 +297,68 @@ html {
   }
   .upload-zone svg      { width: 36px !important; height: 36px !important; }
   .upload-zone-title    { font-size: 0.95rem !important; }
-  .upload-zone-subtitle { font-size: 0.75rem !important; }
-
   .preview-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .result-table-wrapper  { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .sql-editor-wrapper    { font-size: 13px !important; }
   .profile-card          { flex-direction: column !important; }
 }
+
+/* ── Custom iOS / macOS Floating Toast Pill Styling ── */
+.Toastify__toast-container {
+  padding: 0 !important;
+  width: auto !important;
+  max-width: min(90vw, 360px) !important;
+  position: fixed !important;
+  bottom: 72px !important; /* Positioned just above the mobile bottom bar */
+  right: 12px !important;
+  left: auto !important;
+  transform: none !important;
+  box-sizing: border-box;
+  z-index: 99999 !important;
+}
+
+@media (min-width: 768px) {
+  .Toastify__toast-container {
+    bottom: 20px !important;
+    right: 20px !important;
+    max-width: 420px !important;
+  }
+}
+
+.Toastify__toast {
+  border-radius: 18px !important;
+  padding: 12px 18px !important;
+  min-height: 46px !important;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.2), 0 4px 10px -2px rgba(0, 0, 0, 0.05) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  margin-bottom: 8px !important;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease !important;
+}
+
+.dark .Toastify__toast {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 12px 36px -5px rgba(0, 0, 0, 0.6) !important;
+}
+
+.Toastify__toast-body {
+  padding: 0 !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.Toastify__close-button {
+  align-self: center !important;
+  opacity: 0.6 !important;
+  transition: opacity 0.15s ease !important;
+}
+.Toastify__close-button:hover {
+  opacity: 1 !important;
+}
+

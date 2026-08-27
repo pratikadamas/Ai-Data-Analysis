@@ -34,6 +34,8 @@ export function DatasetProvider({ children }) {
   //     filename, schema, preview_rows  ← derived from activeFileIndex
   //   }
   const [dataset, setDatasetRaw] = useState(null);
+  const [uploadEntries, setUploadEntries] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Which file index is currently "active" (used in Preview & Chat)
   const [activeFileIndex, setActiveFileIndex] = useState(0);
@@ -200,6 +202,10 @@ export function DatasetProvider({ children }) {
         setChatMessages,
         clearChat,
         sessionVerified,
+        uploadEntries,
+        setUploadEntries,
+        isUploading,
+        setIsUploading,
       }}
     >
       {children}
@@ -209,6 +215,24 @@ export function DatasetProvider({ children }) {
 
 export function useDataset() {
   const ctx = useContext(DatasetContext);
-  if (!ctx) throw new Error("useDataset must be used within a DatasetProvider");
+  if (!ctx) {
+    return {
+      dataset: null,
+      datasetId: null,
+      files: [],
+      activeFile: null,
+      activeFileIndex: 0,
+      setActiveFileIndex: () => {},
+      clearDataset: () => {},
+      chatMessages: [],
+      setChatMessages: () => {},
+      clearChat: () => {},
+      sessionVerified: false,
+      uploadEntries: [],
+      setUploadEntries: () => {},
+      isUploading: false,
+      setIsUploading: () => {},
+    };
+  }
   return ctx;
 }

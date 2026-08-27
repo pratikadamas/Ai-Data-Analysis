@@ -7,11 +7,15 @@ import {
   Shield, 
   AlertTriangle, 
   FileCheck,
-  Lock 
+  Lock,
+  ArrowRight 
 } from "lucide-react";
 import ThemeToggle from "../components/ThemeToggle.jsx";
+import { useUser } from "../context/UserContext.jsx";
+import UserNavProfile from "../components/layout/UserNavProfile.jsx";
 
 export default function Terms() {
+  const { user } = useUser();
   return (
     <div className="min-h-screen bg-[#fbfbfd] text-[#1d1d1f] dark:bg-[#161617] dark:text-[#f5f5f7] font-sans antialiased overflow-x-hidden selection:bg-blue-500/20 transition-colors duration-300">
       
@@ -53,16 +57,32 @@ export default function Terms() {
           {/* Action Buttons */}
           <div className="flex items-center space-x-3">
             <ThemeToggle />
-            <Link to="/login" className="hidden sm:inline-block text-[#515154] dark:text-[#a1a1a6] hover:text-[#0071e3] dark:hover:text-white font-medium text-sm transition-colors px-3 py-1.5 rounded-lg hover:bg-black/[0.04] dark:hover:bg-white/[0.06]">
-              Sign In
-            </Link>
-            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-              <Link to="/register" className="relative group inline-flex items-center justify-center px-4 py-2 rounded-full text-white text-sm font-medium bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] transition-all duration-300">
-                <span className="relative flex items-center gap-1.5">
-                  Get Started
-                </span>
-              </Link>
-            </motion.div>
+            
+            {user ? (
+              <div className="flex items-center gap-3">
+                <UserNavProfile />
+                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+                  <Link to="/app" className="relative group inline-flex items-center justify-center px-4 py-2 rounded-full text-white text-sm font-medium bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] transition-all duration-300">
+                    <span className="relative flex items-center gap-1.5">
+                      Launch App <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                    </span>
+                  </Link>
+                </motion.div>
+              </div>
+            ) : (
+              <>
+                <Link to="/login" className="hidden sm:inline-block text-[#515154] dark:text-[#a1a1a6] hover:text-[#0071e3] dark:hover:text-white font-medium text-sm transition-colors px-3 py-1.5 rounded-lg hover:bg-black/[0.04] dark:hover:bg-white/[0.06]">
+                  Sign In
+                </Link>
+                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+                  <Link to="/register" className="relative group inline-flex items-center justify-center px-4 py-2 rounded-full text-white text-sm font-medium bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] transition-all duration-300">
+                    <span className="relative flex items-center gap-1.5">
+                      Get Started
+                    </span>
+                  </Link>
+                </motion.div>
+              </>
+            )}
           </div>
 
         </div>

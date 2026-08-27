@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useUser } from "../../context/UserContext.jsx";
-import { Eye, EyeOff, CheckCircle, Camera, Upload, Trash2 } from "lucide-react";
+import { Eye, EyeOff, CheckCircle, Camera, Upload, Trash2, ShieldCheck, KeyRound, Sparkles } from "lucide-react";
 import { toast } from "react-toastify";
 
 export default function UserProfile() {
@@ -87,38 +87,52 @@ export default function UserProfile() {
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in select-none">
       
-      {/* Page Title */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Account Settings</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Manage your account profile and security settings.
-        </p>
+      {/* Page Title with Apple badge */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-[#0071e3]/10 to-[#818cf8]/15 text-[#0071e3] dark:text-blue-400 font-bold text-xs mb-2 border border-[#0071e3]/20">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>ACCOUNT SETTINGS</span>
+          </div>
+          <h1 className="font-outfit text-3xl font-extrabold tracking-tight bg-gradient-to-r from-[#1d1d1f] via-[#0071e3] to-[#6366f1] dark:from-[#f5f5f7] dark:via-[#38bdf8] dark:to-[#818cf8] bg-clip-text text-transparent">
+            User Profile & Security
+          </h1>
+          <p className="text-xs sm:text-sm text-[#6e6e73] dark:text-[#a1a1a6] mt-1 font-normal">
+            Manage your account identity, security keys, and workspace preferences.
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        {/* Profile Detail Card */}
-        <div className="md:col-span-1 glass-panel rounded-xl p-6 flex flex-col items-center justify-center text-center">
-          
+        {/* Profile Detail Card - macOS Window Card */}
+        <div className="md:col-span-1 rounded-2xl bg-white/80 dark:bg-[#1d1d1f]/80 backdrop-blur-2xl border border-black/[0.08] dark:border-white/[0.1] shadow-sm p-6 flex flex-col items-center justify-center text-center relative overflow-hidden">
+          {/* Top macOS Traffic Dots */}
+          <div className="w-full flex items-center justify-start gap-1.5 mb-6 opacity-70">
+            <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
+            <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
+            <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
+          </div>
+
           {/* Profile Picture Avatar */}
-          <div className="relative group mb-3">
+          <div className="relative group mb-4">
             {profilePic ? (
               <img
                 src={profilePic}
                 alt="Profile Avatar"
-                className="w-24 h-24 rounded-full object-cover shadow-md border-2 border-brand-500/40"
+                className="w-24 h-24 rounded-full object-cover shadow-[0_8px_20px_rgba(0,0,0,0.12)] border-2 border-[#0071e3]/50"
               />
             ) : (
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-brand-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-extrabold shadow-md border border-brand-400/20">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#0071e3] to-[#af52de] flex items-center justify-center text-white text-3xl font-extrabold shadow-[0_8px_20px_rgba(0,113,227,0.3)]">
                 {initials}
               </div>
             )}
             <label
               htmlFor="profile-pic-input"
-              className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white cursor-pointer transition-opacity backdrop-blur-[2px]"
+              className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white cursor-pointer transition-opacity backdrop-blur-sm"
               title="Upload Profile Picture"
             >
-              <Camera size={24} />
+              <Camera size={22} />
             </label>
             <input
               id="profile-pic-input"
@@ -133,9 +147,9 @@ export default function UserProfile() {
           <div className="flex items-center gap-2 mb-4">
             <label
               htmlFor="profile-pic-input"
-              className="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline cursor-pointer flex items-center gap-1"
+              className="text-xs font-semibold text-[#0071e3] dark:text-blue-400 hover:underline cursor-pointer flex items-center gap-1.5"
             >
-              <Upload size={12} /> {profilePic ? "Change Photo" : "Upload Photo"}
+              <Upload size={13} /> {profilePic ? "Change Photo" : "Upload Photo"}
             </label>
             {profilePic && (
               <>
@@ -154,35 +168,48 @@ export default function UserProfile() {
             )}
           </div>
           
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">{user?.username}</h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-6 break-all">{user?.email}</p>
+          <h2 className="text-lg font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">{user?.username}</h2>
+          <p className="text-xs text-[#6e6e73] dark:text-[#a1a1a6] mt-0.5 mb-6 break-all font-normal">{user?.email || "Active Member"}</p>
           
-          <div className="w-full pt-4 border-t border-gray-100 dark:border-gray-800 text-left space-y-3.5">
+          <div className="w-full pt-4 border-t border-black/[0.06] dark:border-white/[0.08] text-left space-y-3.5">
             <div>
-              <span className="block text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Verification</span>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 mt-1">
+              <span className="block text-[10px] uppercase tracking-wider text-[#6e6e73] dark:text-[#a1a1a6] font-semibold">Account Status</span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 mt-1 border border-emerald-200/50 dark:border-emerald-800/40">
                 <CheckCircle size={12} strokeWidth={2.5} /> Active Verified
               </span>
             </div>
             <div>
-              <span className="block text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Member Since</span>
-              <span className="text-xs font-medium text-gray-700 dark:text-gray-300 mt-1 block">
+              <span className="block text-[10px] uppercase tracking-wider text-[#6e6e73] dark:text-[#a1a1a6] font-semibold">Member Since</span>
+              <span className="text-xs font-medium text-[#1d1d1f] dark:text-[#f5f5f7] mt-1 block">
                 {memberDate}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Change Password Card */}
-        <div className="md:col-span-2 glass-panel rounded-xl p-6">
-          <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1">Update Password</h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-5">
-            Ensure your account uses a secure password to prevent unauthorized access.
+        {/* Change Password Card - macOS Window Card */}
+        <div className="md:col-span-2 rounded-2xl bg-white/80 dark:bg-[#1d1d1f]/80 backdrop-blur-2xl border border-black/[0.08] dark:border-white/[0.1] shadow-sm p-6 relative overflow-hidden">
+          {/* Top macOS Traffic Dots */}
+          <div className="w-full flex items-center justify-between gap-1.5 mb-5 opacity-70">
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
+            </div>
+            <div className="flex items-center gap-1 text-[11px] font-medium text-[#6e6e73] dark:text-[#a1a1a6]">
+              <KeyRound size={12} />
+              <span>Password Security</span>
+            </div>
+          </div>
+
+          <h3 className="text-lg font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">Update Security Credentials</h3>
+          <p className="text-xs text-[#6e6e73] dark:text-[#a1a1a6] mb-5 font-normal">
+            Ensure your account is protected with a strong, distinct password.
           </p>
 
           <form onSubmit={handleChangePasswordSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1.5 uppercase tracking-wider">
                 Current Password
               </label>
               <div className="relative">
@@ -192,19 +219,19 @@ export default function UserProfile() {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="Enter current password"
-                  className="w-full px-3.5 py-2.5 rounded-lg bg-white/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm text-gray-900 dark:text-white outline-none transition-all duration-200 pr-10 shadow-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.08] dark:border-white/[0.1] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 text-sm text-[#1d1d1f] dark:text-[#f5f5f7] outline-none transition-all duration-200 pr-10 shadow-sm"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-500 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6e6e73] dark:text-[#a1a1a6] hover:text-[#0071e3] transition-colors"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1.5 uppercase tracking-wider">
                 New Password
               </label>
               <div className="relative">
@@ -214,19 +241,19 @@ export default function UserProfile() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Enter new password (min. 6 chars)"
-                  className="w-full px-3.5 py-2.5 rounded-lg bg-white/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm text-gray-900 dark:text-white outline-none transition-all duration-200 pr-10 shadow-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.08] dark:border-white/[0.1] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 text-sm text-[#1d1d1f] dark:text-[#f5f5f7] outline-none transition-all duration-200 pr-10 shadow-sm"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-500 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6e6e73] dark:text-[#a1a1a6] hover:text-[#0071e3] transition-colors"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1.5 uppercase tracking-wider">
                 Confirm New Password
               </label>
               <div className="relative">
@@ -236,12 +263,12 @@ export default function UserProfile() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Verify new password"
-                  className="w-full px-3.5 py-2.5 rounded-lg bg-white/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-sm text-gray-900 dark:text-white outline-none transition-all duration-200 pr-10 shadow-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.08] dark:border-white/[0.1] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 text-sm text-[#1d1d1f] dark:text-[#f5f5f7] outline-none transition-all duration-200 pr-10 shadow-sm"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-500 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6e6e73] dark:text-[#a1a1a6] hover:text-[#0071e3] transition-colors"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -252,7 +279,7 @@ export default function UserProfile() {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-5 py-2.5 bg-gradient-to-r from-brand-500 to-indigo-600 hover:from-brand-600 hover:to-indigo-700 disabled:opacity-50 text-white font-semibold text-xs rounded-lg transition-all flex items-center gap-2 shadow-md hover:shadow-lg active:scale-95"
+                className="px-5 py-2.5 bg-[#0071e3] hover:bg-[#0077ed] disabled:opacity-50 text-white font-semibold text-xs rounded-xl transition-all duration-200 flex items-center gap-2 shadow-[0_2px_8px_rgba(0,113,227,0.35)] active:scale-95 cursor-pointer"
               >
                 {loading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : "Save Changes"}
               </button>

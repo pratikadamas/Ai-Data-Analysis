@@ -34,14 +34,13 @@ import logging
 import math
 import threading
 
-from bitarray import bitarray
-
 logger = logging.getLogger(__name__)
 
 
 class UsernameBloomFilter:
     """
     Thread-safe in-memory Bloom Filter for username membership testing.
+    Pure Python implementation using bytearray (zero C-extension / MSVC compiler required).
 
     Parameters
     ----------
@@ -64,9 +63,9 @@ class UsernameBloomFilter:
         self._m: int = self._optimal_m(capacity, false_positive_rate)
         self._k: int = self._optimal_k(self._m, capacity)
 
-        # Allocate the bit array, all zeros
-        self._bits: bitarray = bitarray(self._m)
-        self._bits.setall(0)
+        # Allocate the bytearray for bit storage (each byte holds 8 bits)
+        num_bytes = (self._m + 7) // 8
+        self._bits: bytearray = bytearray(num_bytes)
 
         # Lock for thread-safe concurrent add / check operations
         self._lock: threading.Lock = threading.Lock()
@@ -80,7 +79,7 @@ class UsernameBloomFilter:
             capacity,
             false_positive_rate * 100,
             self._m,
-            self._m / 8 / 1024,
+            num_bytes / 1024,
             self._k,
         )
 
@@ -100,7 +99,9 @@ class UsernameBloomFilter:
         key = username.strip().lower()
         with self._lock:
             for idx in self._probe_indices(key):
-                self._bits[idx] = True
+                byte_idx = idx // 8
+                bit_offset = idx % 8
+                self._bits[byte_idx] |= (1 << bit_offset)
             self._count += 1
 
     def might_exist(self, username: str) -> bool:
@@ -120,7 +121,12 @@ class UsernameBloomFilter:
         """
         key = username.strip().lower()
         with self._lock:
-            return all(self._bits[idx] for idx in self._probe_indices(key))
+            for idx in self._probe_indices(key):
+                byte_idx = idx // 8
+                bit_offset = idx % 8
+                if not (self._bits[byte_idx] & (1 << bit_offset)):
+                    return False
+            return True
 
     def load_from_db(self) -> None:
         """

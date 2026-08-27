@@ -27,6 +27,8 @@ import {
   Check
 } from "lucide-react";
 import ThemeToggle from "../components/ThemeToggle.jsx";
+import { useUser } from "../context/UserContext.jsx";
+import UserNavProfile from "../components/layout/UserNavProfile.jsx";
 
 const stats = [
   { value: "10x", label: "Faster Insights", sub: "compared to manual SQL writing", icon: Zap },
@@ -139,6 +141,7 @@ const testimonials = [
 ];
 
 export default function LandingPage() {
+  const { user } = useUser();
   const [activeDemo, setActiveDemo] = useState(0);
   const [isDemoHovered, setIsDemoHovered] = useState(false);
 
@@ -163,6 +166,18 @@ export default function LandingPage() {
     return () => clearInterval(timer);
   }, [isTestimonialHovered]);
 
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Track scroll position to morph navbar from full width (top) to floating pill (scrolled)
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleScrollToTop = (e) => {
     e.preventDefault();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -179,14 +194,22 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#2d2d30_1px,transparent_1px)] [background-size:24px_24px] opacity-60 dark:opacity-40" />
       </div>
 
-      {/* Floating Apple/macOS Styled Navigation Bar */}
+      {/* Dynamic Apple/macOS Navigation Bar (Full width at top -> Floating pill on scroll) */}
       <motion.nav 
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed top-4 left-0 right-0 z-50 max-w-5xl mx-auto px-4"
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className={`fixed left-0 right-0 z-50 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          isScrolled 
+            ? "top-3.5 max-w-7xl mx-auto px-4 sm:px-6" 
+            : "top-0 w-full px-4 sm:px-10 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-[#161617]/80 backdrop-blur-2xl"
+        }`}
       >
-        <div className="bg-white/65 dark:bg-[#1d1d1f]/65 backdrop-blur-2xl border border-black/[0.06] dark:border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.35)] rounded-full px-6 h-16 flex items-center justify-between transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.07)] dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
+        <div className={`flex items-center justify-between transition-all duration-300 ${
+          isScrolled
+            ? "bg-white/80 dark:bg-[#1d1d1f]/85 backdrop-blur-2xl border border-black/[0.08] dark:border-white/[0.1] shadow-[0_12px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)] rounded-2xl sm:rounded-full px-6 sm:px-8 h-16"
+            : "max-w-7xl mx-auto h-20 px-2 sm:px-4"
+        }`}>
           
           {/* Logo with Favicon */}
           <a href="#" onClick={handleScrollToTop} className="flex items-center space-x-3 group cursor-pointer select-none">
@@ -211,16 +234,32 @@ export default function LandingPage() {
           {/* Action Buttons */}
           <div className="flex items-center space-x-3">
             <ThemeToggle />
-            <Link to="/login" className="hidden sm:inline-block text-[#515154] dark:text-[#a1a1a6] hover:text-[#0071e3] dark:hover:text-white font-medium text-sm transition-colors px-3 py-1.5 rounded-lg hover:bg-black/[0.04] dark:hover:bg-white/[0.06]">
-              Sign In
-            </Link>
-            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-              <Link to="/register" className="relative group inline-flex items-center justify-center px-4 py-2 rounded-full text-white text-sm font-medium bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] transition-all duration-300">
-                <span className="relative flex items-center gap-1.5">
-                  Get Started <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                </span>
-              </Link>
-            </motion.div>
+            
+            {user ? (
+              <div className="flex items-center gap-3">
+                <UserNavProfile />
+                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+                  <Link to="/app" className="relative group inline-flex items-center justify-center px-4 py-2 rounded-full text-white text-sm font-medium bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] transition-all duration-300 cursor-pointer">
+                    <span className="relative flex items-center gap-1.5">
+                      Launch App <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                    </span>
+                  </Link>
+                </motion.div>
+              </div>
+            ) : (
+              <>
+                <Link to="/login" className="hidden sm:inline-block text-[#515154] dark:text-[#a1a1a6] hover:text-[#0071e3] dark:hover:text-white font-medium text-sm transition-colors px-3 py-1.5 rounded-lg hover:bg-black/[0.04] dark:hover:bg-white/[0.06]">
+                  Sign In
+                </Link>
+                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+                  <Link to="/register" className="relative group inline-flex items-center justify-center px-4 py-2 rounded-full text-white text-sm font-medium bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] transition-all duration-300 cursor-pointer">
+                    <span className="relative flex items-center gap-1.5">
+                      Get Started <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                    </span>
+                  </Link>
+                </motion.div>
+              </>
+            )}
           </div>
 
         </div>
@@ -711,13 +750,25 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="flex-1 order-1 md:order-2">
-                <div className="flex items-center justify-center p-2">
-                  <img 
-                    src="/assets/workflow_upload.webp" 
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.85, y: 30 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex items-center justify-center p-2 relative"
+                >
+                  <motion.img 
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ 
+                      duration: 4.5, 
+                      repeat: Infinity, 
+                      ease: "easeInOut" 
+                    }}
+                    src="/assets/img1.webp" 
                     alt="Data Ingestion" 
-                    className="w-full max-w-lg h-auto object-contain drop-shadow-[0_20px_35px_rgba(0,113,227,0.15)] transition-transform duration-500 hover:scale-[1.03]" 
+                    className="w-full max-w-[340px] sm:max-w-[380px] h-auto object-contain drop-shadow-[0_20px_35px_rgba(0,113,227,0.22)] transition-transform duration-500 hover:scale-[1.05]" 
                   />
-                </div>
+                </motion.div>
               </div>
             </motion.div>
 
@@ -730,13 +781,26 @@ export default function LandingPage() {
               className="flex flex-col md:flex-row items-center gap-12 lg:gap-16"
             >
               <div className="flex-1">
-                <div className="flex items-center justify-center p-2">
-                  <img 
-                    src="/assets/workflow_charts.webp" 
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.85, y: 30 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+                  className="flex items-center justify-center p-2 relative"
+                >
+                  <motion.img 
+                    animate={{ y: [0, -12, 0] }}
+                    transition={{ 
+                      duration: 5, 
+                      repeat: Infinity, 
+                      ease: "easeInOut",
+                      delay: 0.6
+                    }}
+                    src="/assets/img2.webp" 
                     alt="Interactive Charting" 
-                    className="w-full max-w-lg h-auto object-contain drop-shadow-[0_20px_35px_rgba(94,92,230,0.18)] transition-transform duration-500 hover:scale-[1.03]" 
+                    className="w-full max-w-[340px] sm:max-w-[380px] h-auto object-contain drop-shadow-[0_20px_35px_rgba(94,92,230,0.25)] transition-transform duration-500 hover:scale-[1.05]" 
                   />
-                </div>
+                </motion.div>
               </div>
               <div className="flex-1">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-[#5e5ce6] dark:text-indigo-400 font-bold text-xs mb-4 border border-indigo-100 dark:border-indigo-800/40">

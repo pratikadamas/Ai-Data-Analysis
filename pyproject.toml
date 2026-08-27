@@ -62,8 +62,6 @@ dependencies = [
     # Authentication
     "bcrypt==5.0.0",
     "PyJWT==2.8.0",
-    # Bloom Filter
-    "bitarray==2.9.2",
     # Security
     "slowapi==0.1.9",
     # Firebase Admin SDK (server-side Google OAuth token verification)

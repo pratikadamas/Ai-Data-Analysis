@@ -10,7 +10,9 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
+# pyrefly: ignore [missing-import]
 import duckdb
+# pyrefly: ignore [missing-import]
 import pandas as pd
 
 from app.db.duckdb_manager import filename_to_table_name
@@ -74,7 +76,22 @@ class FileLoader:
     def _load_excel(
         self, conn: duckdb.DuckDBPyConnection, file_path: Path, table_name: str
     ) -> None:
-        df = pd.read_excel(file_path, sheet_name=0)
+        try:
+            df = pd.read_excel(file_path, sheet_name=0)
+        except Exception:
+            # Fallback for alternative excel engines or legacy files
+            df = pd.read_excel(file_path)
+            
+        # Clean column names (strip whitespace, ensure string, fill unnamed)
+        cleaned_cols = []
+        for i, col in enumerate(df.columns):
+            c_str = str(col).strip() if col is not None else ""
+            if not c_str or c_str.startswith("Unnamed:"):
+                cleaned_cols.append(f"column_{i+1}")
+            else:
+                cleaned_cols.append(c_str)
+        df.columns = cleaned_cols
+
         conn.register("tmp_df", df)
         conn.execute(f'CREATE TABLE "{table_name}" AS SELECT * FROM tmp_df')
         conn.unregister("tmp_df")

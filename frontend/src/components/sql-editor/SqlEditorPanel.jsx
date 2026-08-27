@@ -117,16 +117,16 @@ export default function SqlEditorPanel() {
   // If no dataset, show empty state
   if (!dataset) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-4">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500/20 to-indigo-500/20 flex items-center justify-center">
-          <Database size={32} className="text-brand-500" />
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4 max-w-md mx-auto py-8 px-4 animate-fade-in">
+        <div className="w-16 h-16 rounded-2xl bg-[#0071e3]/10 dark:bg-[#0071e3]/20 flex items-center justify-center text-[#0071e3] dark:text-blue-400">
+          <Database size={32} />
         </div>
         <div>
-          <p className="font-semibold text-lg text-gray-800 dark:text-gray-200">
+          <h3 className="font-semibold text-lg text-[#1d1d1f] dark:text-[#f5f5f7]">
             No Dataset Loaded
-          </p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Upload a file first to start writing SQL queries
+          </h3>
+          <p className="text-sm text-[#86868b] dark:text-[#a1a1a6] mt-1.5 leading-relaxed">
+            Import a dataset from the Data Preview tab to start executing low-latency SQL queries.
           </p>
         </div>
       </div>
@@ -134,15 +134,26 @@ export default function SqlEditorPanel() {
   }
 
   return (
-    <div className="flex gap-4 h-[calc(100vh-140px)]">
-      {/* Left sidebar — Tables panel */}
-      <div className="w-56 shrink-0 glass-panel rounded-xl overflow-hidden flex flex-col">
-        <div className="px-3 py-2.5 border-b border-gray-200/50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-800/30">
-          <div className="flex items-center gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-            <Database size={13} />
-            Tables ({files.length})
+    <div className="space-y-3 h-[calc(100vh-100px)] flex flex-col animate-fade-in">
+      {/* Header Banner */}
+      <div className="shrink-0">
+        <h2 className="font-outfit font-bold text-xl sm:text-2xl bg-gradient-to-r from-[#1d1d1f] via-[#0071e3] to-[#6366f1] dark:from-[#f5f5f7] dark:via-[#38bdf8] dark:to-[#818cf8] bg-clip-text text-transparent tracking-tight">
+          SQL Studio & Schema Explorer
+        </h2>
+        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mt-0.5 font-sans">
+          Execute read-only SQL queries directly against in-memory DuckDB tables.
+        </p>
+      </div>
+
+      <div className="flex flex-col lg:flex-row gap-4 flex-1 overflow-hidden">
+        {/* Left sidebar — Tables & Schema Inspector */}
+        <div className="w-full lg:w-64 shrink-0 rounded-2xl bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.06] dark:border-white/[0.08] backdrop-blur-2xl shadow-sm overflow-hidden flex flex-col">
+          <div className="px-4 py-3 border-b border-black/[0.04] dark:border-white/[0.06] flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#6e6e73] dark:text-[#a1a1a6]">
+              <Database size={14} className="text-[#0071e3]" />
+              Schema Explorer ({files.length})
+            </div>
           </div>
-        </div>
         <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
           {files.map((f) => {
             const isExpanded = expandedTables[f.table_name];
@@ -307,13 +318,8 @@ export default function SqlEditorPanel() {
             </div>
           </div>
         )}
-
-        {result && result.rows?.length === 0 && !error && (
-          <div className="flex items-center justify-center p-8 glass-panel rounded-xl text-sm text-gray-500 dark:text-gray-400">
-            Query executed successfully — no rows returned.
-          </div>
-        )}
       </div>
     </div>
+  </div>
   );
 }
