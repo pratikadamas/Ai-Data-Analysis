@@ -1,6 +1,9 @@
 import sys
 from pathlib import Path
-sys.path.append(str(Path("e:/ai-data-analyst/backend")))
+
+# Add backend directory dynamically to sys.path
+backend_dir = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(backend_dir))
 
 from fastapi.testclient import TestClient
 from app.main import app

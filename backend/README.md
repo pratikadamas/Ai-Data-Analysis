@@ -8,29 +8,42 @@ This is the Python (FastAPI) backend for the AI Data Analyst application. It han
 
 ## 🗂️ Directory Structure
 
-- `app/api/`: 🌐 Route handlers (Upload, Explore, Chat)
-- `app/services/`: 🧠 Core business logic (LLM integrations, schema extraction, chart specs)
+- `app/api/`: 🌐 Route handlers (Upload, Explore, Chat, Auth, Dataset, SQL Editor, Download)
+- `app/services/`: 🧠 Core business logic (LLM integrations, schema extraction, chart specs, file loader)
 - `app/validation/`: 🛡️ Security components (SQL Whitelisting & Parser)
-- `app/db/`: 🗄️ DuckDB manager for per-dataset dynamic connection pooling
+- `app/db/`: 🗄️ DuckDB manager and MongoDB connection pool
 - `app/models/`: 📦 Pydantic schemas for structured inputs/outputs
+- `app/utils/`: 🛠️ JWT Auth, SMTP Mail, Rate limiting, and Bloom Filter
 - `app/main.py`: 🚀 The main FastAPI application entrypoint
+- `tests/`: 🧪 Automated unit and integration tests
 
 ## 🛠️ Setup & Running
 
 ```bash
 # 1. Create a virtual environment
 python -m venv .venv
-.venv\Scripts\activate   # (Windows)
-# source .venv/bin/activate  # (Mac/Linux)
 
-# 2. Install dependencies
+# 2. Activate virtual environment
+# 🔹 Git Bash (MINGW64 / Windows):
+source .venv/Scripts/activate
+
+# 🔹 PowerShell (Windows):
+.\.venv\Scripts\Activate.ps1
+
+# 🔹 Command Prompt (CMD / Windows):
+.venv\Scripts\activate.bat
+
+# 🔹 macOS / Linux:
+source .venv/bin/activate
+
+# 3. Install dependencies
 pip install -r requirements.txt
 
-# 3. Setup environment variables
+# 4. Setup environment variables
 cp .env.example .env
-# Edit .env and add your GROQ_API_KEY!
+# Edit .env and configure GROQ_API_KEY, MONGODB_URI, and MAIL credentials
 
-# 4. Start the server
+# 5. Start the server
 uvicorn app.main:app --reload --port 8000
 ```
 

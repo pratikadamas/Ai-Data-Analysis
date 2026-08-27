@@ -8,12 +8,17 @@ This is the React (Vite) frontend for the AI Data Analyst application. It provid
 
 ## 🗂️ Directory Structure
 
+- `src/pages/`: 🏠 Main pages (`LandingPage.jsx`, `Dashboard.jsx`, `Auth.jsx`, `Docs.jsx`, `FaqPage.jsx`, `Terms.jsx`, `PrivacyPolicy.jsx`)
 - `src/components/chat/`: 💬 AI Chat Interface, message bubbles, and typing indicators
 - `src/components/charts/`: 📈 Plotly charting components and SQL viewers
 - `src/components/explore/`: 🔍 Manual data exploration panels
-- `src/components/upload/`: ☁️ Drag-and-drop file upload zone
-- `src/components/layout/`: 🏗️ Sidebar, Headers, and common layout wrapper
-- `src/context/`: 🧠 React Context for managing application state globally
+- `src/components/sql-editor/`: 💻 Multi-table SQL code editor with syntax execution
+- `src/components/profile/`: 👤 User account and avatar management
+- `src/components/upload/`: ☁️ Multi-format drag-and-drop file upload zone
+- `src/components/layout/`: 🏗️ Sidebar, Header, and UserNavProfile dropdown
+- `src/components/shared/`: ⏳ Branded loaders and modal components
+- `src/context/`: 🧠 React Context (`DatasetContext`, `UserContext`)
+- `src/services/`: 🔌 Axios API communication layer
 
 ## 🛠️ Setup & Running
 
@@ -23,6 +28,9 @@ npm install
 
 # 2. Start the development server
 npm run dev
+
+# 3. Build for production
+npm run build
 ```
 
 > 💡 The Vite server automatically proxies `/api` requests to the backend on `localhost:8000`. Make sure the backend is running simultaneously!
