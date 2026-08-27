@@ -12,11 +12,23 @@ export default function Header() {
   return (
     <header className="h-14 flex items-center justify-between px-6 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-[#161617]/80 backdrop-blur-2xl select-none relative z-50 transition-colors duration-200">
       <div className="flex items-center gap-4">
-        {/* macOS Traffic Dots */}
-        <div className="hidden sm:flex items-center gap-2 mr-1">
-          <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e]" />
-          <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]" />
-          <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29]" />
+        {/* macOS Traffic Dots with Apple Gloss */}
+        <div className="flex items-center gap-2 mr-2">
+          <button 
+            type="button" 
+            title="Close" 
+            className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e] hover:brightness-110 active:scale-95 transition-all shadow-[0_0_8px_rgba(255,95,86,0.35)] cursor-default" 
+          />
+          <button 
+            type="button" 
+            title="Minimize" 
+            className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123] hover:brightness-110 active:scale-95 transition-all shadow-[0_0_8px_rgba(255,189,46,0.35)] cursor-default" 
+          />
+          <button 
+            type="button" 
+            title="Maximize" 
+            className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29] hover:brightness-110 active:scale-95 transition-all shadow-[0_0_8px_rgba(39,201,63,0.35)] cursor-default" 
+          />
         </div>
 
         <Link 

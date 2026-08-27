@@ -130,7 +130,7 @@ export default function UserNavProfile() {
               </Link>
 
               <Link
-                to="/app"
+                to="/app?tab=profile"
                 onClick={() => setIsOpen(false)}
                 className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl text-[#1d1d1f] dark:text-[#f5f5f7] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors cursor-pointer"
               >

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Header from "../components/layout/Header.jsx";
 import Sidebar from "../components/layout/Sidebar.jsx";
 import UploadArea from "../components/upload/UploadArea.jsx";
@@ -20,18 +21,31 @@ const NAV_ITEMS = [
 ];
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState("preview");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const [activeTab, setActiveTab] = useState(() => tabParam || "preview");
   const { dataset, clearDataset, sessionVerified } = useDataset();
 
+  useEffect(() => {
+    if (tabParam && tabParam !== activeTab) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
+
+  const handleTabChange = (key) => {
+    setActiveTab(key);
+    setSearchParams(key === "preview" ? {} : { tab: key });
+  };
+
   return (
-    <div className="h-screen flex flex-col relative">
+    <div className="h-screen flex flex-col relative bg-[#f5f5f7] dark:bg-[#000000] text-[#1d1d1f] dark:text-[#f5f5f7] antialiased selection:bg-[#0071e3] selection:text-white">
       <Header />
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar — hidden on mobile via .sidebar-nav CSS class */}
-        <Sidebar active={activeTab} onSelect={setActiveTab} />
+        <Sidebar active={activeTab} onSelect={handleTabChange} />
 
-        {/* Main content */}
-        <main className="dashboard-main flex-1 overflow-y-auto p-6 space-y-6">
+        {/* Main content with 120Hz smooth scrolling physics */}
+        <main className="dashboard-main flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 scroll-smooth will-change-transform">
           {!sessionVerified ? (
             <div className="flex items-center justify-center h-full">
               <SectionCircleLoader size="lg" text="Restoring workspace session…" />
