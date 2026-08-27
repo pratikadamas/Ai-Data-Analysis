@@ -62,37 +62,6 @@ export default function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    // Only run Lenis on landing page & docs/faq pages, not inside the fixed-height studio app
-    const isAppRoute = window.location.pathname.startsWith("/app");
-    if (isAppRoute) return;
-
-    const lenis = new Lenis({
-      duration: 1.1,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: "vertical",
-      gestureOrientation: "vertical",
-      smoothWheel: true,
-      wheelMultiplier: 1.1,
-      touchMultiplier: 1.8,
-      infinite: false,
-      autoRaf: false,
-    });
-
-    let lastTime = 0;
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    const rafId = requestAnimationFrame(raf);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      lenis.destroy();
-    };
-  }, []);
-
   if (!initialAppReady) {
     return <MainAppLoader text="Initializing AI Data Analysis..." />;
   }
