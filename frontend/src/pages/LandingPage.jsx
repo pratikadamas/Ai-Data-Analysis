@@ -166,6 +166,18 @@ export default function LandingPage() {
     return () => clearInterval(timer);
   }, [isTestimonialHovered]);
 
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Track scroll position to morph navbar from full width (top) to floating pill (scrolled)
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleScrollToTop = (e) => {
     e.preventDefault();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -182,14 +194,22 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#2d2d30_1px,transparent_1px)] [background-size:24px_24px] opacity-60 dark:opacity-40" />
       </div>
 
-      {/* Floating Apple/macOS Styled Navigation Bar */}
+      {/* Dynamic Apple/macOS Navigation Bar (Full width at top -> Floating pill on scroll) */}
       <motion.nav 
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed top-4 left-0 right-0 z-50 max-w-5xl mx-auto px-4"
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className={`fixed left-0 right-0 z-50 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          isScrolled 
+            ? "top-3 max-w-5xl mx-auto px-4" 
+            : "top-0 w-full px-4 sm:px-8 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/75 dark:bg-[#161617]/75 backdrop-blur-2xl"
+        }`}
       >
-        <div className="bg-white/65 dark:bg-[#1d1d1f]/65 backdrop-blur-2xl border border-black/[0.06] dark:border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.35)] rounded-full px-6 h-16 flex items-center justify-between transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.07)] dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
+        <div className={`flex items-center justify-between transition-all duration-300 ${
+          isScrolled
+            ? "bg-white/70 dark:bg-[#1d1d1f]/75 backdrop-blur-2xl border border-black/[0.06] dark:border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] rounded-full px-6 h-15"
+            : "max-w-7xl mx-auto h-18 px-2"
+        }`}>
           
           {/* Logo with Favicon */}
           <a href="#" onClick={handleScrollToTop} className="flex items-center space-x-3 group cursor-pointer select-none">
@@ -219,7 +239,7 @@ export default function LandingPage() {
               <div className="flex items-center gap-3">
                 <UserNavProfile />
                 <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-                  <Link to="/app" className="relative group inline-flex items-center justify-center px-4 py-2 rounded-full text-white text-sm font-medium bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] transition-all duration-300">
+                  <Link to="/app" className="relative group inline-flex items-center justify-center px-4 py-2 rounded-full text-white text-sm font-medium bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] transition-all duration-300 cursor-pointer">
                     <span className="relative flex items-center gap-1.5">
                       Launch App <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                     </span>
@@ -232,7 +252,7 @@ export default function LandingPage() {
                   Sign In
                 </Link>
                 <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-                  <Link to="/register" className="relative group inline-flex items-center justify-center px-4 py-2 rounded-full text-white text-sm font-medium bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] transition-all duration-300">
+                  <Link to="/register" className="relative group inline-flex items-center justify-center px-4 py-2 rounded-full text-white text-sm font-medium bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] transition-all duration-300 cursor-pointer">
                     <span className="relative flex items-center gap-1.5">
                       Get Started <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                     </span>

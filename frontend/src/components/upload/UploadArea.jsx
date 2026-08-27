@@ -37,16 +37,21 @@ function buildEntry(file) {
 
 export default function UploadArea() {
   const [isDragging, setIsDragging] = useState(false);
-  const [entries, setEntries] = useState([]);       // { file, status, error }[]
-  const [uploadingAll, setUploadingAll] = useState(false);
-  const { dataset, appendDataset } = useDataset();
+  const { 
+    dataset, 
+    appendDataset, 
+    uploadEntries: entries, 
+    setUploadEntries: setEntries, 
+    isUploading: uploadingAll, 
+    setIsUploading: setUploadingAll 
+  } = useDataset();
   const inputRef = useRef(null);
 
   // ── helpers ──────────────────────────────────────────────────────────
   const updateEntry = useCallback((index, patch) =>
     setEntries((prev) =>
       prev.map((e, i) => (i === index ? { ...e, ...patch } : e))
-    ), []);
+    ), [setEntries]);
 
   const addFiles = useCallback((newFiles) => {
     const fileArray = Array.from(newFiles);
@@ -58,11 +63,11 @@ export default function UploadArea() {
       }
       return combined;
     });
-  }, []);
+  }, [setEntries]);
 
   const removeEntry = useCallback(
     (index) => setEntries((prev) => prev.filter((_, i) => i !== index)),
-    []
+    [setEntries]
   );
 
   // ── upload a single file by index ────────────────────────────────────

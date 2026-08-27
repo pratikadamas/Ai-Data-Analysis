@@ -3,17 +3,17 @@ import { Link } from "react-router-dom";
 import { useDarkMode } from "../../hooks/useDarkMode.js";
 import { useDataset } from "../../context/DatasetContext.jsx";
 import UserNavProfile from "./UserNavProfile.jsx";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
-export default function Header() {
+export default function Header({ isSidebarOpen = true, onToggleSidebar }) {
   const [isDark, setIsDark] = useDarkMode();
   const { dataset } = useDataset();
 
   return (
-    <header className="h-14 flex items-center justify-between px-6 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-[#161617]/80 backdrop-blur-2xl select-none relative z-50 transition-colors duration-200">
-      <div className="flex items-center gap-4">
+    <header className="h-14 flex items-center justify-between px-4 sm:px-6 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-[#161617]/80 backdrop-blur-2xl select-none relative z-50 transition-colors duration-200">
+      <div className="flex items-center gap-3 sm:gap-4">
         {/* macOS Traffic Dots with Apple Gloss */}
-        <div className="flex items-center gap-2 mr-2">
+        <div className="hidden sm:flex items-center gap-2 mr-1">
           <button 
             type="button" 
             title="Close" 
@@ -31,6 +31,18 @@ export default function Header() {
           />
         </div>
 
+        {/* Sidebar Toggle Icon Button */}
+        {onToggleSidebar && (
+          <button
+            onClick={onToggleSidebar}
+            className="p-1.5 rounded-lg text-[#515154] dark:text-[#a1a1a6] hover:bg-black/[0.05] dark:hover:bg-white/[0.08] hover:text-[#0071e3] transition-colors cursor-pointer"
+            title={isSidebarOpen ? "Hide sidebar" : "Show sidebar"}
+            aria-label="Toggle Sidebar"
+          >
+            {isSidebarOpen ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
+          </button>
+        )}
+
         <Link 
           to="/" 
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -47,7 +59,7 @@ export default function Header() {
         </Link>
         {dataset && (
           <span
-            className="header-dataset-pill text-xs font-medium text-[#6e6e73] dark:text-[#a1a1a6] ml-2 bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.04] dark:border-white/[0.06] px-2.5 py-0.5 rounded-full backdrop-blur-sm"
+            className="header-dataset-pill hidden md:inline-block text-xs font-medium text-[#6e6e73] dark:text-[#a1a1a6] ml-2 bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.04] dark:border-white/[0.06] px-2.5 py-0.5 rounded-full backdrop-blur-sm truncate max-w-[220px]"
             title={dataset.files?.map(f => f.filename).join(", ") || dataset.filename}
           >
             {dataset.files?.length > 1

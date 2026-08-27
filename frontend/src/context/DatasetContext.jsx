@@ -34,6 +34,8 @@ export function DatasetProvider({ children }) {
   //     filename, schema, preview_rows  ← derived from activeFileIndex
   //   }
   const [dataset, setDatasetRaw] = useState(null);
+  const [uploadEntries, setUploadEntries] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Which file index is currently "active" (used in Preview & Chat)
   const [activeFileIndex, setActiveFileIndex] = useState(0);
@@ -200,6 +202,10 @@ export function DatasetProvider({ children }) {
         setChatMessages,
         clearChat,
         sessionVerified,
+        uploadEntries,
+        setUploadEntries,
+        isUploading,
+        setIsUploading,
       }}
     >
       {children}
@@ -222,6 +228,10 @@ export function useDataset() {
       setChatMessages: () => {},
       clearChat: () => {},
       sessionVerified: false,
+      uploadEntries: [],
+      setUploadEntries: () => {},
+      isUploading: false,
+      setIsUploading: () => {},
     };
   }
   return ctx;

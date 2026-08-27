@@ -24,6 +24,7 @@ export default function Dashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
   const [activeTab, setActiveTab] = useState(() => tabParam || "preview");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { dataset, clearDataset, sessionVerified } = useDataset();
 
   useEffect(() => {
@@ -39,10 +40,13 @@ export default function Dashboard() {
 
   return (
     <div className="h-screen flex flex-col relative bg-[#f5f5f7] dark:bg-[#000000] text-[#1d1d1f] dark:text-[#f5f5f7] antialiased selection:bg-[#0071e3] selection:text-white">
-      <Header />
+      <Header 
+        isSidebarOpen={isSidebarOpen} 
+        onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)} 
+      />
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar — hidden on mobile via .sidebar-nav CSS class */}
-        <Sidebar active={activeTab} onSelect={handleTabChange} />
+        {/* Sidebar with show/hide transition */}
+        <Sidebar active={activeTab} onSelect={handleTabChange} isOpen={isSidebarOpen} />
 
         {/* Main content with 120Hz smooth scrolling physics */}
         <main className="dashboard-main flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 scroll-smooth will-change-transform">

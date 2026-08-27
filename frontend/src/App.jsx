@@ -109,9 +109,7 @@ export default function App() {
           path="/app" 
           element={
             <ProtectedRoute>
-              <DatasetProvider>
-                <Dashboard />
-              </DatasetProvider>
+              <Dashboard />
             </ProtectedRoute>
           } 
         />
