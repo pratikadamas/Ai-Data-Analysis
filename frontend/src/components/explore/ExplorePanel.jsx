@@ -98,8 +98,18 @@ export default function ExplorePanel() {
   const showTable = result && result.rows?.length > 0 && (!showChart || result.chart_type === "table");
 
   return (
-    <div className="space-y-6 animate-fade-in max-w-5xl mx-auto">
-      {/* Dataset selector dropdown — only shown for multi-file uploads */}
+    <div className="space-y-4 max-w-5xl mx-auto animate-fade-in pb-4">
+      {/* Header Banner */}
+      <div>
+        <h2 className="font-outfit font-bold text-xl sm:text-2xl bg-gradient-to-r from-[#1d1d1f] via-[#0071e3] to-[#6366f1] dark:from-[#f5f5f7] dark:via-[#38bdf8] dark:to-[#818cf8] bg-clip-text text-transparent tracking-tight">
+          Explore & Visualize
+        </h2>
+        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mt-0.5 font-sans">
+          Build interactive charts, aggregate columns with DuckDB, and export presentation-ready graphs.
+        </p>
+      </div>
+
+      {/* Controls Container */}
       {hasMultipleFiles && (
         <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.06] dark:border-white/[0.08] backdrop-blur-2xl">
           <div className="flex items-center gap-2 text-xs font-bold text-[#6e6e73] dark:text-[#a1a1a6] uppercase tracking-wider shrink-0">

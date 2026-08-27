@@ -90,12 +90,14 @@ export default function UserProfile() {
       {/* Page Title with Apple badge */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#0071e3]/10 dark:bg-blue-500/15 text-[#0071e3] dark:text-blue-400 font-bold text-xs mb-2 border border-[#0071e3]/20">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-[#0071e3]/10 to-[#818cf8]/15 text-[#0071e3] dark:text-blue-400 font-bold text-xs mb-2 border border-[#0071e3]/20">
             <ShieldCheck className="w-3.5 h-3.5" />
             <span>ACCOUNT SETTINGS</span>
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">User Profile & Security</h1>
-          <p className="text-sm text-[#6e6e73] dark:text-[#a1a1a6] mt-1 font-normal">
+          <h1 className="font-outfit text-3xl font-extrabold tracking-tight bg-gradient-to-r from-[#1d1d1f] via-[#0071e3] to-[#6366f1] dark:from-[#f5f5f7] dark:via-[#38bdf8] dark:to-[#818cf8] bg-clip-text text-transparent">
+            User Profile & Security
+          </h1>
+          <p className="text-xs sm:text-sm text-[#6e6e73] dark:text-[#a1a1a6] mt-1 font-normal">
             Manage your account identity, security keys, and workspace preferences.
           </p>
         </div>

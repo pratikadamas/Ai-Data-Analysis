@@ -26,7 +26,19 @@ export default function PreviewTable() {
   if (!dataset) return null;
 
   return (
-    <div className="space-y-3 flex flex-col h-[calc(100vh-100px)]">
+    <div className="space-y-3 flex flex-col h-[calc(100vh-100px)] animate-fade-in">
+      {/* Tab Header Banner */}
+      <div className="flex items-center justify-between gap-3 shrink-0">
+        <div>
+          <h2 className="font-outfit font-bold text-xl sm:text-2xl bg-gradient-to-r from-[#1d1d1f] via-[#0071e3] to-[#6366f1] dark:from-[#f5f5f7] dark:via-[#38bdf8] dark:to-[#818cf8] bg-clip-text text-transparent tracking-tight">
+            Data Preview & Statistics
+          </h2>
+          <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mt-0.5 font-sans">
+            Inspect raw schemas, check column data types, null counts, and preview table rows.
+          </p>
+        </div>
+      </div>
+
       {/* Dataset selector + Compact Stats Row */}
       <div className="flex flex-wrap items-center justify-between gap-3 shrink-0">
         <DatasetSelector />

@@ -115,9 +115,16 @@ export default function ChatPanel() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-120px)] relative max-w-5xl mx-auto space-y-2.5 animate-fade-in">
-      {/* Dataset selector + Header Row */}
+      {/* Header Banner */}
       <div className="flex items-center justify-between shrink-0">
-        <DatasetSelector allowAll />
+        <div>
+          <h2 className="font-outfit font-bold text-xl sm:text-2xl bg-gradient-to-r from-[#1d1d1f] via-[#0071e3] to-[#6366f1] dark:from-[#f5f5f7] dark:via-[#38bdf8] dark:to-[#818cf8] bg-clip-text text-transparent tracking-tight">
+            Ask AI Assistant
+          </h2>
+          <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mt-0.5 font-sans">
+            Natural language to DuckDB SQL powered by Groq Llama 3.3 70B.
+          </p>
+        </div>
 
         <div className="flex items-center gap-2">
           {chatMessages.some((m) => m.role === "assistant" && m.sql) && (
