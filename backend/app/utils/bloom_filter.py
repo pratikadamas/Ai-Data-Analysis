@@ -27,7 +27,6 @@ IMPLEMENTATION DETAILS:
     k = (m/n) * ln(2)           ≈ 10 hash probes
     → False positive rate ≤ 0.1% for up to 100,000 unique usernames.
 """
-"""
 from __future__ import annotations
 
 import hashlib
