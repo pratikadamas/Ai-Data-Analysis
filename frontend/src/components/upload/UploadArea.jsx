@@ -152,25 +152,10 @@ export default function UploadArea() {
     uploadingAll || entries.some((e) => e.status === "uploading");
 
   return (
-    <div className="max-w-2xl mx-auto py-2 sm:py-4 px-2 animate-fade-in">
+    <div className="max-w-xl mx-auto py-4 sm:py-6 px-2 animate-fade-in">
       
-      {/* ── Apple Centered Glass Upload Container ── */}
-      <div className="relative rounded-3xl p-5 sm:p-7 bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.06] dark:border-white/[0.08] shadow-[0_12px_36px_rgba(0,0,0,0.04)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.4)] backdrop-blur-2xl transition-all duration-300">
-        
-        {/* Subtle macOS Traffic Window Header */}
-        <div className="flex items-center justify-between pb-4 mb-4 border-b border-black/[0.04] dark:border-white/[0.06]">
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e] opacity-80" />
-            <span className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123] opacity-80" />
-            <span className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29] opacity-80" />
-          </div>
-          <span className="text-xs font-medium text-[#86868b] dark:text-[#a1a1a6] tracking-tight">
-            Import Dataset
-          </span>
-          <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] text-[#86868b] dark:text-[#a1a1a6]">
-            Max 10 files
-          </span>
-        </div>
+      {/* ── Seamless Backgroundless Upload Container ── */}
+      <div className="relative">
 
         {/* ── Interactive Drop Zone ── */}
         <div
@@ -357,7 +342,6 @@ export default function UploadArea() {
             )}
           </div>
         )}
-
       </div>
     </div>
   );

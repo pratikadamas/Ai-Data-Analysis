@@ -37,7 +37,7 @@ export default function ExplorePanel() {
 
   if (!dataset) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[420px] text-center space-y-4 max-w-md mx-auto py-12 px-6 rounded-3xl bg-white/70 dark:bg-[#1c1c1e]/70 border border-black/[0.06] dark:border-white/[0.08] backdrop-blur-2xl shadow-xl animate-fade-in">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4 max-w-md mx-auto py-8 px-4 animate-fade-in">
         <div className="w-16 h-16 rounded-2xl bg-[#0071e3]/10 dark:bg-[#0071e3]/20 flex items-center justify-center text-[#0071e3] dark:text-blue-400">
           <LineChart size={32} />
         </div>
