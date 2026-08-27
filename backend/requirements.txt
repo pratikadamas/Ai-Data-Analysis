@@ -31,8 +31,5 @@ certifi==2024.8.30               # explicit CA bundle for TLS to Atlas
 bcrypt==5.0.0                    # password hashing
 pyjwt==2.8.0                     # JWT access/refresh tokens
 
-# --- Bloom Filter (username pre-check) ---
-bitarray==2.9.2                  # C-backed bit array for memory-efficient Bloom Filter
-
 # --- Rate Limiting ---
 slowapi==0.1.9                   # rate-limit OTP-send endpoint against abuse
