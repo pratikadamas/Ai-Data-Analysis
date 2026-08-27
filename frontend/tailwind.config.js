@@ -8,10 +8,14 @@ export default {
         brand: {
           50: "#eef4ff",
           100: "#d9e6ff",
+          200: "#bad0ff",
+          300: "#8bb3ff",
           400: "#5c8bff",
           500: "#3366ff",
           600: "#254edb",
           700: "#1c3cad",
+          800: "#172f88",
+          900: "#132364",
         },
       },
       animation: {
