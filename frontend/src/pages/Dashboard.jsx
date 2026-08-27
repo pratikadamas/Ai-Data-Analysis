@@ -7,6 +7,7 @@ import PreviewTable from "../components/preview/PreviewTable.jsx";
 import ExplorePanel from "../components/explore/ExplorePanel.jsx";
 import ChatPanel from "../components/chat/ChatPanel.jsx";
 import SqlEditorPanel from "../components/sql-editor/SqlEditorPanel.jsx";
+import EmptyWorkspaceStudio from "../components/dashboard/EmptyWorkspaceStudio.jsx";
 import SectionCircleLoader from "../components/shared/SectionCircleLoader.jsx";
 import UserProfile from "../components/profile/UserProfile.jsx";
 import { useDataset } from "../context/DatasetContext.jsx";
@@ -58,18 +59,14 @@ export default function Dashboard() {
             </div>
           ) : activeTab === "profile" ? (
             <UserProfile />
+          ) : !dataset ? (
+            <EmptyWorkspaceStudio onSelectTab={handleTabChange} />
           ) : (
             <>
-              {!dataset && activeTab === "preview" && <UploadArea />}
-
-              {activeTab === "preview" && dataset && <PreviewTable />}
+              {activeTab === "preview" && <PreviewTable />}
               {activeTab === "explore" && <ExplorePanel />}
               {activeTab === "chat" && <ChatPanel />}
               {activeTab === "sql-editor" && <SqlEditorPanel />}
-
-              {!dataset && (activeTab === "explore" || activeTab === "chat" || activeTab === "sql-editor") && (
-                <UploadArea />
-              )}
 
               {dataset && (
                 <div className="pt-2 flex justify-center">
