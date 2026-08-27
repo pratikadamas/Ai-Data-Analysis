@@ -20,41 +20,55 @@ The application follows a standard client-server architecture:
 
 ```mermaid
 graph TD
-    subgraph Frontend [🎨 React / Vite Frontend]
-        UI[User Interface]
-        Upload[Upload Component]
-        Chat[Chat Component]
-        Explore[Explore Component]
-        Charts[Plotly Charts]
+    subgraph Frontend [🎨 React / Vite macOS Studio Frontend]
+        UI[User Interface & Window Header]
+        Sidebar[Collapsible Dock Sidebar]
+        Upload[Seamless Upload Area]
+        Preview[AG Grid Preview Table]
+        Chat[Ask AI Chat Panel]
+        Explore[Explore Auto-Visualizer]
+        SQLEditor[DuckDB SQL Editor]
+        Charts[Plotly Visualizations]
         
-        UI --> Upload
-        UI --> Chat
-        UI --> Explore
+        UI --> Sidebar
+        Sidebar --> Upload
+        Sidebar --> Preview
+        Sidebar --> Chat
+        Sidebar --> Explore
+        Sidebar --> SQLEditor
         Chat --> Charts
         Explore --> Charts
     end
 
-    subgraph Backend [⚙️ FastAPI Backend]
-        API[API Router]
-        LLM[LLM Service / Groq]
-        SQLValid[SQL Validator]
-        DuckDB[(DuckDB In-Memory)]
+    subgraph Backend [⚙️ FastAPI Analytical Engine]
+        API[API Routers & Auth]
+        FileLoader[Multi-Format File Loader]
+        LLM[LLM NL-to-SQL Service / Groq]
+        SQLValid[SQL Read-Only Whitelist Validator]
+        DuckDB[(DuckDB In-Memory Engine)]
+        MongoDB[(MongoDB Atlas - User Auth)]
         
-        Upload -.->|CSV/Excel/SQL| API
-        Chat -.->|Natural Language| API
-        Explore -.->|Manual Config| API
+        Upload -.->|CSV / Excel / SQLite / SQL| FileLoader
+        FileLoader --> DuckDB
+        Chat -.->|Natural Language Query| LLM
+        Explore -.->|Aggregation & Grouping| DuckDB
+        SQLEditor -.->|Raw SQL Query| SQLValid
         
-        API --> LLM
+        API --> MongoDB
         LLM -->|Generates SQL| SQLValid
-        SQLValid -->|Validated SQL| DuckDB
-        DuckDB -->|Data Rows| API
+        SQLValid -->|Safe SQL| DuckDB
+        DuckDB -->|Query Results & Schemas| API
     end
 
-    subgraph External [🌐 External Services]
-        GroqCloud((Groq API))
+    subgraph External [🌐 Cloud & AI Services]
+        GroqCloud((Groq Llama 3.3 70B))
+        MongoCloud((MongoDB Atlas))
+        SMTPServer((Gmail SMTP Server))
     end
 
-    LLM <-->|Prompts & Responses| GroqCloud
+    LLM <-->|Prompts & Fast Inference| GroqCloud
+    API <-->|User Auth & Profiles| MongoCloud
+    API <-->|OTP & Security Emails| SMTPServer
 ```
 
 ---

@@ -16,7 +16,17 @@
 </div>
 
 > **🚀 Analyze your structured data (CSV, Excel, SQLite, SQL dump) in plain English — no SQL required!**  
-> The backend runs queries securely through DuckDB with a strict read-only SQL whitelist, while the frontend provides manual chart building and an AI chat mode powered by **Groq** (Llama 3.3 70B).
+> The backend runs queries securely through **DuckDB** with a strict read-only SQL whitelist, while the frontend provides a macOS-inspired Studio workspace with **Data Preview**, **Explore Visualizer**, **Ask AI (Llama 3.3 70B via Groq)**, and a full **SQL Editor**.
+
+## 🌟 Key Features
+
+- 🖥️ **macOS Studio Aesthetic**: Sleek frosted glass (`backdrop-blur-2xl`), interactive collapsible dock sidebar with hover tooltips, and ultra-compact responsive layout.
+- ⚡ **Zero-Lag In-Memory Analytics**: Instant queries on multi-million row datasets via embedded DuckDB with read-only whitelist validation.
+- 📂 **Multi-File Upload & Background Queues**: Upload up to 10 CSV, Excel (`.xlsx`/`.xls`), SQLite (`.db`), or `.sql` files with persistent background upload queues.
+- 🤖 **Conversational AI Analysis**: Ask questions in plain English. The AI generates verified SQL queries, markdown explanations, interactive Plotly visualizations, and downloadable HTML reports.
+- 📊 **Auto-Explore & Visualizer**: Interactive chart builder with dynamic aggregation (`SUM`, `AVG`, `COUNT`, `MIN`, `MAX`) across 7 chart types.
+- 💻 **SQL Editor & Schema Explorer**: Live table schema explorer, syntax validation, and instant table preview with export options.
+- 📱 **Adaptive Responsive Design**: Natural 120Hz physics on desktop, floating iOS top-pill toast notifications, and compact mobile bottom dock.
 
 ## 📚 Documentation
 
@@ -35,26 +45,28 @@
 ai-data-analyst/
   backend/                  ⚙️ FastAPI + DuckDB service
     app/
-      api/routes/           🌐 upload, explore, chat, dataset, download endpoints
+      api/routes/           🌐 upload, explore, chat, dataset, sql_editor, auth endpoints
       services/             🧠 file_loader, schema_service, llm_service, chart_service
       validation/           🛡️ sql_validator (whitelist-based SQL safety checks)
       models/               📦 Pydantic request/response schemas
-      db/                   🗄️ DuckDBManager (per-dataset in-memory connections)
+      db/                   🗄️ DuckDBManager (per-dataset in-memory connections) & MongoDB
       utils/                🛠️ filename sanitizing, extension detection
       main.py               🚀 FastAPI app + router wiring
     requirements.txt        📝 Python dependencies
     .env.example            🔐 Example environment variables
-  frontend/                 🎨 React (Vite) + Tailwind + Plotly
+  frontend/                 🎨 React (Vite) + Tailwind + Plotly + AG Grid
     src/
       components/
         charts/             📈 ResultChart, ResultTable, SqlViewer, DownloadButtons
         chat/               💬 ChatPanel (AI chat with export + clear)
         explore/            🔍 ExplorePanel (manual column/aggregation builder)
-        layout/             🏗️ Header, Sidebar
-        preview/            👀 PreviewTable (AG Grid data preview)
-        upload/             ☁️ UploadArea (drag-and-drop)
-      pages/                🏠 Dashboard.jsx
-      context/              🧠 DatasetContext (dataset + chat history state)
+        sql-editor/         💻 SqlEditorPanel (DuckDB SQL runner & schema tree)
+        layout/             🏗️ Header (macOS window bar), Sidebar (collapsible icon dock)
+        preview/            👀 PreviewTable (AG Grid compact data preview)
+        upload/             ☁️ UploadArea (drag-and-drop seamless dropzone)
+        auth/               🔐 Auth modal, OTP verification, password reset
+      pages/                🏠 Dashboard.jsx, LandingPage.jsx, Docs.jsx, FaqPage.jsx
+      context/              🧠 DatasetContext & UserContext
       services/             🔌 api.js (Axios client)
       utils/                📄 exportChat.js (HTML report generator)
 ```
