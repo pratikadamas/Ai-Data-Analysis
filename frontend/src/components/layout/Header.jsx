@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { useDarkMode } from "../../hooks/useDarkMode.js";
 import { useDataset } from "../../context/DatasetContext.jsx";
 import { useUser } from "../../context/UserContext.jsx";
