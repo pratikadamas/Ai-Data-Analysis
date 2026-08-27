@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useUser } from "../context/UserContext.jsx";
 import { Eye, EyeOff, X, Sparkles, Database, TrendingUp, MessageSquare, ArrowLeft, RefreshCw, Clock } from "lucide-react";
 import { toast } from "react-toastify";
+<<<<<<< HEAD
 import { Link } from "react-router-dom";
 import { signInWithGoogle } from "../services/firebase.js";
 
@@ -15,6 +16,10 @@ const GoogleIcon = () => (
     <path fill="none" d="M0 0h48v48H0z"/>
   </svg>
 );
+=======
+import { Link, useLocation, useSearchParams } from "react-router-dom";
+import ThemeToggle from "../components/ThemeToggle.jsx";
+>>>>>>> 1b2787d2b57322ae857fe73f03f25b664ebe3eb3
 
 // ── Countdown-timer hook ──────────────────────────────────────────────
 // Returns: { secondsLeft, isActive, startCountdown }
@@ -85,6 +90,7 @@ function CountdownRing({ secondsLeft, total = 60 }) {
 
 export default function Auth() {
   const { login, register, verifyOtp, forgotPassword, resetPassword, resendOtp } = useUser();
+<<<<<<< HEAD
   const [view, setView] = useState("login"); // login | register | verify | forgot | reset
   const [googleLoading, setGoogleLoading] = useState(false);
 
@@ -104,6 +110,22 @@ export default function Auth() {
       setGoogleLoading(false);
     }
   };
+=======
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+
+  const initialMode = searchParams.get("mode") || (location.pathname === "/register" ? "register" : "login");
+  const [view, setView] = useState(initialMode); // login | register | verify | forgot | reset
+
+  useEffect(() => {
+    const mode = searchParams.get("mode");
+    if (mode === "register" || location.pathname === "/register") {
+      setView("register");
+    } else if (mode === "login" || location.pathname === "/login") {
+      setView("login");
+    }
+  }, [searchParams, location]);
+>>>>>>> 1b2787d2b57322ae857fe73f03f25b664ebe3eb3
 
   // Countdown timer (shared between verify + reset views)
   const { secondsLeft, isActive: timerActive, startCountdown } = useOtpCountdown();
@@ -257,14 +279,12 @@ export default function Auth() {
         <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-indigo-500/10 blur-[100px] pointer-events-none animate-pulse duration-[8000ms]" />
 
         {/* Brand Header */}
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-brand-500/20">
-            <Sparkles className="w-5 h-5 text-white" />
-          </div>
-          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
-            AI Data Analyst
+        <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="relative z-10 flex items-center gap-2.5 group cursor-pointer">
+          <img src="/favicon.webp" alt="AI Data Analysis Logo" className="w-8 h-8 object-contain group-hover:scale-110 transition-transform duration-300 drop-shadow-sm" />
+          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-700 dark:from-white dark:via-indigo-200 dark:to-slate-300 bg-clip-text text-transparent">
+            AI Data Analysis
           </span>
-        </div>
+        </Link>
 
         {/* Feature List Container */}
         <div className="relative z-10 my-auto max-w-md">
@@ -329,7 +349,7 @@ export default function Auth() {
 
         {/* Left Side Footer */}
         <div className="relative z-10 flex justify-between items-center text-xs text-slate-500 dark:text-slate-600">
-          <span>&copy; {new Date().getFullYear()} AI Data Analyst. All rights reserved.</span>
+          <span>&copy; {new Date().getFullYear()} AI Data Analysis. All rights reserved.</span>
           <span>v2.1.0</span>
         </div>
       </div>
@@ -337,10 +357,13 @@ export default function Auth() {
       {/* Right side: Auth Form container */}
       <div className="w-full lg:w-[50%] flex items-center justify-center p-6 sm:p-12 relative bg-white dark:bg-[#050505] transition-colors duration-500">
         
-        {/* Back to Home Button */}
-        <Link to="/" className="absolute top-6 left-6 sm:top-10 sm:left-10 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center text-sm font-medium transition-colors z-20">
-          <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
-        </Link>
+        {/* Top Actions: Back to Home & Theme Toggle */}
+        <div className="absolute top-6 left-6 right-6 sm:top-10 sm:left-10 sm:right-10 flex items-center justify-between z-20 pointer-events-auto">
+          <Link to="/" className="text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center text-sm font-semibold transition-colors">
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
+          </Link>
+          <ThemeToggle />
+        </div>
 
         {/* Glow circles for mobile/tablet background */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.02),transparent_70%)] dark:bg-[radial-gradient(ellipse_at_center,#1e293b,transparent_70%)] opacity-20 lg:hidden pointer-events-none transition-colors duration-500" />
@@ -353,8 +376,8 @@ export default function Auth() {
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-brand-500/25">
               <Sparkles className="w-4.5 h-4.5 text-white" />
             </div>
-            <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
-              AI Data Analyst
+            <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-700 dark:from-white dark:via-indigo-200 dark:to-slate-300 bg-clip-text text-transparent">
+              AI Data Analysis
             </span>
           </div>
 

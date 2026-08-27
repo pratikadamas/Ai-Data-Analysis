@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { DatasetProvider } from "./context/DatasetContext.jsx";
 import { useUser } from "./context/UserContext.jsx";
@@ -12,22 +12,17 @@ import Terms from "./pages/Terms.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Lenis from "lenis";
+
+import MainAppLoader from "./components/shared/MainAppLoader.jsx";
+import AppLoadingBar from "./components/shared/AppLoadingBar.jsx";
 
 // Protected Route Wrapper
 function ProtectedRoute({ children }) {
   const { user, loading } = useUser();
 
   if (loading) {
-    return (
-      <div className="h-screen w-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="w-12 h-12 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-sm font-medium tracking-wide text-gray-500 dark:text-gray-400 animate-pulse">
-            Loading session...
-          </p>
-        </div>
-      </div>
-    );
+    return <MainAppLoader text="Restoring secure session..." />;
   }
 
   if (!user) {
@@ -38,20 +33,66 @@ function ProtectedRoute({ children }) {
 }
 
 export default function App() {
-  const { user } = useUser();
+  const { user, loading } = useUser();
+  const [initialAppReady, setInitialAppReady] = React.useState(false);
+
+  React.useEffect(() => {
+    // Show splash main loader on initial app load for a smooth brand intro
+    const timer = setTimeout(() => {
+      setInitialAppReady(true);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.1,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: "vertical",
+      gestureOrientation: "vertical",
+      smoothWheel: true,
+      wheelMultiplier: 1.1,
+      touchMultiplier: 1.8,
+      infinite: false,
+      autoRaf: false,
+    });
+
+    let lastTime = 0;
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    const rafId = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      lenis.destroy();
+    };
+  }, []);
+
+  if (!initialAppReady) {
+    return <MainAppLoader text="Initializing AI Data Analysis..." />;
+  }
 
   return (
     <>
+      <AppLoadingBar />
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/faq" element={<FaqPage />} />
+        <Route path="/faqs" element={<FaqPage />} />
         <Route path="/docs" element={<Docs />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<Terms />} />
         
         <Route 
           path="/login" 
+          element={user ? <Navigate to="/app" replace /> : <Auth />} 
+        />
+        <Route 
+          path="/register" 
           element={user ? <Navigate to="/app" replace /> : <Auth />} 
         />
         

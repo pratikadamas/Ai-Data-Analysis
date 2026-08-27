@@ -6,6 +6,7 @@ import PreviewTable from "../components/preview/PreviewTable.jsx";
 import ExplorePanel from "../components/explore/ExplorePanel.jsx";
 import ChatPanel from "../components/chat/ChatPanel.jsx";
 import SqlEditorPanel from "../components/sql-editor/SqlEditorPanel.jsx";
+import SectionCircleLoader from "../components/shared/SectionCircleLoader.jsx";
 import UserProfile from "../components/profile/UserProfile.jsx";
 import { useDataset } from "../context/DatasetContext.jsx";
 import { RefreshCw, Table, LineChart, MessageSquare, User, Code2 } from "lucide-react";
@@ -33,10 +34,7 @@ export default function Dashboard() {
         <main className="dashboard-main flex-1 overflow-y-auto p-6 space-y-6">
           {!sessionVerified ? (
             <div className="flex items-center justify-center h-full">
-              <div className="flex flex-col items-center gap-3 text-gray-400 dark:text-gray-500">
-                <div className="w-8 h-8 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                <span className="text-sm font-medium">Restoring session…</span>
-              </div>
+              <SectionCircleLoader size="lg" text="Restoring workspace session…" />
             </div>
           ) : activeTab === "profile" ? (
             <UserProfile />
