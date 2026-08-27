@@ -10,7 +10,9 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
+# pyrefly: ignore [missing-import]
 import duckdb
+# pyrefly: ignore [missing-import]
 import pandas as pd
 
 from app.db.duckdb_manager import filename_to_table_name
