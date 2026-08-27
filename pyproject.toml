@@ -66,6 +66,8 @@ dependencies = [
     "bitarray==2.9.2",
     # Security
     "slowapi==0.1.9",
+    # Firebase Admin SDK (server-side Google OAuth token verification)
+    "firebase-admin>=6.5.0",
 ]
 
 [project.urls]

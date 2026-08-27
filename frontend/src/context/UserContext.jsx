@@ -134,6 +134,22 @@ export function UserProvider({ children }) {
     }
   }, []);
 
+  const loginWithGoogle = useCallback(async (idToken) => {
+    setError(null);
+    try {
+      const response = await api.post("/auth/google", { id_token: idToken });
+      const { access_token, user: userData } = response.data;
+      localStorage.setItem("token", access_token);
+      setToken(access_token);
+      setUser(userData);
+      return { success: true };
+    } catch (err) {
+      const detail = parseError(err, "Google sign-in failed. Please try again.");
+      setError(detail);
+      return { success: false, error: detail };
+    }
+  }, []);
+
   const resendOtp = useCallback(async (email, purpose = "registration") => {
     setError(null);
     try {
@@ -228,6 +244,7 @@ export function UserProvider({ children }) {
         resetPassword,
         resendOtp,
         changePassword,
+        loginWithGoogle,
         logout,
         setError,
       }}

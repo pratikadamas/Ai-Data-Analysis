@@ -37,3 +37,5 @@ bitarray==2.9.2                  # C-backed bit array for memory-efficient Bloom
 # --- Optional but recommended ---
 slowapi==0.1.9                   # rate-limit OTP-send endpoint against abuse
 
+# --- Firebase Admin SDK (Google OAuth server-side token verification) ---
+firebase-admin>=6.5.0

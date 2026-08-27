@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useUser } from "../context/UserContext.jsx";
 import { Eye, EyeOff, X, Sparkles, Database, TrendingUp, MessageSquare, ArrowLeft, RefreshCw, Clock } from "lucide-react";
 import { toast } from "react-toastify";
-<<<<<<< HEAD
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { signInWithGoogle } from "../services/firebase.js";
+import ThemeToggle from "../components/ThemeToggle.jsx";
 
 // Google colour logo SVG
 const GoogleIcon = () => (
@@ -16,10 +16,6 @@ const GoogleIcon = () => (
     <path fill="none" d="M0 0h48v48H0z"/>
   </svg>
 );
-=======
-import { Link, useLocation, useSearchParams } from "react-router-dom";
-import ThemeToggle from "../components/ThemeToggle.jsx";
->>>>>>> 1b2787d2b57322ae857fe73f03f25b664ebe3eb3
 
 // ── Countdown-timer hook ──────────────────────────────────────────────
 // Returns: { secondsLeft, isActive, startCountdown }
@@ -89,34 +85,17 @@ function CountdownRing({ secondsLeft, total = 60 }) {
 }
 
 export default function Auth() {
-  const { login, register, verifyOtp, forgotPassword, resetPassword, resendOtp } = useUser();
-<<<<<<< HEAD
-  const [view, setView] = useState("login"); // login | register | verify | forgot | reset
-  const [googleLoading, setGoogleLoading] = useState(false);
+  const { login, register, verifyOtp, forgotPassword, resetPassword, resendOtp, loginWithGoogle } = useUser();
+  const navigate = useNavigate();
 
-  const handleGoogleSignIn = async () => {
-    if (googleLoading) return;
-    setGoogleLoading(true);
-    try {
-      const result = await signInWithGoogle();
-      const user = result.user;
-      toast.success(`Welcome, ${user.displayName || user.email}!`);
-      // TODO: send user.accessToken / user.uid to your backend to create a session if needed
-    } catch (err) {
-      if (err.code !== "auth/popup-closed-by-user") {
-        toast.error(err.message || "Google sign-in failed. Please try again.");
-      }
-    } finally {
-      setGoogleLoading(false);
-    }
-  };
-=======
+  // Determine initial view from URL path or query param
   const [searchParams] = useSearchParams();
   const location = useLocation();
-
   const initialMode = searchParams.get("mode") || (location.pathname === "/register" ? "register" : "login");
   const [view, setView] = useState(initialMode); // login | register | verify | forgot | reset
+  const [googleLoading, setGoogleLoading] = useState(false);
 
+  // Sync view when URL changes
   useEffect(() => {
     const mode = searchParams.get("mode");
     if (mode === "register" || location.pathname === "/register") {
@@ -125,7 +104,32 @@ export default function Auth() {
       setView("login");
     }
   }, [searchParams, location]);
->>>>>>> 1b2787d2b57322ae857fe73f03f25b664ebe3eb3
+
+  // Google OAuth handler
+  const handleGoogleSignIn = async () => {
+    if (googleLoading) return;
+    setGoogleLoading(true);
+    try {
+      // Step 1: Firebase popup → get credential
+      const result = await signInWithGoogle();
+      // Step 2: Get Firebase ID token to exchange with our backend
+      const idToken = await result.user.getIdToken();
+      // Step 3: Backend verifies token, upserts user in MongoDB, returns our JWT
+      const outcome = await loginWithGoogle(idToken);
+      if (outcome.success) {
+        toast.success(`Welcome, ${result.user.displayName || result.user.email}!`);
+        navigate("/app", { replace: true });
+      } else {
+        toast.error(outcome.error || "Google sign-in failed. Please try again.");
+      }
+    } catch (err) {
+      if (err.code !== "auth/popup-closed-by-user") {
+        toast.error(err.message || "Google sign-in failed. Please try again.");
+      }
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
 
   // Countdown timer (shared between verify + reset views)
   const { secondsLeft, isActive: timerActive, startCountdown } = useOtpCountdown();
