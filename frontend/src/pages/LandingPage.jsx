@@ -730,9 +730,15 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="flex-1 order-1 md:order-2">
-                <div className="flex items-center justify-center p-2 relative">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.85, y: 30 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex items-center justify-center p-2 relative"
+                >
                   <motion.img 
-                    animate={{ y: [0, -12, 0] }}
+                    animate={{ y: [0, -10, 0] }}
                     transition={{ 
                       duration: 4.5, 
                       repeat: Infinity, 
@@ -740,9 +746,9 @@ export default function LandingPage() {
                     }}
                     src="/assets/img1.webp" 
                     alt="Data Ingestion" 
-                    className="w-full max-w-lg h-auto object-contain drop-shadow-[0_25px_40px_rgba(0,113,227,0.22)] transition-transform duration-500 hover:scale-[1.04]" 
+                    className="w-full max-w-[340px] sm:max-w-[380px] h-auto object-contain drop-shadow-[0_20px_35px_rgba(0,113,227,0.22)] transition-transform duration-500 hover:scale-[1.05]" 
                   />
-                </div>
+                </motion.div>
               </div>
             </motion.div>
 
@@ -755,9 +761,15 @@ export default function LandingPage() {
               className="flex flex-col md:flex-row items-center gap-12 lg:gap-16"
             >
               <div className="flex-1">
-                <div className="flex items-center justify-center p-2 relative">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.85, y: 30 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+                  className="flex items-center justify-center p-2 relative"
+                >
                   <motion.img 
-                    animate={{ y: [0, -14, 0] }}
+                    animate={{ y: [0, -12, 0] }}
                     transition={{ 
                       duration: 5, 
                       repeat: Infinity, 
@@ -766,9 +778,9 @@ export default function LandingPage() {
                     }}
                     src="/assets/img2.webp" 
                     alt="Interactive Charting" 
-                    className="w-full max-w-lg h-auto object-contain drop-shadow-[0_25px_40px_rgba(94,92,230,0.25)] transition-transform duration-500 hover:scale-[1.04]" 
+                    className="w-full max-w-[340px] sm:max-w-[380px] h-auto object-contain drop-shadow-[0_20px_35px_rgba(94,92,230,0.25)] transition-transform duration-500 hover:scale-[1.05]" 
                   />
-                </div>
+                </motion.div>
               </div>
               <div className="flex-1">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-[#5e5ce6] dark:text-indigo-400 font-bold text-xs mb-4 border border-indigo-100 dark:border-indigo-800/40">
