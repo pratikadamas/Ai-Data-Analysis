@@ -60,24 +60,26 @@ export default function Dashboard() {
             <UserProfile />
           ) : (
             <>
-              {!dataset && activeTab === "preview" && <UploadArea />}
-
-              {activeTab === "preview" && dataset && <PreviewTable />}
-              {activeTab === "explore" && <ExplorePanel />}
-              {activeTab === "chat" && <ChatPanel />}
-              {activeTab === "sql-editor" && <SqlEditorPanel />}
-
-              {!dataset && (activeTab === "explore" || activeTab === "chat" || activeTab === "sql-editor") && (
-                <UploadArea />
+              {activeTab === "preview" && (
+                dataset ? <PreviewTable /> : <UploadArea />
+              )}
+              {activeTab === "explore" && (
+                dataset ? <ExplorePanel /> : <ExplorePanel />
+              )}
+              {activeTab === "chat" && (
+                dataset ? <ChatPanel /> : <ChatPanel />
+              )}
+              {activeTab === "sql-editor" && (
+                dataset ? <SqlEditorPanel /> : <SqlEditorPanel />
               )}
 
-              {dataset && (
+              {dataset && activeTab === "preview" && (
                 <div className="pt-2 flex justify-center">
                   <button
                     onClick={clearDataset}
-                    className="flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-red-500 transition-colors"
+                    className="flex items-center gap-2 text-xs font-medium text-[#86868b] hover:text-red-500 transition-colors cursor-pointer"
                   >
-                    <RefreshCw size={14} className="hover:animate-spin" />
+                    <RefreshCw size={13} className="hover:animate-spin" />
                     Upload a different dataset
                   </button>
                 </div>

@@ -152,13 +152,13 @@ export default function UploadArea() {
     uploadingAll || entries.some((e) => e.status === "uploading");
 
   return (
-    <div className="max-w-2xl mx-auto py-8 sm:py-12 px-2 animate-fade-in">
+    <div className="max-w-2xl mx-auto py-2 sm:py-4 px-2 animate-fade-in">
       
       {/* ── Apple Centered Glass Upload Container ── */}
-      <div className="relative rounded-3xl p-6 sm:p-10 bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.06] dark:border-white/[0.08] shadow-[0_16px_40px_rgba(0,0,0,0.04)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] backdrop-blur-2xl transition-all duration-300">
+      <div className="relative rounded-3xl p-5 sm:p-7 bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.06] dark:border-white/[0.08] shadow-[0_12px_36px_rgba(0,0,0,0.04)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.4)] backdrop-blur-2xl transition-all duration-300">
         
         {/* Subtle macOS Traffic Window Header */}
-        <div className="flex items-center justify-between pb-6 mb-6 border-b border-black/[0.04] dark:border-white/[0.06]">
+        <div className="flex items-center justify-between pb-4 mb-4 border-b border-black/[0.04] dark:border-white/[0.06]">
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e] opacity-80" />
             <span className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123] opacity-80" />
@@ -181,34 +181,34 @@ export default function UploadArea() {
             setIsDragging(false);
             addFiles(e.dataTransfer.files);
           }}
-          className={`relative border-2 border-dashed rounded-2xl p-8 sm:p-12 text-center transition-all duration-300 flex flex-col items-center justify-center min-h-[260px] ${
+          className={`relative border-2 border-dashed rounded-2xl p-6 sm:p-8 text-center transition-all duration-300 flex flex-col items-center justify-center min-h-[200px] ${
             isDragging
               ? "border-[#0071e3] bg-[#0071e3]/[0.06] dark:bg-[#0071e3]/[0.12] scale-[1.01] shadow-[0_0_30px_rgba(0,113,227,0.2)]"
               : "border-black/[0.08] dark:border-white/[0.12] hover:border-[#0071e3]/50 hover:bg-black/[0.01] dark:hover:bg-white/[0.02]"
           }`}
         >
           {/* Animated Glowing Cloud Icon */}
-          <div className={`mb-4 w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+          <div className={`mb-3 w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 ${
             isDragging 
               ? "bg-[#0071e3] text-white scale-110 shadow-[0_8px_20px_rgba(0,113,227,0.4)]" 
               : "bg-[#0071e3]/10 text-[#0071e3] dark:bg-[#0071e3]/20 dark:text-blue-400"
           }`}>
-            <UploadCloud size={30} strokeWidth={1.8} className={isDragging ? "animate-bounce" : ""} />
+            <UploadCloud size={24} strokeWidth={1.8} className={isDragging ? "animate-bounce" : ""} />
           </div>
 
-          <h3 className="font-semibold text-lg sm:text-xl text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight mb-1.5">
+          <h3 className="font-semibold text-base sm:text-lg text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight mb-1">
             Drop your dataset files here
           </h3>
-          <p className="text-xs sm:text-sm text-[#86868b] dark:text-[#a1a1a6] max-w-sm mb-5 leading-relaxed">
+          <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] max-w-sm mb-4 leading-relaxed">
             Drag & drop tables or browse from your computer. DuckDB processes and joins your data with instant zero-lag memory speed.
           </p>
 
           {/* Supported Format Pills */}
-          <div className="flex flex-wrap items-center justify-center gap-1.5 mb-6 max-w-md">
+          <div className="flex flex-wrap items-center justify-center gap-1.5 mb-4 max-w-md">
             {["CSV", "Excel (.xlsx)", "SQLite (.db)", "SQL Dumps"].map((format) => (
               <span 
                 key={format} 
-                className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.04] dark:border-white/[0.06] text-[#6e6e73] dark:text-[#a1a1a6]"
+                className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.04] dark:border-white/[0.06] text-[#6e6e73] dark:text-[#a1a1a6]"
               >
                 {format}
               </span>
@@ -216,7 +216,7 @@ export default function UploadArea() {
           </div>
 
           {/* Browse Files Button */}
-          <label className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-sm font-semibold cursor-pointer shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] active:scale-95 transition-all duration-200">
+          <label className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-semibold cursor-pointer shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] active:scale-95 transition-all duration-200">
             Browse Files
             <input
               ref={inputRef}
