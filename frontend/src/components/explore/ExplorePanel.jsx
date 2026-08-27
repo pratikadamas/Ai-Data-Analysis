@@ -37,16 +37,16 @@ export default function ExplorePanel() {
 
   if (!dataset) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-4">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500/20 to-indigo-500/20 flex items-center justify-center">
-          <LineChart size={32} className="text-brand-500" />
+      <div className="flex flex-col items-center justify-center min-h-[420px] text-center space-y-4 max-w-md mx-auto py-12 px-6 rounded-3xl bg-white/70 dark:bg-[#1c1c1e]/70 border border-black/[0.06] dark:border-white/[0.08] backdrop-blur-2xl shadow-xl animate-fade-in">
+        <div className="w-16 h-16 rounded-2xl bg-[#0071e3]/10 dark:bg-[#0071e3]/20 flex items-center justify-center text-[#0071e3] dark:text-blue-400">
+          <LineChart size={32} />
         </div>
         <div>
-          <p className="font-semibold text-lg text-gray-800 dark:text-gray-200">
+          <h3 className="font-semibold text-lg text-[#1d1d1f] dark:text-[#f5f5f7]">
             No Dataset Loaded
-          </p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Upload a file to start exploring your data
+          </h3>
+          <p className="text-sm text-[#86868b] dark:text-[#a1a1a6] mt-1.5 leading-relaxed">
+            Import a dataset to visually plot distributions, categories, and time series trends.
           </p>
         </div>
       </div>
@@ -98,18 +98,18 @@ export default function ExplorePanel() {
   const showTable = result && result.rows?.length > 0 && (!showChart || result.chart_type === "table");
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 animate-fade-in max-w-5xl mx-auto">
       {/* Dataset selector dropdown — only shown for multi-file uploads */}
       {hasMultipleFiles && (
-        <div className="flex items-center gap-3 p-3 glass-panel rounded-xl">
-          <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider shrink-0">
-            <Database size={14} className="text-brand-500" />
+        <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.06] dark:border-white/[0.08] backdrop-blur-2xl">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#6e6e73] dark:text-[#a1a1a6] uppercase tracking-wider shrink-0">
+            <Database size={14} className="text-[#0071e3]" />
             Select Dataset
           </div>
           <select
             value={selectedFileIndex}
             onChange={(e) => setSelectedFileIndex(Number(e.target.value))}
-            className="flex-1 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm font-medium text-gray-800 dark:text-gray-200 outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all cursor-pointer"
+            className="flex-1 rounded-xl border border-black/[0.08] dark:border-white/[0.12] bg-black/[0.02] dark:bg-white/[0.04] px-3.5 py-2 text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7] outline-none focus:ring-2 focus:ring-[#0071e3]/40 focus:border-[#0071e3] transition-all cursor-pointer"
           >
             {files.map((f, idx) => (
               <option key={f.table_name} value={idx}>
@@ -120,27 +120,32 @@ export default function ExplorePanel() {
         </div>
       )}
 
-      <div className="explore-controls-grid grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Select label="X-axis" value={xColumn} onChange={setXColumn} options={["", ...columns]} />
-        <Select label="Y-axis (optional)" value={yColumn} onChange={setYColumn} options={["", ...columns]} />
-        <Select label="Aggregation" value={aggregation} onChange={setAggregation} options={AGGREGATIONS} />
-        <Select label="Chart type" value={chartType} onChange={setChartType} options={CHART_TYPES} />
-      </div>
+      {/* Control Grid in Apple Frosted Glass Box */}
+      <div className="p-5 sm:p-6 rounded-3xl bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.06] dark:border-white/[0.08] backdrop-blur-2xl shadow-sm space-y-5">
+        <div className="explore-controls-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <Select label="X-axis" value={xColumn} onChange={setXColumn} options={["", ...columns]} />
+          <Select label="Y-axis (optional)" value={yColumn} onChange={setYColumn} options={["", ...columns]} />
+          <Select label="Aggregation" value={aggregation} onChange={setAggregation} options={AGGREGATIONS} />
+          <Select label="Chart Type" value={chartType} onChange={setChartType} options={CHART_TYPES} />
+        </div>
 
-      <button
-        onClick={runQuery}
-        disabled={loading || !xColumn}
-        className="px-4 py-2 rounded-md bg-brand-500 text-white text-sm hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-      >
-        {loading ? (
-          <>
-            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
-            Generating…
-          </>
-        ) : (
-          "Generate Chart"
-        )}
-      </button>
+        <div className="flex justify-end pt-2 border-t border-black/[0.04] dark:border-white/[0.06]">
+          <button
+            onClick={runQuery}
+            disabled={loading || !xColumn}
+            className="px-5 py-2.5 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-sm font-semibold shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all cursor-pointer"
+          >
+            {loading ? (
+              <>
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
+                Generating Plot…
+              </>
+            ) : (
+              "Generate Chart"
+            )}
+          </button>
+        </div>
+      </div>
 
       {result && (
         <div className="space-y-3">

@@ -97,16 +97,16 @@ export default function ChatPanel() {
 
   if (!dataset) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-4">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500/20 to-indigo-500/20 flex items-center justify-center">
-          <MessageSquare size={32} className="text-brand-500" />
+      <div className="flex flex-col items-center justify-center min-h-[420px] text-center space-y-4 max-w-md mx-auto py-12 px-6 rounded-3xl bg-white/70 dark:bg-[#1c1c1e]/70 border border-black/[0.06] dark:border-white/[0.08] backdrop-blur-2xl shadow-xl animate-fade-in">
+        <div className="w-16 h-16 rounded-2xl bg-[#0071e3]/10 dark:bg-[#0071e3]/20 flex items-center justify-center text-[#0071e3] dark:text-blue-400">
+          <MessageSquare size={32} />
         </div>
         <div>
-          <p className="font-semibold text-lg text-gray-800 dark:text-gray-200">
+          <h3 className="font-semibold text-lg text-[#1d1d1f] dark:text-[#f5f5f7]">
             No Dataset Loaded
-          </p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Upload a file to start asking AI questions about your data
+          </h3>
+          <p className="text-sm text-[#86868b] dark:text-[#a1a1a6] mt-1.5 leading-relaxed">
+            Import a dataset to start asking AI questions, generating statistical summaries, and rendering automatic charts.
           </p>
         </div>
       </div>
