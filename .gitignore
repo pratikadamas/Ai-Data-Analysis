@@ -3,21 +3,29 @@
 /.venv/
 backend/.venv/
 
-# Environment files
+# Environment files (Protected across all subdirectories)
 .env
 .env.*
-.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+**/.env
+**/.env.*
+**/.env.local
+backend/.env
+frontend/.env
+frontend/.env.local
 
 # Backend Config & Cache
 backend/__pycache__/
 backend/**/__pycache__/
-.env
-**/.env
 backend/uploads/*
 !backend/uploads/.gitkeep
 
 # Frontend Config & Cache
 node_modules/
+frontend/node_modules/
 frontend/dist/
 frontend/.eslintcache
 
@@ -28,3 +36,5 @@ Thumbs.db
 # Agent Artifacts
 *.md
 !README.md
+!ARCHITECTURE.md
+!INSTRUCTIONS.md
