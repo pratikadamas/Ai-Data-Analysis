@@ -26,12 +26,12 @@ export default function ResultChart({ chartType, chartSpec }) {
   const trace = buildTrace(chartType, chartSpec);
 
   return (
-    <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-2">
+    <div className="rounded-2xl border border-black/[0.06] dark:border-white/[0.08] bg-white/70 dark:bg-[#1c1c1e]/70 backdrop-blur-xl p-2 sm:p-3 shadow-xs">
       <Plot
         data={[trace]}
         layout={{
           autosize: true,
-          margin: { t: 20, r: 20, b: 60, l: 60 },
+          margin: { t: 20, r: 20, b: 50, l: 50 },
           xaxis: { title: chartSpec.x_label },
           yaxis: { title: chartSpec.y_label },
           paper_bgcolor: "transparent",
@@ -39,7 +39,7 @@ export default function ResultChart({ chartType, chartSpec }) {
           font: { color: "inherit" },
         }}
         useResizeHandler
-        style={{ width: "100%", height: "420px" }}
+        style={{ width: "100%", height: "340px" }}
         config={{ displaylogo: false, toImageButtonOptions: { format: "png" } }}
       />
     </div>

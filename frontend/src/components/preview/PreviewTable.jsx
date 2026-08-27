@@ -26,36 +26,49 @@ export default function PreviewTable() {
   if (!dataset) return null;
 
   return (
-    <div className="space-y-4">
-      {/* Dataset selector — shown when multiple files are loaded */}
-      <DatasetSelector />
+    <div className="space-y-3 flex flex-col h-[calc(100vh-100px)]">
+      {/* Dataset selector + Compact Stats Row */}
+      <div className="flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <DatasetSelector />
+        
+        {schema && (
+          <div className="flex items-center gap-2 sm:gap-4 px-3.5 py-1.5 rounded-2xl bg-white/70 dark:bg-[#1c1c1e]/70 border border-black/[0.06] dark:border-white/[0.08] backdrop-blur-xl shadow-xs text-xs">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[#86868b] dark:text-[#a1a1a6]">Rows:</span>
+              <span className="font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{schema.row_count?.toLocaleString()}</span>
+            </div>
+            <span className="text-black/20 dark:text-white/20">|</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[#86868b] dark:text-[#a1a1a6]">Cols:</span>
+              <span className="font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{schema.column_count}</span>
+            </div>
+            <span className="text-black/20 dark:text-white/20">|</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[#86868b] dark:text-[#a1a1a6]">Missing:</span>
+              <span className="font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{schema.columns?.reduce((sum, c) => sum + c.missing_count, 0).toLocaleString()}</span>
+            </div>
+            <span className="text-black/20 dark:text-white/20">|</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[#86868b] dark:text-[#a1a1a6]">Duplicates:</span>
+              <span className="font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">{schema.duplicate_row_count?.toLocaleString()}</span>
+            </div>
+          </div>
+        )}
+      </div>
 
-      {/* Stats cards */}
-      {schema && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <StatCard label="Rows" value={schema.row_count?.toLocaleString()} />
-          <StatCard label="Columns" value={schema.column_count} />
-          <StatCard
-            label="Missing values"
-            value={schema.columns?.reduce((sum, c) => sum + c.missing_count, 0).toLocaleString()}
-          />
-          <StatCard label="Duplicate rows" value={schema.duplicate_row_count?.toLocaleString()} />
-        </div>
-      )}
-
-      {/* Data grid in macOS Window Container */}
-      <div className="macos-card p-4 sm:p-5 overflow-hidden rounded-3xl bg-white/80 dark:bg-[#1c1c1e]/80 border border-black/[0.06] dark:border-white/[0.08] backdrop-blur-2xl shadow-sm">
-        <div className="ag-theme-quartz dark:ag-theme-quartz-dark rounded-2xl overflow-hidden w-full" style={{ height: 500 }}>
+      {/* Data grid in Full-Fitted macOS Container */}
+      <div className="flex-1 rounded-2xl bg-white/80 dark:bg-[#1c1c1e]/80 border border-black/[0.06] dark:border-white/[0.08] backdrop-blur-2xl shadow-sm p-2 sm:p-3 overflow-hidden flex flex-col">
+        <div className="ag-theme-quartz dark:ag-theme-quartz-dark rounded-xl overflow-hidden w-full flex-1">
           <AgGridReact
             rowData={previewRows}
             columnDefs={columnDefs}
             pagination
-            paginationPageSize={25}
+            paginationPageSize={20}
             defaultColDef={{
               sortable: true,
               filter: true,
               resizable: true,
-              minWidth: 120,
+              minWidth: 110,
               flex: 1,
             }}
             animateRows={true}
@@ -63,15 +76,6 @@ export default function PreviewTable() {
           />
         </div>
       </div>
-    </div>
-  );
-}
-
-function StatCard({ label, value }) {
-  return (
-    <div className="macos-card p-4 transition-transform hover:-translate-y-1 duration-200">
-      <p className="text-xs font-medium text-[#6e6e73] dark:text-[#a1a1a6] mb-1">{label}</p>
-      <p className="text-2xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">{value}</p>
     </div>
   );
 }
