@@ -1,94 +1,163 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Database, FileText, Lock, Layout } from "lucide-react";
+import { motion } from "framer-motion";
+import { 
+  FileText, 
+  Lock, 
+  Layout, 
+  BookOpen, 
+  CheckCircle2, 
+  FileSpreadsheet, 
+  ShieldCheck, 
+  LineChart, 
+  Terminal, 
+  HelpCircle 
+} from "lucide-react";
 import ThemeToggle from "../components/ThemeToggle.jsx";
 
 export default function Docs() {
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-[#050505] text-gray-900 dark:text-gray-100 font-sans transition-colors duration-500 overflow-x-hidden selection:bg-brand-500/30">
-      <nav className="fixed w-full z-50 glass-panel border-b border-white/20 dark:border-gray-800/40 bg-white/70 dark:bg-[#0a0a0a]/70">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-20 items-center">
-            <Link to="/" className="flex items-center space-x-3 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-brand-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-glow group-hover:scale-105 transition-transform">
-                <Database className="w-6 h-6" />
-              </div>
-              <span className="font-bold text-2xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">
-                AI Data Analyst
-              </span>
-            </Link>
-            <div className="flex items-center space-x-6">
-              <ThemeToggle />
-              <Link to="/login" className="relative group inline-flex items-center justify-center px-6 py-2.5 rounded-full text-white font-medium bg-gradient-to-r from-brand-600 to-indigo-600 overflow-hidden shadow-glow hover:shadow-glow-lg transition-all">
-                <span className="relative">Get Started</span>
-              </Link>
-            </div>
+    <div className="min-h-screen bg-[#fbfbfd] text-[#1d1d1f] dark:bg-[#161617] dark:text-[#f5f5f7] font-sans antialiased overflow-x-hidden selection:bg-blue-500/20 transition-colors duration-300">
+      
+      {/* Subtle macOS Ambient Aura Background */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-[90vw] h-[550px] bg-gradient-to-b from-blue-400/10 via-indigo-300/6 to-transparent dark:from-blue-500/15 dark:via-purple-500/10 blur-[140px] rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#2d2d30_1px,transparent_1px)] [background-size:24px_24px] opacity-60 dark:opacity-40" />
+      </div>
+
+      {/* Floating Apple/macOS Styled Navigation Bar */}
+      <motion.nav 
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="fixed top-4 left-0 right-0 z-50 max-w-5xl mx-auto px-4"
+      >
+        <div className="bg-white/65 dark:bg-[#1d1d1f]/65 backdrop-blur-2xl border border-black/[0.06] dark:border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.35)] rounded-full px-6 h-16 flex items-center justify-between transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.07)] dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
+          
+          {/* Logo with Favicon */}
+          <Link to="/" className="flex items-center space-x-3 group cursor-pointer select-none">
+            <img 
+              src="/favicon.webp" 
+              alt="AI Data Analysis Logo" 
+              className="w-8 h-8 object-contain transition-transform duration-300 group-hover:scale-105"
+            />
+            <span className="font-semibold text-lg tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+              AI Data Analysis
+            </span>
+          </Link>
+
+          {/* Navigation Links */}
+          <div className="hidden md:flex items-center space-x-7 text-sm font-medium text-[#515154] dark:text-[#a1a1a6]">
+            <Link to="/#features" className="hover:text-[#0071e3] dark:hover:text-white transition-colors duration-200">Features</Link>
+            <Link to="/#demo" className="hover:text-[#0071e3] dark:hover:text-white transition-colors duration-200">Interactive Demo</Link>
+            <Link to="/docs" className="text-[#0071e3] dark:text-white font-semibold transition-colors duration-200">Documentation</Link>
+            <Link to="/faq" className="hover:text-[#0071e3] dark:hover:text-white transition-colors duration-200">FAQs</Link>
           </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center space-x-3">
+            <ThemeToggle />
+            <Link to="/login" className="hidden sm:inline-block text-[#515154] dark:text-[#a1a1a6] hover:text-[#0071e3] dark:hover:text-white font-medium text-sm transition-colors px-3 py-1.5 rounded-lg hover:bg-black/[0.04] dark:hover:bg-white/[0.06]">
+              Sign In
+            </Link>
+            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+              <Link to="/register" className="relative group inline-flex items-center justify-center px-4 py-2 rounded-full text-white text-sm font-medium bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] transition-all duration-300">
+                <span className="relative flex items-center gap-1.5">
+                  Get Started
+                </span>
+              </Link>
+            </motion.div>
+          </div>
+
         </div>
-      </nav>
+      </motion.nav>
 
-      <section className="pt-40 pb-32 relative">
+      {/* Main Content */}
+      <section className="pt-36 pb-28 relative z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-5xl font-bold tracking-tight mb-8">Documentation</h1>
-          <div className="prose prose-lg dark:prose-invert max-w-none">
-            <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed mb-12">
-              Welcome to the AI Data Analyst documentation. Here you will find everything you need to know about preparing your data, running queries, and understanding the architecture of the platform.
+          
+          <div className="mb-12">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 text-[#0071e3] text-xs font-semibold uppercase tracking-wider mb-4 border border-blue-100">
+              <BookOpen className="w-3.5 h-3.5" /> Technical Reference & User Guide
+            </div>
+            <h1 className="text-4xl sm:text-5xl tracking-tight mb-4 text-[#1d1d1f] dark:text-[#f5f5f7]">
+              <span className="font-kaushan text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] via-[#5e5ce6] to-[#af52de] dark:from-blue-400 dark:via-indigo-300 dark:to-purple-300">
+                Documentation
+              </span>
+            </h1>
+            <p className="text-lg text-[#6e6e73] dark:text-[#a1a1a6] leading-relaxed font-normal">
+              Welcome to the AI Data Analysis documentation. Learn how to prepare your data, execute natural language queries, and understand the platform architecture.
             </p>
-            
-            <div className="space-y-12">
-              <div className="bg-white/80 dark:bg-gray-900/40 backdrop-blur-md rounded-2xl p-8 border border-gray-200/50 dark:border-gray-800/50 shadow-sm">
+          </div>
+
+          <div className="prose prose-lg dark:prose-invert max-w-none">
+            <div className="space-y-6">
+              
+              {/* Section 1 */}
+              <div className="macos-card p-8 group">
                 <div className="flex items-center space-x-4 mb-6">
-                  <div className="w-12 h-12 bg-brand-500/10 rounded-xl flex items-center justify-center text-brand-600 dark:text-brand-400">
-                    <FileText className="w-6 h-6" />
+                  <div className="w-11 h-11 bg-blue-50 dark:bg-blue-950/60 text-[#0071e3] dark:text-blue-400 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105">
+                    <FileSpreadsheet className="w-6 h-6" />
                   </div>
-                  <h2 className="text-2xl font-bold m-0">Supported File Formats</h2>
+                  <h2 className="text-2xl font-bold m-0 text-[#1d1d1f] dark:text-[#f5f5f7]">Supported File Formats</h2>
                 </div>
-                <p className="mb-4">Our engine currently supports the following formats out of the box:</p>
-                <ul className="list-disc pl-6 space-y-2">
-                  <li><strong>CSV (.csv):</strong> Standard comma-separated values. Ensure headers are present on the first row.</li>
-                  <li><strong>Excel (.xlsx, .xls):</strong> The engine will read the first active sheet.</li>
-                  <li><strong>SQLite (.db, .sqlite):</strong> Connect directly to lightweight database files.</li>
+                <p className="mb-4 text-sm sm:text-base text-[#6e6e73] dark:text-[#a1a1a6]">Our engine currently supports the following formats out of the box:</p>
+                <ul className="list-disc pl-6 space-y-2 text-sm sm:text-base text-[#1d1d1f] dark:text-[#f5f5f7]">
+                  <li><strong className="text-[#0071e3] dark:text-blue-400">CSV (.csv):</strong> Standard comma-separated values. Ensure column headers are present on the first row.</li>
+                  <li><strong className="text-[#0071e3] dark:text-blue-400">Excel (.xlsx, .xls):</strong> The engine reads the first active sheet and infers types automatically.</li>
+                  <li><strong className="text-[#0071e3] dark:text-blue-400">SQLite (.db, .sqlite):</strong> Connect and inspect multi-table database schemas natively.</li>
+                  <li><strong className="text-[#0071e3] dark:text-blue-400">SQL Dumps (.sql):</strong> Load raw DDL and INSERT statements into temporary tables.</li>
                 </ul>
               </div>
 
-              <div className="bg-white/80 dark:bg-gray-900/40 backdrop-blur-md rounded-2xl p-8 border border-gray-200/50 dark:border-gray-800/50 shadow-sm">
+              {/* Section 2: Security & Privacy Architecture */}
+              <div className="macos-card p-8 group">
                 <div className="flex items-center space-x-4 mb-6">
-                  <div className="w-12 h-12 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                    <Lock className="w-6 h-6" />
+                  <div className="w-11 h-11 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105">
+                    <ShieldCheck className="w-6 h-6" />
                   </div>
-                  <h2 className="text-2xl font-bold m-0">Security & Privacy</h2>
+                  <h2 className="text-2xl font-bold m-0 text-[#1d1d1f] dark:text-[#f5f5f7]">Security & Privacy Architecture</h2>
                 </div>
-                <p>We take data privacy extremely seriously. Because we utilize <strong>DuckDB</strong> in-memory sessions, your uploaded data resides in a completely isolated, temporary environment.</p>
-                <p className="mt-4">When you interact with the AI, we <strong>never</strong> send your raw row data to the LLM. We only transmit the schema definitions (column names and data types) alongside your natural language prompt so the model can generate the appropriate SQL query.</p>
+                <p className="text-sm sm:text-base text-[#6e6e73] dark:text-[#a1a1a6] leading-relaxed font-normal">
+                  We take data privacy seriously. By leveraging <strong className="text-[#1d1d1f] dark:text-[#f5f5f7]">DuckDB</strong> in-memory sessions, your uploaded data resides in a completely isolated, volatile memory space.
+                </p>
+                <p className="mt-4 text-sm sm:text-base text-[#6e6e73] dark:text-[#a1a1a6] leading-relaxed font-normal">
+                  When you converse with the AI, we <strong className="text-[#1d1d1f] dark:text-[#f5f5f7]">never</strong> send your raw table rows to the LLM. We only transmit the schema definitions (column names and data types) alongside your natural language query so the model can generate accurate SQL.
+                </p>
               </div>
 
-              <div className="bg-white/80 dark:bg-gray-900/40 backdrop-blur-md rounded-2xl p-8 border border-gray-200/50 dark:border-gray-800/50 shadow-sm">
+              {/* Section 3: Interactive Plotly Visualizations */}
+              <div className="macos-card p-8 group">
                 <div className="flex items-center space-x-4 mb-6">
-                  <div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center text-purple-600 dark:text-purple-400">
-                    <Layout className="w-6 h-6" />
+                  <div className="w-11 h-11 bg-purple-50 dark:bg-purple-950/60 text-[#af52de] dark:text-purple-400 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105">
+                    <LineChart className="w-6 h-6" />
                   </div>
-                  <h2 className="text-2xl font-bold m-0">Interactive Charts</h2>
+                  <h2 className="text-2xl font-bold m-0 text-[#1d1d1f] dark:text-[#f5f5f7]">Interactive Plotly Visualizations</h2>
                 </div>
-                <p>The platform automatically detects the intent of your query and generates the most appropriate chart using Plotly.js.</p>
-                <p className="mt-4">You can use the built-in Plotly toolbar on every chart to:</p>
-                <ul className="list-disc pl-6 space-y-2 mt-2">
-                  <li>Zoom into specific data clusters.</li>
-                  <li>Pan across time-series data.</li>
-                  <li>Download high-resolution PNGs directly to your device.</li>
+                <p className="text-sm sm:text-base text-[#6e6e73] dark:text-[#a1a1a6] leading-relaxed font-normal">
+                  The analytics engine analyzes your query results and automatically recommends and renders the ideal chart type (Bar, Line, Scatter, Pie, Heatmap).
+                </p>
+                <p className="mt-4 text-sm sm:text-base font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">Use the built-in Plotly control toolbar to:</p>
+                <ul className="list-disc pl-6 space-y-2 mt-2 text-sm sm:text-base text-[#6e6e73] dark:text-[#a1a1a6]">
+                  <li>Zoom into specific data ranges and outliers.</li>
+                  <li>Pan across continuous time-series data.</li>
+                  <li>Export publication-ready, high-resolution PNG charts directly to your device.</li>
                 </ul>
               </div>
+
             </div>
           </div>
         </div>
       </section>
 
-      <footer className="bg-white dark:bg-[#050505] border-t border-gray-200 dark:border-gray-800/50 py-12 text-center text-gray-500 dark:text-gray-400">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
-          <span className="font-medium">&copy; {new Date().getFullYear()} AI Data Analyst</span>
-          <div className="flex space-x-6 mt-4 md:mt-0 text-sm">
-            <Link to="/faq" className="hover:text-brand-600 dark:hover:text-white">FAQ</Link>
-            <Link to="/privacy" className="hover:text-brand-600 dark:hover:text-white">Privacy</Link>
-            <Link to="/terms" className="hover:text-brand-600 dark:hover:text-white">Terms</Link>
+      {/* Static Footer */}
+      <footer className="bg-white dark:bg-[#050505] border-t border-gray-200 dark:border-gray-800/50 py-12 text-gray-500 dark:text-gray-400 select-none">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <span className="font-medium">&copy; {new Date().getFullYear()} AI Data Analysis</span>
+          <div className="flex space-x-6 text-sm">
+            <Link to="/faq" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="text-gray-500 dark:text-gray-400">FAQs</Link>
+            <Link to="/privacy" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="text-gray-500 dark:text-gray-400">Privacy</Link>
+            <Link to="/terms" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="text-gray-500 dark:text-gray-400">Terms</Link>
           </div>
         </div>
       </footer>
