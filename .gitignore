@@ -1,30 +1,24 @@
 # Virtual Environments
 .venv/
-/.venv/
 backend/.venv/
 
-# Environment files
+# Environment Files
 .env
-.env.*
-.env.example
+backend/.env
+frontend/.env
+frontend/.env.local
 
-# Backend Config & Cache
+# Python Cache
 backend/__pycache__/
 backend/**/__pycache__/
-.env
-**/.env
 backend/uploads/*
 !backend/uploads/.gitkeep
 
-# Frontend Config & Cache
-node_modules/
+# Node / Frontend Build
+frontend/node_modules/
 frontend/dist/
 frontend/.eslintcache
 
 # OS
 .DS_Store
 Thumbs.db
-
-# Agent Artifacts
-*.md
-!README.md
