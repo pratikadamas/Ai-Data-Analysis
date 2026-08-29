@@ -173,7 +173,7 @@ npm run dev
 ### 🛡️ Admin Portal & Control Center (Frontend: `http://localhost:5173/admin` | Backend API: `http://localhost:8000/api/admin`)
 
 - **Role-Protected & Demo Auth**: Access via email/password or 1-click Demo Admin (`admin@demo.com`), secured by JWT Bearer tokens and admin role authorization.
-- **Groq API Usage Tracker**: Custom SVG daily bar chart and summary analytics tracking total LLM API calls, estimated token consumption, today's request count, and recorded days in MongoDB `groq_usage` collection.
+- **Groq API Usage Tracker with Date Range Filtering**: Custom SVG daily bar chart and summary analytics tracking total LLM API calls, estimated token consumption, today's request count, and recorded days in MongoDB `groq_usage` collection, with support for date range filters (`All Time`, `Today`, `Last 7 Days`, `Last 30 Days`, and Custom Start/End Date Pickers).
 - **Standalone Admin & User Directories**: Independent top-level tabs for **Admin Management** and **User Management** with server-side MongoDB `.skip()` / `.limit()` pagination, regex search, role badges, and verification status.
 - **Active WebApp User Session Tracker**: Thread-safe live session monitoring (`/api/admin/active-sessions`) tracking real-time active user sessions, admin vs standard user breakdown, idle time, and online state.
 - **System Health Diagnostics**: Real-time monitoring of MongoDB connectivity & ping response time (ms), active DuckDB in-memory connections, active webapp sessions, Groq API key readiness, and API latency.

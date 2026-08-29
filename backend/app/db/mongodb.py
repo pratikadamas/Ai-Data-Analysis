@@ -62,7 +62,7 @@ def track_groq_usage(call_type: str = "chat", tokens_estimated: int = 150) -> No
     """Record daily Groq API usage in MongoDB groq_usage collection."""
     try:
         from datetime import datetime
-        today = datetime.utcnow().strftime("%Y-%m-%d")
+        today = datetime.now().strftime("%Y-%m-%d")
         db.groq_usage.update_one(
             {"date": today},
             {
@@ -72,11 +72,12 @@ def track_groq_usage(call_type: str = "chat", tokens_estimated: int = 150) -> No
                     "tokens_estimated": tokens_estimated,
                 },
                 "$set": {
-                    "updated_at": datetime.utcnow(),
+                    "updated_at": datetime.now(),
                 },
             },
             upsert=True,
         )
+        logger.info(f"Groq API usage tracked successfully for date: {today}")
     except Exception as exc:
         logger.error(f"Failed to track Groq usage: {exc}")
 

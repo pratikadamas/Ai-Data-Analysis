@@ -20,6 +20,7 @@ import {
   Sparkles,
   ArrowUpRight,
   Filter,
+  Calendar,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -32,6 +33,9 @@ export default function Admin() {
   // --- Groq Usage State ---
   const [groqData, setGroqData] = useState(null);
   const [loadingGroq, setLoadingGroq] = useState(false);
+  const [groqRangeMode, setGroqRangeMode] = useState("all"); // all | today | 7days | 30days | custom
+  const [groqStartDate, setGroqStartDate] = useState("");
+  const [groqEndDate, setGroqEndDate] = useState("");
 
   // --- Users Paginated State ---
   const [users, setUsers] = useState([]);
@@ -103,12 +107,17 @@ export default function Admin() {
     }
   }, [getAdminAxios]);
 
-  // ── Fetch Groq API Usage Stats ─────────────────────────────────────────────
-  const fetchGroqUsage = useCallback(async () => {
+  // ── Fetch Groq API Usage Stats (with Date Filter) ─────────────────────────
+  const fetchGroqUsage = useCallback(async (start = groqStartDate, end = groqEndDate) => {
     setLoadingGroq(true);
     try {
       const axiosInst = getAdminAxios();
-      const res = await axiosInst.get("/api/admin/groq-usage");
+      const res = await axiosInst.get("/api/admin/groq-usage", {
+        params: {
+          start_date: start || undefined,
+          end_date: end || undefined,
+        },
+      });
       setGroqData(res.data);
     } catch (err) {
       if (err.response?.status === 401 || err.response?.status === 403) {
@@ -120,7 +129,46 @@ export default function Admin() {
     } finally {
       setLoadingGroq(false);
     }
-  }, [getAdminAxios, navigate]);
+  }, [getAdminAxios, navigate, groqStartDate, groqEndDate]);
+
+  // Quick Preset Date Range Selector
+  const handleGroqPresetRange = (mode) => {
+    setGroqRangeMode(mode);
+    const today = new Date();
+    const formatDate = (d) => {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    if (mode === "all") {
+      setGroqStartDate("");
+      setGroqEndDate("");
+      fetchGroqUsage("", "");
+    } else if (mode === "today") {
+      const tStr = formatDate(today);
+      setGroqStartDate(tStr);
+      setGroqEndDate(tStr);
+      fetchGroqUsage(tStr, tStr);
+    } else if (mode === "7days") {
+      const start = new Date();
+      start.setDate(today.getDate() - 6);
+      const sStr = formatDate(start);
+      const eStr = formatDate(today);
+      setGroqStartDate(sStr);
+      setGroqEndDate(eStr);
+      fetchGroqUsage(sStr, eStr);
+    } else if (mode === "30days") {
+      const start = new Date();
+      start.setDate(today.getDate() - 29);
+      const sStr = formatDate(start);
+      const eStr = formatDate(today);
+      setGroqStartDate(sStr);
+      setGroqEndDate(eStr);
+      fetchGroqUsage(sStr, eStr);
+    }
+  };
 
   // ── Fetch Paginated Users (MongoDB .skip & .limit) ───────────────────────
   const fetchUsers = useCallback(async (page = 1, limit = 10, search = "", role = "all") => {
@@ -441,17 +489,17 @@ export default function Admin() {
                 <p className="text-[11px] text-slate-400 mt-1">All-time Groq LLM requests</p>
               </div>
 
-              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+              <div className="bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-900/40 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
                     Today's Calls
                   </span>
                   <Clock className="w-4 h-4 text-emerald-500" />
                 </div>
-                <div className="text-2xl font-black tracking-tight text-emerald-600 dark:text-emerald-400">
-                  {groqData?.summary?.today_calls || 0}
+                <div className="text-3xl font-black tracking-tight text-emerald-600 dark:text-emerald-400">
+                  {groqData?.summary?.today_calls ?? 0}
                 </div>
-                <p className="text-[11px] text-slate-400 mt-1">Requests executed today</p>
+                <p className="text-[11px] text-slate-400 mt-1">Groq LLM calls executed today</p>
               </div>
 
               <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
@@ -478,6 +526,95 @@ export default function Admin() {
                   {groqData?.summary?.recorded_days || 0}
                 </div>
                 <p className="text-[11px] text-slate-400 mt-1">Days logged in MongoDB collection</p>
+              </div>
+            </div>
+
+            {/* Groq API Usage Date Filter Control Bar */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-4 rounded-2xl shadow-sm">
+              <div className="flex items-center space-x-2">
+                <Calendar className="w-4 h-4 text-blue-500" />
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                  Filter Usage By Date
+                </span>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="flex items-center space-x-1 p-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-semibold">
+                  <button
+                    onClick={() => handleGroqPresetRange("all")}
+                    className={`px-3 py-1.5 rounded-lg transition ${
+                      groqRangeMode === "all"
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10"
+                    }`}
+                  >
+                    All Time
+                  </button>
+                  <button
+                    onClick={() => handleGroqPresetRange("today")}
+                    className={`px-3 py-1.5 rounded-lg transition ${
+                      groqRangeMode === "today"
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10"
+                    }`}
+                  >
+                    Today
+                  </button>
+                  <button
+                    onClick={() => handleGroqPresetRange("7days")}
+                    className={`px-3 py-1.5 rounded-lg transition ${
+                      groqRangeMode === "7days"
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10"
+                    }`}
+                  >
+                    Last 7 Days
+                  </button>
+                  <button
+                    onClick={() => handleGroqPresetRange("30days")}
+                    className={`px-3 py-1.5 rounded-lg transition ${
+                      groqRangeMode === "30days"
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10"
+                    }`}
+                  >
+                    Last 30 Days
+                  </button>
+                  <button
+                    onClick={() => setGroqRangeMode("custom")}
+                    className={`px-3 py-1.5 rounded-lg transition ${
+                      groqRangeMode === "custom"
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10"
+                    }`}
+                  >
+                    Custom Date Range
+                  </button>
+                </div>
+
+                {groqRangeMode === "custom" && (
+                  <div className="flex items-center space-x-2 text-xs">
+                    <input
+                      type="date"
+                      value={groqStartDate}
+                      onChange={(e) => setGroqStartDate(e.target.value)}
+                      className="px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-medium focus:outline-none"
+                    />
+                    <span className="text-slate-400 font-semibold">to</span>
+                    <input
+                      type="date"
+                      value={groqEndDate}
+                      onChange={(e) => setGroqEndDate(e.target.value)}
+                      className="px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-medium focus:outline-none"
+                    />
+                    <button
+                      onClick={() => fetchGroqUsage(groqStartDate, groqEndDate)}
+                      className="px-3 py-1.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition active:scale-95 shadow-sm"
+                    >
+                      Apply Filter
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 

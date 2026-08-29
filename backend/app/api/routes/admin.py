@@ -251,13 +251,26 @@ async def get_system_logs(
     }
 
 
-# ── 5. Groq API Usage Analytics (Graphical Data) ──────────────────────────────
+# ── 5. Groq API Usage Analytics (with Date Range Filter) ────────────────────
 @router.get("/groq-usage")
 async def get_groq_usage(
+    start_date: str | None = Query(default=None, description="Start date YYYY-MM-DD"),
+    end_date: str | None = Query(default=None, description="End date YYYY-MM-DD"),
     admin_user: dict = Depends(get_admin_user),
 ) -> dict[str, Any]:
     usage_col = db["groq_usage"]
-    cursor = usage_col.find().sort("date", 1)
+
+    today_local = datetime.now().strftime("%Y-%m-%d")
+
+    date_filter: dict[str, Any] = {}
+    if start_date and end_date:
+        date_filter["date"] = {"$gte": start_date, "$lte": end_date}
+    elif start_date:
+        date_filter["date"] = {"$gte": start_date}
+    elif end_date:
+        date_filter["date"] = {"$lte": end_date}
+
+    cursor = usage_col.find(date_filter).sort("date", 1)
 
     daily_records = []
     total_calls_all_time = 0
@@ -282,12 +295,15 @@ async def get_groq_usage(
             "calls_breakdown": doc.get("calls", {}),
         })
 
-    today_str = datetime.utcnow().strftime("%Y-%m-%d")
-    today_doc = usage_col.find_one({"date": today_str})
+    today_doc = usage_col.find_one({"date": today_local})
     today_calls = today_doc.get("total_calls", 0) if today_doc else 0
 
     return {
         "daily_records": daily_records,
+        "filter": {
+            "start_date": start_date,
+            "end_date": end_date,
+        },
         "summary": {
             "total_calls_all_time": total_calls_all_time,
             "total_tokens_all_time": total_tokens_all_time,
