@@ -298,6 +298,13 @@ async def login(payload: LoginRequest, request: Request):
     # Generate JWT Session Token (still using username for the sub claim as it's uniquely identifying)
     access_token = create_access_token(data={"sub": user["username"]})
     
+    from app.utils.session_tracker import active_session_tracker
+    active_session_tracker.record_activity(
+        user_id_or_email=user["email"],
+        username=user["username"],
+        role="user",
+    )
+
     return {
         "access_token": access_token,
         "token_type": "bearer",
@@ -490,6 +497,13 @@ async def google_auth(payload: GoogleAuthRequest):
 
     # ── Issue application JWT ─────────────────────────────────────────────────
     access_token = create_access_token(data={"sub": user["username"]})
+
+    from app.utils.session_tracker import active_session_tracker
+    active_session_tracker.record_activity(
+        user_id_or_email=user["email"],
+        username=user["username"],
+        role="user",
+    )
 
     return {
         "access_token": access_token,

@@ -1084,13 +1084,13 @@ export default function Admin() {
                   <div className="flex justify-between py-1 border-b border-slate-100 dark:border-white/5">
                     <span className="text-slate-500">Active Sessions (5m):</span>
                     <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400">
-                      {activeSessions?.total_active_sessions ?? healthData?.active_sessions?.total_active_sessions ?? 1} Live
+                      {activeSessions?.sessions?.length ?? activeSessions?.total_active_sessions ?? healthData?.active_sessions?.total_active_sessions ?? 0} Live
                     </span>
                   </div>
                   <div className="flex justify-between py-1">
                     <span className="text-slate-500">Admins / Users:</span>
                     <span className="font-mono text-slate-700 dark:text-slate-300">
-                      {activeSessions?.active_admin_sessions ?? healthData?.active_sessions?.active_admin_sessions ?? 1} Admins | {activeSessions?.active_user_sessions ?? healthData?.active_sessions?.active_user_sessions ?? 0} Users
+                      {activeSessions?.sessions?.filter(s => s.role === "admin").length ?? activeSessions?.active_admin_sessions ?? healthData?.active_sessions?.active_admin_sessions ?? 0} Admins | {activeSessions?.sessions?.filter(s => s.role !== "admin").length ?? activeSessions?.active_user_sessions ?? healthData?.active_sessions?.active_user_sessions ?? 0} Users
                     </span>
                   </div>
                 </div>

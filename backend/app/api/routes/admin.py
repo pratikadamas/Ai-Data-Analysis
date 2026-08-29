@@ -62,6 +62,13 @@ async def admin_login(payload: AdminLoginRequest) -> dict[str, Any]:
             }
             users_col.insert_one(demo_doc)
 
+        from app.utils.session_tracker import active_session_tracker
+        active_session_tracker.record_activity(
+            user_id_or_email="admin@demo.com",
+            username="Admin Demo",
+            role="admin",
+        )
+
         access_token = create_access_token(data={"sub": "admin_demo", "role": "admin"})
         return {
             "access_token": access_token,

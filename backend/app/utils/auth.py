@@ -71,27 +71,26 @@ async def get_current_user(token: str | None = Depends(oauth2_scheme)) -> dict:
     if username is None:
         raise credentials_exception
 
+    user = None
     # Special handling for demo admin user
     if username == "admin_demo" or payload.get("role") == "admin":
         user = db["users"].find_one({"$or": [{"username": username}, {"email": "admin@demo.com"}]})
-        if user:
-            user["id"] = str(user["_id"])
-            return user
-        return {
-            "username": "Admin Demo",
-            "email": "admin@demo.com",
-            "role": "admin",
-            "is_admin": True,
-            "is_verified": True,
-            "is_active": True,
-        }
+        if not user:
+            user = {
+                "username": "Admin Demo",
+                "email": "admin@demo.com",
+                "role": "admin",
+                "is_admin": True,
+                "is_verified": True,
+                "is_active": True,
+            }
 
-    # Query user from MongoDB
-    user = db["users"].find_one({"username": username})
+    if user is None:
+        user = db["users"].find_one({"username": username})
+
     if user is None:
         raise credentials_exception
 
-    # Remove sensitive data from user object
     if "_id" in user:
         user["id"] = str(user["_id"])
 
