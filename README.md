@@ -26,6 +26,7 @@
 - 🤖 **Conversational AI Analysis**: Ask questions in plain English. The AI generates verified SQL queries, markdown explanations, interactive Plotly visualizations, and downloadable HTML reports.
 - 📊 **Auto-Explore & Visualizer**: Interactive chart builder with dynamic aggregation (`SUM`, `AVG`, `COUNT`, `MIN`, `MAX`) across 7 chart types.
 - 💻 **SQL Editor & Schema Explorer**: Live table schema explorer, syntax validation, and instant table preview with export options.
+- 🛡️ **Admin Portal & Control Center**: Dedicated management dashboard for Groq LLM API analytics, paginated user management, system health diagnostics, and live backend log streaming.
 - 📱 **Adaptive Responsive Design**: Natural 120Hz physics on desktop, floating iOS top-pill toast notifications, and compact mobile bottom dock.
 
 ## 📚 Documentation
@@ -45,12 +46,12 @@
 ai-data-analyst/
   backend/                  ⚙️ FastAPI + DuckDB service
     app/
-      api/routes/           🌐 upload, explore, chat, dataset, sql_editor, auth endpoints
+      api/routes/           🌐 upload, explore, chat, dataset, sql_editor, auth, admin endpoints
       services/             🧠 file_loader, schema_service, llm_service, chart_service
       validation/           🛡️ sql_validator (whitelist-based SQL safety checks)
       models/               📦 Pydantic request/response schemas
       db/                   🗄️ DuckDBManager (per-dataset in-memory connections) & MongoDB
-      utils/                🛠️ filename sanitizing, extension detection
+      utils/                🛠️ filename sanitizing, auth, logger_streamer, firebase_admin_sdk
       main.py               🚀 FastAPI app + router wiring
     requirements.txt        📝 Python dependencies
     .env.example            🔐 Example environment variables
@@ -65,7 +66,7 @@ ai-data-analyst/
         preview/            👀 PreviewTable (AG Grid compact data preview)
         upload/             ☁️ UploadArea (drag-and-drop seamless dropzone)
         auth/               🔐 Auth modal, OTP verification, password reset
-      pages/                🏠 Dashboard.jsx, LandingPage.jsx, Docs.jsx, FaqPage.jsx
+      pages/                🏠 Dashboard.jsx, LandingPage.jsx, Admin.jsx, AdminAuth.jsx, Docs.jsx, FaqPage.jsx
       context/              🧠 DatasetContext & UserContext
       services/             🔌 api.js (Axios client)
       utils/                📄 exportChat.js (HTML report generator)
@@ -168,6 +169,14 @@ npm run dev
 - **Secure JWT Session Management**: Email verification with 6-digit OTPs, bcrypt hashed passwords, and password resets.
 - **Persistent Header Profile**: Real-time user avatar, username display, modal window with outside-click dismissal, and account settings.
 
+### 🛡️ Admin Portal & Control Center (`/api/admin` & `/admin`)
+
+- **Role-Protected & Demo Auth**: Access via email/password or 1-click Demo Admin (`admin@demo.com`), secured by JWT Bearer tokens and admin role authorization.
+- **Groq API Usage Tracker**: Custom SVG daily bar chart and summary analytics tracking total LLM API calls, estimated token consumption, today's request count, and recorded days in MongoDB `groq_usage` collection.
+- **Server-Side Paginated User Management**: Live user table with MongoDB `.skip()` and `.limit()` pagination, regex search (username/email), role badges, and verification indicators.
+- **System Health Diagnostics**: Real-time monitoring of MongoDB connectivity & ping response time (ms), active DuckDB in-memory connections, Groq API key readiness, and API latency.
+- **Live System Log Streamer**: In-memory ring buffer log capture streaming real-time FastAPI logs with log level filtering (`ALL`, `INFO`, `WARNING`, `ERROR`), search filtering, and 3-second live auto-refresh.
+
 ### 🎨 Modern Apple macOS Studio UI
 
 - **120Hz Smooth Inertia Scrolling**: Powered by Lenis with dynamic interactive spring animations.
@@ -179,6 +188,7 @@ npm run dev
 ## 🔮 Future Roadmap
 
 - [x] 🔐 Auth and user sessions with OTP email verification
+- [x] 🛡️ Admin Portal with user management, Groq LLM analytics, health checks, & live log streamer
 - [x] 🎨 Apple macOS / MacBook Pro design system with dark & light theme persistence
 - [x] ⚡ 120Hz Lenis smooth inertial scrolling
 - [ ] 📌 Saved/named dashboards
