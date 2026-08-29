@@ -35,10 +35,13 @@ export default function Admin() {
 
   // --- Users Paginated State ---
   const [users, setUsers] = useState([]);
+  const [userRoleFilter, setUserRoleFilter] = useState("all"); // all | admin | user
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
     total_users: 0,
+    admin_count: 0,
+    standard_user_count: 0,
     total_pages: 1,
     has_next: false,
     has_prev: false,
@@ -106,12 +109,17 @@ export default function Admin() {
   }, [getAdminAxios, navigate]);
 
   // ── Fetch Paginated Users (MongoDB .skip & .limit) ───────────────────────
-  const fetchUsers = useCallback(async (page = 1, limit = 10, search = "") => {
+  const fetchUsers = useCallback(async (page = 1, limit = 10, search = "", role = "all") => {
     setLoadingUsers(true);
     try {
       const axiosInst = getAdminAxios();
       const res = await axiosInst.get("/api/admin/users", {
-        params: { page, limit, search: search.trim() || undefined },
+        params: {
+          page,
+          limit,
+          search: search.trim() || undefined,
+          role: role === "all" ? undefined : role,
+        },
       });
       setUsers(res.data.users);
       setPagination(res.data.pagination);
@@ -159,7 +167,8 @@ export default function Admin() {
   // Initial tab fetch triggers
   useEffect(() => {
     if (activeTab === "groq") fetchGroqUsage();
-    if (activeTab === "users") fetchUsers(pagination.page, pagination.limit, userSearch);
+    if (activeTab === "admins") fetchUsers(1, pagination.limit, userSearch, "admin");
+    if (activeTab === "users") fetchUsers(1, pagination.limit, userSearch, "user");
     if (activeTab === "health") fetchHealth();
     if (activeTab === "logs") fetchLogs();
   }, [activeTab]);
@@ -350,6 +359,18 @@ export default function Admin() {
           </button>
 
           <button
+            onClick={() => setActiveTab("admins")}
+            className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-xs transition-all whitespace-nowrap ${
+              activeTab === "admins"
+                ? "bg-purple-600 text-white shadow-md shadow-purple-500/20"
+                : "text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-white/5"
+            }`}
+          >
+            <ShieldCheck className="w-4 h-4 text-purple-200" />
+            <span>Admin Management</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab("users")}
             className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-xs transition-all whitespace-nowrap ${
               activeTab === "users"
@@ -358,7 +379,7 @@ export default function Admin() {
             }`}
           >
             <Users className="w-4 h-4" />
-            <span>User Management (Paginated)</span>
+            <span>User Management</span>
           </button>
 
           <button
@@ -454,11 +475,44 @@ export default function Admin() {
           </div>
         )}
 
-        {/* ── TAB 2: User Management (MongoDB Paginated) ────────────────────── */}
-        {activeTab === "users" && (
-          <div className="space-y-4">
-            
-            {/* Filter and Search Bar */}
+        {/* ── TAB 2: Admin Management (Dedicated Section) ─────────────────── */}
+        {activeTab === "admins" && (
+          <div className="space-y-6">
+            {/* Header Cards Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-900/40 p-5 rounded-2xl shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
+                    Total Administrator Accounts
+                  </span>
+                  <ShieldCheck className="w-5 h-5 text-purple-500" />
+                </div>
+                <div className="text-3xl font-black text-purple-600 dark:text-purple-400">
+                  {pagination.admin_count || pagination.total_users || 0}
+                </div>
+                <p className="text-[11px] text-slate-400 mt-1">Users with administrator privileges</p>
+              </div>
+
+              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Active Admin Sessions</span>
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                </div>
+                <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400">1 Active</div>
+                <p className="text-[11px] text-slate-400 mt-1">Current logged-in admin session</p>
+              </div>
+
+              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Security Access Level</span>
+                  <Sparkles className="w-5 h-5 text-indigo-500" />
+                </div>
+                <div className="text-3xl font-black text-slate-800 dark:text-slate-200">Super Admin</div>
+                <p className="text-[11px] text-slate-400 mt-1">MongoDB & DuckDB system control</p>
+              </div>
+            </div>
+
+            {/* Admin Controls & Search Bar */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-4 rounded-2xl shadow-sm">
               <div className="relative w-full sm:w-80">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -467,10 +521,10 @@ export default function Admin() {
                   value={userSearch}
                   onChange={(e) => {
                     setUserSearch(e.target.value);
-                    fetchUsers(1, pagination.limit, e.target.value);
+                    fetchUsers(1, pagination.limit, e.target.value, "admin");
                   }}
-                  placeholder="Search by username or email..."
-                  className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  placeholder="Search admin username or email..."
+                  className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
                 />
               </div>
 
@@ -480,7 +534,7 @@ export default function Admin() {
                   value={pagination.limit}
                   onChange={(e) => {
                     const newLimit = Number(e.target.value);
-                    fetchUsers(1, newLimit, userSearch);
+                    fetchUsers(1, newLimit, userSearch, "admin");
                   }}
                   className="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-semibold focus:outline-none"
                 >
@@ -491,7 +545,181 @@ export default function Admin() {
                 </select>
 
                 <button
-                  onClick={() => fetchUsers(pagination.page, pagination.limit, userSearch)}
+                  onClick={() => fetchUsers(pagination.page, pagination.limit, userSearch, "admin")}
+                  className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 border border-slate-200 dark:border-white/10 transition"
+                  title="Refresh Admin List"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${loadingUsers ? "animate-spin" : ""}`} />
+                </button>
+              </div>
+            </div>
+
+            {/* Admin Table */}
+            <div className="bg-white dark:bg-[#161618] border border-purple-200 dark:border-purple-900/40 rounded-2xl overflow-hidden shadow-sm">
+              <div className="px-5 py-3.5 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/40 dark:to-indigo-950/40 border-b border-purple-200/60 dark:border-purple-800/30 flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <ShieldCheck className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                  <h3 className="font-bold text-xs uppercase tracking-wider text-purple-900 dark:text-purple-200">
+                    Administrator Accounts Directory
+                  </h3>
+                </div>
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-purple-200/60 dark:bg-purple-900/60 text-purple-800 dark:text-purple-200">
+                  {pagination.total_users || 0} Admins Found
+                </span>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50/50 dark:bg-white/[0.01] border-b border-slate-200 dark:border-white/10 text-slate-500 font-semibold uppercase tracking-wider">
+                    <tr>
+                      <th className="py-3.5 px-4">Admin User</th>
+                      <th className="py-3.5 px-4">Email</th>
+                      <th className="py-3.5 px-4">Role & Privileges</th>
+                      <th className="py-3.5 px-4">Account Status</th>
+                      <th className="py-3.5 px-4">Joined Date</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                    {loadingUsers ? (
+                      <tr>
+                        <td colSpan={5} className="py-8 text-center text-slate-400">Loading admin accounts...</td>
+                      </tr>
+                    ) : users.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="py-8 text-center text-slate-400">No administrator accounts found.</td>
+                      </tr>
+                    ) : (
+                      users.map((u) => (
+                        <tr key={u._id} className="hover:bg-purple-50/30 dark:hover:bg-purple-950/10 transition">
+                          <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                            <div className="w-7 h-7 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-xs">
+                              {u.username?.[0]?.toUpperCase() || "A"}
+                            </div>
+                            <span>{u.username}</span>
+                          </td>
+                          <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">{u.email}</td>
+                          <td className="py-3.5 px-4">
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-800">
+                              ADMINISTRATOR
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300">
+                              Active & Verified
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4 text-slate-500 font-mono text-[11px]">
+                            {u.created_at ? new Date(u.created_at).toLocaleDateString() : "N/A"}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Server-side Pagination */}
+              <div className="flex items-center justify-between px-4 py-3 bg-slate-50/50 dark:bg-white/[0.02] border-t border-slate-200 dark:border-white/10 text-xs text-slate-500">
+                <div>
+                  Showing page <span className="font-semibold text-slate-800 dark:text-slate-200">{pagination.page}</span> of{" "}
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{pagination.total_pages}</span> (
+                  <span className="font-medium">{pagination.total_users} total admins</span>)
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <button
+                    disabled={!pagination.has_prev || loadingUsers}
+                    onClick={() => fetchUsers(pagination.page - 1, pagination.limit, userSearch, "admin")}
+                    className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 disabled:opacity-40 transition"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    disabled={!pagination.has_next || loadingUsers}
+                    onClick={() => fetchUsers(pagination.page + 1, pagination.limit, userSearch, "admin")}
+                    className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 disabled:opacity-40 transition"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB 3: Standard User Management (Dedicated Section) ─────────── */}
+        {activeTab === "users" && (
+          <div className="space-y-6">
+            {/* Header Cards Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-900/40 p-5 rounded-2xl shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+                    Total Standard Users
+                  </span>
+                  <Users className="w-5 h-5 text-indigo-500" />
+                </div>
+                <div className="text-3xl font-black text-indigo-600 dark:text-indigo-400">
+                  {pagination.standard_user_count || pagination.total_users || 0}
+                </div>
+                <p className="text-[11px] text-slate-400 mt-1">Application end-user accounts</p>
+              </div>
+
+              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Verified Accounts</span>
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                </div>
+                <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
+                  {users.filter(u => u.is_verified).length} Verified
+                </div>
+                <p className="text-[11px] text-slate-400 mt-1">OTP verified user emails</p>
+              </div>
+
+              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Database Isolation</span>
+                  <Database className="w-5 h-5 text-blue-500" />
+                </div>
+                <div className="text-3xl font-black text-slate-800 dark:text-slate-200">MongoDB</div>
+                <p className="text-[11px] text-slate-400 mt-1">Per-session isolated data</p>
+              </div>
+            </div>
+
+            {/* User Controls & Search Bar */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-4 rounded-2xl shadow-sm">
+              <div className="relative w-full sm:w-80">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={userSearch}
+                  onChange={(e) => {
+                    setUserSearch(e.target.value);
+                    fetchUsers(1, pagination.limit, e.target.value, "user");
+                  }}
+                  placeholder="Search standard user username or email..."
+                  className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                />
+              </div>
+
+              <div className="flex items-center space-x-3 text-xs">
+                <span className="text-slate-500 font-medium">Rows per page:</span>
+                <select
+                  value={pagination.limit}
+                  onChange={(e) => {
+                    const newLimit = Number(e.target.value);
+                    fetchUsers(1, newLimit, userSearch, "user");
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-semibold focus:outline-none"
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                </select>
+
+                <button
+                  onClick={() => fetchUsers(pagination.page, pagination.limit, userSearch, "user")}
                   className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 border border-slate-200 dark:border-white/10 transition"
                   title="Refresh User List"
                 >
@@ -500,8 +728,20 @@ export default function Admin() {
               </div>
             </div>
 
-            {/* Users Table */}
+            {/* Standard User Table */}
             <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">
+              <div className="px-5 py-3.5 bg-slate-50/80 dark:bg-white/[0.03] border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Users className="w-4 h-4 text-indigo-500" />
+                  <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                    Standard User Accounts Directory
+                  </h3>
+                </div>
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-slate-300">
+                  {pagination.total_users || 0} Users Found
+                </span>
+              </div>
+
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-slate-50 dark:bg-white/[0.02] border-b border-slate-200 dark:border-white/10 text-slate-500 font-semibold uppercase tracking-wider">
@@ -516,32 +756,25 @@ export default function Admin() {
                   <tbody className="divide-y divide-slate-100 dark:divide-white/5">
                     {loadingUsers ? (
                       <tr>
-                        <td colSpan={5} className="py-8 text-center text-slate-400">
-                          Fetching users via MongoDB pagination...
-                        </td>
+                        <td colSpan={5} className="py-8 text-center text-slate-400">Loading user accounts...</td>
                       </tr>
                     ) : users.length === 0 ? (
                       <tr>
-                        <td colSpan={5} className="py-8 text-center text-slate-400">
-                          No users found matching query.
-                        </td>
+                        <td colSpan={5} className="py-8 text-center text-slate-400">No standard user accounts found.</td>
                       </tr>
                     ) : (
                       users.map((u) => (
                         <tr key={u._id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition">
-                          <td className="py-3.5 px-4 font-semibold text-slate-800 dark:text-slate-200">
-                            {u.username}
+                          <td className="py-3.5 px-4 font-semibold text-slate-800 dark:text-slate-200 flex items-center space-x-2">
+                            <div className="w-7 h-7 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs">
+                              {u.username?.[0]?.toUpperCase() || "U"}
+                            </div>
+                            <span>{u.username}</span>
                           </td>
-                          <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">
-                            {u.email}
-                          </td>
+                          <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">{u.email}</td>
                           <td className="py-3.5 px-4">
-                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                              u.role === "admin" || u.is_admin
-                                ? "bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300"
-                                : "bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300"
-                            }`}>
-                              {u.role || "user"}
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-medium uppercase bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300">
+                              Standard User
                             </span>
                           </td>
                           <td className="py-3.5 px-4">
@@ -563,7 +796,7 @@ export default function Admin() {
                 </table>
               </div>
 
-              {/* Server-side Pagination Controls */}
+              {/* Server-side Pagination */}
               <div className="flex items-center justify-between px-4 py-3 bg-slate-50/50 dark:bg-white/[0.02] border-t border-slate-200 dark:border-white/10 text-xs text-slate-500">
                 <div>
                   Showing page <span className="font-semibold text-slate-800 dark:text-slate-200">{pagination.page}</span> of{" "}
@@ -574,14 +807,14 @@ export default function Admin() {
                 <div className="flex items-center space-x-2">
                   <button
                     disabled={!pagination.has_prev || loadingUsers}
-                    onClick={() => fetchUsers(pagination.page - 1, pagination.limit, userSearch)}
+                    onClick={() => fetchUsers(pagination.page - 1, pagination.limit, userSearch, "user")}
                     className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 disabled:opacity-40 transition"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
                   <button
                     disabled={!pagination.has_next || loadingUsers}
-                    onClick={() => fetchUsers(pagination.page + 1, pagination.limit, userSearch)}
+                    onClick={() => fetchUsers(pagination.page + 1, pagination.limit, userSearch, "user")}
                     className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 disabled:opacity-40 transition"
                   >
                     <ChevronRight className="w-4 h-4" />

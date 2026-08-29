@@ -120,12 +120,29 @@ async def get_paginated_users(
     page: int = Query(default=1, ge=1),
     limit: int = Query(default=10, ge=1, le=100),
     search: str | None = Query(default=None),
+    role: str | None = Query(default=None),
     admin_user: dict = Depends(get_admin_user),
 ) -> dict[str, Any]:
     users_col = db["users"]
     query: dict[str, Any] = {}
 
-    if search:
+    if role == "admin":
+        admin_match = [{"role": "admin"}, {"is_admin": True}]
+        if search:
+            s = search.strip()
+            search_match = [{"username": {"$regex": s, "$options": "i"}}, {"email": {"$regex": s, "$options": "i"}}]
+            query = {"$and": [{"$or": admin_match}, {"$or": search_match}]}
+        else:
+            query = {"$or": admin_match}
+    elif role == "user":
+        user_match = {"role": {"$ne": "admin"}, "is_admin": {"$ne": True}}
+        if search:
+            s = search.strip()
+            search_match = [{"username": {"$regex": s, "$options": "i"}}, {"email": {"$regex": s, "$options": "i"}}]
+            query = {"$and": [user_match, {"$or": search_match}]}
+        else:
+            query = user_match
+    elif search:
         s = search.strip()
         query["$or"] = [
             {"username": {"$regex": s, "$options": "i"}},
@@ -133,6 +150,9 @@ async def get_paginated_users(
         ]
 
     total_users = users_col.count_documents(query)
+    admin_count = users_col.count_documents({"$or": [{"role": "admin"}, {"is_admin": True}]})
+    standard_user_count = users_col.count_documents({"role": {"$ne": "admin"}, "is_admin": {"$ne": True}})
+
     skip = (page - 1) * limit
 
     # Perform server-side pagination with skip and limit
@@ -158,6 +178,8 @@ async def get_paginated_users(
             "page": page,
             "limit": limit,
             "total_users": total_users,
+            "admin_count": admin_count,
+            "standard_user_count": standard_user_count,
             "total_pages": max(total_pages, 1),
             "has_next": page < total_pages,
             "has_prev": page > 1,
