@@ -111,14 +111,12 @@ async def upload_dataset(
                 raise HTTPException(status_code=422, detail=str(exc)) from exc
         except Exception as exc:  # noqa: BLE001 - surfaced as a clean 400 to the client
             logger.exception("File processing failed for %s: %s", safe_name, exc)
+            if dest_path.exists():
+                dest_path.unlink(missing_ok=True)
             if len(files) == 1:
                 if len(duckdb_manager.get_table_names(dataset_id)) == 0:
                     duckdb_manager.drop_connection(dataset_id)
                 raise HTTPException(status_code=400, detail=f"Failed to process file '{safe_name}': {exc}") from exc
-        finally:
-            # Delete the temp file from disk once loaded into DuckDB
-            if dest_path.exists():
-                dest_path.unlink(missing_ok=True)
 
     if not file_infos:
         if len(duckdb_manager.get_table_names(dataset_id)) == 0:

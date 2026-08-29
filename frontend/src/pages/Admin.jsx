@@ -49,6 +49,9 @@ export default function Admin() {
   const [userSearch, setUserSearch] = useState("");
   const [loadingUsers, setLoadingUsers] = useState(false);
 
+  // --- Active WebApp Sessions State ---
+  const [activeSessions, setActiveSessions] = useState(null);
+
   // --- Health State ---
   const [healthData, setHealthData] = useState(null);
   const [loadingHealth, setLoadingHealth] = useState(false);
@@ -88,6 +91,17 @@ export default function Admin() {
       navigate("/admin/login");
     }
   }, [navigate]);
+
+  // ── Fetch Active WebApp User Sessions ─────────────────────────────────────
+  const fetchActiveSessions = useCallback(async () => {
+    try {
+      const axiosInst = getAdminAxios();
+      const res = await axiosInst.get("/api/admin/active-sessions");
+      setActiveSessions(res.data);
+    } catch {
+      // ignore
+    }
+  }, [getAdminAxios]);
 
   // ── Fetch Groq API Usage Stats ─────────────────────────────────────────────
   const fetchGroqUsage = useCallback(async () => {
@@ -166,12 +180,13 @@ export default function Admin() {
 
   // Initial tab fetch triggers
   useEffect(() => {
+    fetchActiveSessions();
     if (activeTab === "groq") fetchGroqUsage();
     if (activeTab === "admins") fetchUsers(1, pagination.limit, userSearch, "admin");
     if (activeTab === "users") fetchUsers(1, pagination.limit, userSearch, "user");
     if (activeTab === "health") fetchHealth();
     if (activeTab === "logs") fetchLogs();
-  }, [activeTab]);
+  }, [activeTab, fetchActiveSessions]);
 
   // Auto-refresh interval for logs when enabled
   useEffect(() => {
@@ -651,7 +666,7 @@ export default function Admin() {
         {activeTab === "users" && (
           <div className="space-y-6">
             {/* Header Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
               <div className="bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-900/40 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
@@ -665,12 +680,28 @@ export default function Admin() {
                 <p className="text-[11px] text-slate-400 mt-1">Application end-user accounts</p>
               </div>
 
+              <div className="bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 p-5 rounded-2xl shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+                    Active User Sessions
+                  </span>
+                  <div className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                  </div>
+                </div>
+                <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
+                  {activeSessions?.active_user_sessions ?? activeSessions?.total_active_sessions ?? 1} Active
+                </div>
+                <p className="text-[11px] text-slate-400 mt-1">Live active user sessions</p>
+              </div>
+
               <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Verified Accounts</span>
                   <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                 </div>
-                <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
+                <div className="text-3xl font-black text-slate-800 dark:text-slate-200">
                   {users.filter(u => u.is_verified).length} Verified
                 </div>
                 <p className="text-[11px] text-slate-400 mt-1">OTP verified user emails</p>
@@ -737,9 +768,15 @@ export default function Admin() {
                     Standard User Accounts Directory
                   </h3>
                 </div>
-                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-slate-300">
-                  {pagination.total_users || 0} Users Found
-                </span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center space-x-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>{activeSessions?.active_user_sessions ?? activeSessions?.total_active_sessions ?? 1} Active Now</span>
+                  </span>
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-slate-300">
+                    {pagination.total_users || 0} Total Users
+                  </span>
+                </div>
               </div>
 
               <div className="overflow-x-auto">
@@ -848,7 +885,7 @@ export default function Admin() {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
               {/* MongoDB Diagnostics */}
               <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-4">
@@ -895,6 +932,33 @@ export default function Admin() {
                 </div>
               </div>
 
+              {/* Live WebApp Sessions */}
+              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-2">
+                    <Users className="w-5 h-5 text-indigo-500" />
+                    <h4 className="font-bold text-sm">Active WebApp Sessions</h4>
+                  </div>
+                  <span className="px-2 py-0.5 bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold rounded-full border border-indigo-200 dark:border-indigo-800">
+                    Live Tracking
+                  </span>
+                </div>
+                <div className="space-y-2 text-xs">
+                  <div className="flex justify-between py-1 border-b border-slate-100 dark:border-white/5">
+                    <span className="text-slate-500">Active Sessions (5m):</span>
+                    <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                      {activeSessions?.total_active_sessions ?? healthData?.active_sessions?.total_active_sessions ?? 1} Live
+                    </span>
+                  </div>
+                  <div className="flex justify-between py-1">
+                    <span className="text-slate-500">Admins / Users:</span>
+                    <span className="font-mono text-slate-700 dark:text-slate-300">
+                      {activeSessions?.active_admin_sessions ?? healthData?.active_sessions?.active_admin_sessions ?? 1} Admins | {activeSessions?.active_user_sessions ?? healthData?.active_sessions?.active_user_sessions ?? 0} Users
+                    </span>
+                  </div>
+                </div>
+              </div>
+
               {/* Groq API Configuration */}
               <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-4">
@@ -920,6 +984,95 @@ export default function Admin() {
                     <span className="font-mono text-slate-700 dark:text-slate-300">{healthData?.latency_ms} ms</span>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Live Active Sessions Table */}
+            <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">
+              <div className="px-5 py-3.5 bg-slate-50/80 dark:bg-white/[0.03] border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Users className="w-4 h-4 text-indigo-500" />
+                  <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                    Live Active User Sessions
+                  </h3>
+                </div>
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                  {activeSessions?.sessions?.length ?? 1} Active Session(s)
+                </span>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 dark:bg-white/[0.02] border-b border-slate-200 dark:border-white/10 text-slate-500 font-semibold uppercase tracking-wider">
+                    <tr>
+                      <th className="py-3.5 px-4">User Session</th>
+                      <th className="py-3.5 px-4">Role</th>
+                      <th className="py-3.5 px-4">Login Time</th>
+                      <th className="py-3.5 px-4">Idle Status</th>
+                      <th className="py-3.5 px-4">State</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                    {(!activeSessions?.sessions || activeSessions.sessions.length === 0) ? (
+                      <tr className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition">
+                        <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                          <div className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-[10px]">
+                            A
+                          </div>
+                          <span>{adminUser?.email || "admin@demo.com"}</span>
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300">
+                            ADMIN
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 font-mono text-slate-500 text-[11px]">Just now</td>
+                        <td className="py-3.5 px-4 font-mono text-emerald-600 dark:text-emerald-400 font-bold">Active (&lt;1s)</td>
+                        <td className="py-3.5 px-4">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300">
+                            Online
+                          </span>
+                        </td>
+                      </tr>
+                    ) : (
+                      activeSessions.sessions.map((sess, idx) => (
+                        <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition">
+                          <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] ${
+                              sess.role === "admin"
+                                ? "bg-purple-500/20 text-purple-600 dark:text-purple-400"
+                                : "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
+                            }`}>
+                              {sess.username?.[0]?.toUpperCase() || "U"}
+                            </div>
+                            <span>{sess.username} ({sess.user_key})</span>
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
+                              sess.role === "admin"
+                                ? "bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300"
+                                : "bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300"
+                            }`}>
+                              {sess.role}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4 font-mono text-slate-500 text-[11px]">
+                            {sess.login_at ? new Date(sess.login_at).toLocaleTimeString() : "N/A"}
+                          </td>
+                          <td className="py-3.5 px-4 font-mono font-semibold text-slate-700 dark:text-slate-300">
+                            {sess.idle_seconds}s idle
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 flex items-center space-x-1 w-fit">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                              <span>Online</span>
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

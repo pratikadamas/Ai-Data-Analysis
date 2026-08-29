@@ -94,5 +94,15 @@ async def get_current_user(token: str | None = Depends(oauth2_scheme)) -> dict:
     # Remove sensitive data from user object
     if "_id" in user:
         user["id"] = str(user["_id"])
-        
+
+    # Record active user session heartbeat
+    user_email = user.get("email") or user.get("username") or "user"
+    user_role = "admin" if (user.get("role") == "admin" or user.get("is_admin")) else "user"
+    from app.utils.session_tracker import active_session_tracker
+    active_session_tracker.record_activity(
+        user_id_or_email=user_email,
+        username=user.get("username", user_email),
+        role=user_role,
+    )
+
     return user

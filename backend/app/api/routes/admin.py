@@ -205,6 +205,8 @@ async def admin_health_check(
         db_status = f"error: {exc}"
 
     duckdb_connections = len(duckdb_manager._connections)
+    from app.utils.session_tracker import active_session_tracker
+    session_summary = active_session_tracker.get_summary()
 
     return {
         "status": "healthy" if db_status == "connected" else "degraded",
@@ -219,8 +221,18 @@ async def admin_health_check(
         "duckdb": {
             "active_connections": duckdb_connections,
         },
+        "active_sessions": session_summary,
         "groq_configured": bool(settings.groq_api_key),
     }
+
+
+# ── 3b. Active Sessions Tracker Endpoint ──────────────────────────────────────
+@router.get("/active-sessions")
+async def get_active_sessions(
+    admin_user: dict = Depends(get_admin_user),
+) -> dict[str, Any]:
+    from app.utils.session_tracker import active_session_tracker
+    return active_session_tracker.get_summary()
 
 
 # ── 4. System Log Viewer Streamer ─────────────────────────────────────────────

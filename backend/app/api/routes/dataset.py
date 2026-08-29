@@ -61,6 +61,16 @@ async def delete_dataset(dataset_id: str) -> dict:
         raise HTTPException(status_code=404, detail="Dataset not found or expired.")
     duckdb_manager.drop_connection(dataset_id)
     invalidate_schema_cache(dataset_id)
+
+    # Clean up disk files
+    from pathlib import Path
+    from app.config import settings
+    upload_dir = Path(settings.upload_dir)
+    if upload_dir.exists():
+        prefix = f"{dataset_id}_"
+        for f in upload_dir.glob(f"{prefix}*"):
+            f.unlink(missing_ok=True)
+
     return {"status": "deleted", "dataset_id": dataset_id}
 
 
