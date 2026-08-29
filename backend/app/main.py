@@ -4,11 +4,18 @@ from __future__ import annotations
 from fastapi import APIRouter, FastAPI, Depends, Response
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import chat, dataset, download, explore, upload, auth, sql_editor
+import logging
+from app.api.routes import chat, dataset, download, explore, upload, auth, sql_editor, admin
 from app.config import settings
 from app.db.duckdb_manager import duckdb_manager
 from app.services.schema_service import invalidate_schema_cache
 from app.utils.auth import get_current_user
+from app.utils.logger_streamer import memory_log_handler
+
+# Attach memory log handler to root logger to capture system logs
+root_logger = logging.getLogger()
+if memory_log_handler not in root_logger.handlers:
+    root_logger.addHandler(memory_log_handler)
 
 app = FastAPI(
     title="AI Data Analyst API",
@@ -47,6 +54,7 @@ app.include_router(_public_dataset_router)
 
 # ── Authenticated routes ─────────────────────────────────────────────────────
 app.include_router(auth.router)
+app.include_router(admin.router)
 app.include_router(upload.router, dependencies=[Depends(get_current_user)])
 app.include_router(explore.router, dependencies=[Depends(get_current_user)])
 app.include_router(chat.router, dependencies=[Depends(get_current_user)])

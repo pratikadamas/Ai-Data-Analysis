@@ -1,0 +1,804 @@
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import {
+  ShieldCheck,
+  Users,
+  Activity,
+  Terminal,
+  BarChart3,
+  LogOut,
+  RefreshCw,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  Database,
+  Cpu,
+  CheckCircle2,
+  AlertTriangle,
+  XCircle,
+  Clock,
+  Sparkles,
+  ArrowUpRight,
+  Filter,
+} from "lucide-react";
+import { toast } from "react-toastify";
+import axios from "axios";
+
+export default function Admin() {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("groq"); // groq | users | health | logs
+  const [adminUser, setAdminUser] = useState(null);
+
+  // --- Groq Usage State ---
+  const [groqData, setGroqData] = useState(null);
+  const [loadingGroq, setLoadingGroq] = useState(false);
+
+  // --- Users Paginated State ---
+  const [users, setUsers] = useState([]);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total_users: 0,
+    total_pages: 1,
+    has_next: false,
+    has_prev: false,
+  });
+  const [userSearch, setUserSearch] = useState("");
+  const [loadingUsers, setLoadingUsers] = useState(false);
+
+  // --- Health State ---
+  const [healthData, setHealthData] = useState(null);
+  const [loadingHealth, setLoadingHealth] = useState(false);
+
+  // --- Logs State ---
+  const [logs, setLogs] = useState([]);
+  const [logLevel, setLogLevel] = useState("ALL");
+  const [logSearch, setLogSearch] = useState("");
+  const [loadingLogs, setLoadingLogs] = useState(false);
+  const [autoRefreshLogs, setAutoRefreshLogs] = useState(false);
+
+  const API_URL = import.meta.env.VITE_API_URL || "";
+
+  // Helper axios instance with Admin Auth Token
+  const getAdminAxios = useCallback(() => {
+    const token = localStorage.getItem("admin_token");
+    return axios.create({
+      baseURL: API_URL,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }, [API_URL]);
+
+  // Authenticate admin access on mount
+  useEffect(() => {
+    const userStr = localStorage.getItem("admin_user");
+    const token = localStorage.getItem("admin_token");
+    if (!token || !userStr) {
+      toast.error("Please login to access Admin Panel.");
+      navigate("/admin/login");
+      return;
+    }
+    try {
+      setAdminUser(JSON.parse(userStr));
+    } catch {
+      navigate("/admin/login");
+    }
+  }, [navigate]);
+
+  // ── Fetch Groq API Usage Stats ─────────────────────────────────────────────
+  const fetchGroqUsage = useCallback(async () => {
+    setLoadingGroq(true);
+    try {
+      const axiosInst = getAdminAxios();
+      const res = await axiosInst.get("/api/admin/groq-usage");
+      setGroqData(res.data);
+    } catch (err) {
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        toast.error("Admin session expired. Please sign in again.");
+        navigate("/admin/login");
+      } else {
+        toast.error("Failed to load Groq API usage stats.");
+      }
+    } finally {
+      setLoadingGroq(false);
+    }
+  }, [getAdminAxios, navigate]);
+
+  // ── Fetch Paginated Users (MongoDB .skip & .limit) ───────────────────────
+  const fetchUsers = useCallback(async (page = 1, limit = 10, search = "") => {
+    setLoadingUsers(true);
+    try {
+      const axiosInst = getAdminAxios();
+      const res = await axiosInst.get("/api/admin/users", {
+        params: { page, limit, search: search.trim() || undefined },
+      });
+      setUsers(res.data.users);
+      setPagination(res.data.pagination);
+    } catch (err) {
+      toast.error("Failed to load users list.");
+    } finally {
+      setLoadingUsers(false);
+    }
+  }, [getAdminAxios]);
+
+  // ── Fetch Health Check ────────────────────────────────────────────────────
+  const fetchHealth = useCallback(async () => {
+    setLoadingHealth(true);
+    try {
+      const axiosInst = getAdminAxios();
+      const res = await axiosInst.get("/api/admin/health");
+      setHealthData(res.data);
+    } catch (err) {
+      toast.error("Failed to fetch system health status.");
+    } finally {
+      setLoadingHealth(false);
+    }
+  }, [getAdminAxios]);
+
+  // ── Fetch System Logs ─────────────────────────────────────────────────────
+  const fetchLogs = useCallback(async () => {
+    setLoadingLogs(true);
+    try {
+      const axiosInst = getAdminAxios();
+      const res = await axiosInst.get("/api/admin/logs", {
+        params: {
+          limit: 150,
+          level: logLevel,
+          search: logSearch.trim() || undefined,
+        },
+      });
+      setLogs(res.data.logs);
+    } catch (err) {
+      toast.error("Failed to stream backend system logs.");
+    } finally {
+      setLoadingLogs(false);
+    }
+  }, [getAdminAxios, logLevel, logSearch]);
+
+  // Initial tab fetch triggers
+  useEffect(() => {
+    if (activeTab === "groq") fetchGroqUsage();
+    if (activeTab === "users") fetchUsers(pagination.page, pagination.limit, userSearch);
+    if (activeTab === "health") fetchHealth();
+    if (activeTab === "logs") fetchLogs();
+  }, [activeTab]);
+
+  // Auto-refresh interval for logs when enabled
+  useEffect(() => {
+    let interval;
+    if (activeTab === "logs" && autoRefreshLogs) {
+      interval = setInterval(() => {
+        fetchLogs();
+      }, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [activeTab, autoRefreshLogs, fetchLogs]);
+
+  // Handle Logout
+  const handleLogout = () => {
+    localStorage.removeItem("admin_token");
+    localStorage.removeItem("admin_user");
+    toast.info("Logged out from Admin Panel.");
+    navigate("/admin/login");
+  };
+
+  // ── Render Groq SVG Chart Component ─────────────────────────────────────────
+  const renderGroqChart = () => {
+    const records = groqData?.daily_records || [];
+
+    if (records.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center p-12 text-center border border-dashed border-slate-200 dark:border-white/10 rounded-2xl bg-slate-50/50 dark:bg-white/[0.02]">
+          <BarChart3 className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-3" />
+          <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+            No Groq API usage recorded yet today.
+          </p>
+          <p className="text-xs text-slate-400 mt-1">
+            Usage automatically tracks date and API call counts when users interact with the AI chatbot.
+          </p>
+        </div>
+      );
+    }
+
+    const maxCalls = Math.max(...records.map((r) => r.total_calls), 5);
+    const chartHeight = 220;
+
+    return (
+      <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h3 className="text-base font-bold tracking-tight">Groq API Calls Per Day</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Recorded in MongoDB <code className="text-blue-600 dark:text-blue-400 font-mono">groq_usage</code> collection
+            </p>
+          </div>
+          <span className="text-xs font-semibold px-3 py-1 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-full border border-indigo-200 dark:border-indigo-500/20">
+            Daily Aggregated
+          </span>
+        </div>
+
+        {/* SVG Custom Responsive Bar Chart */}
+        <div className="w-full overflow-x-auto">
+          <div className="min-w-[500px]">
+            <svg viewBox={`0 0 ${Math.max(records.length * 70, 500)} ${chartHeight}`} className="w-full h-56">
+              {/* Horizontal Grid lines */}
+              {[0, 0.25, 0.5, 0.75, 1].map((ratio, i) => {
+                const y = chartHeight - 30 - ratio * (chartHeight - 50);
+                const val = Math.round(ratio * maxCalls);
+                return (
+                  <g key={i}>
+                    <line x1="35" y1={y} x2="100%" y2={y} stroke="currentColor" className="text-slate-100 dark:text-white/5" strokeDasharray="4 4" />
+                    <text x="5" y={y + 4} className="fill-slate-400 text-[10px] font-mono">{val}</text>
+                  </g>
+                );
+              })}
+
+              {/* Bars */}
+              {records.map((r, i) => {
+                const barWidth = 36;
+                const gap = Math.max((500 - 40) / records.length, 65);
+                const x = 45 + i * gap;
+                const barHeight = (r.total_calls / maxCalls) * (chartHeight - 50);
+                const y = chartHeight - 30 - barHeight;
+
+                return (
+                  <g key={r.date} className="group cursor-pointer">
+                    {/* Hover Glow */}
+                    <rect
+                      x={x - 4}
+                      y={y - 4}
+                      width={barWidth + 8}
+                      height={barHeight + 8}
+                      rx="8"
+                      className="fill-blue-500/0 group-hover:fill-blue-500/10 transition-colors"
+                    />
+                    {/* Main Gradient Bar */}
+                    <rect
+                      x={x}
+                      y={y}
+                      width={barWidth}
+                      height={barHeight}
+                      rx="6"
+                      className="fill-gradient-to-t fill-blue-600 dark:fill-blue-500 group-hover:fill-indigo-500 transition-all duration-300"
+                    />
+                    {/* Value Badge on bar */}
+                    <text
+                      x={x + barWidth / 2}
+                      y={y - 8}
+                      textAnchor="middle"
+                      className="fill-slate-700 dark:fill-slate-200 text-[11px] font-bold opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      {r.total_calls} calls
+                    </text>
+                    {/* Date label */}
+                    <text
+                      x={x + barWidth / 2}
+                      y={chartHeight - 10}
+                      textAnchor="middle"
+                      className="fill-slate-500 dark:fill-slate-400 text-[10px] font-mono"
+                    >
+                      {r.date.slice(5)}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-[#f5f5f7] dark:bg-[#000000] text-slate-900 dark:text-white font-sans transition-colors duration-300 pb-16">
+      
+      {/* Top Admin Navbar */}
+      <header className="sticky top-0 z-30 bg-white/80 dark:bg-[#161618]/80 backdrop-blur-xl border-b border-slate-200 dark:border-white/10 px-6 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-md shadow-blue-500/20">
+              <ShieldCheck className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center space-x-2">
+                <h1 className="font-bold text-lg tracking-tight">Admin Portal</h1>
+                <span className="text-[10px] bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-bold px-2 py-0.5 rounded-full uppercase">
+                  Control Center
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Logged in as <span className="font-medium text-slate-800 dark:text-slate-200">{adminUser?.email || "Admin"}</span>
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-3">
+            <Link
+              to="/app"
+              className="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 text-xs font-medium flex items-center space-x-1.5 transition"
+            >
+              <ArrowUpRight className="w-3.5 h-3.5" />
+              <span>Go to App</span>
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="px-3.5 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-xs font-semibold flex items-center space-x-1.5 transition border border-rose-200 dark:border-rose-800/40"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Container */}
+      <main className="max-w-7xl mx-auto px-6 pt-8">
+        
+        {/* Navigation Tabs */}
+        <div className="flex items-center space-x-2 border-b border-slate-200 dark:border-white/10 mb-8 overflow-x-auto pb-2">
+          <button
+            onClick={() => setActiveTab("groq")}
+            className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-xs transition-all whitespace-nowrap ${
+              activeTab === "groq"
+                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                : "text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-white/5"
+            }`}
+          >
+            <BarChart3 className="w-4 h-4" />
+            <span>Groq API Usage</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("users")}
+            className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-xs transition-all whitespace-nowrap ${
+              activeTab === "users"
+                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                : "text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-white/5"
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            <span>User Management (Paginated)</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("health")}
+            className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-xs transition-all whitespace-nowrap ${
+              activeTab === "health"
+                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                : "text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-white/5"
+            }`}
+          >
+            <Activity className="w-4 h-4" />
+            <span>Health Check</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("logs")}
+            className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-xs transition-all whitespace-nowrap ${
+              activeTab === "logs"
+                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                : "text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-white/5"
+            }`}
+          >
+            <Terminal className="w-4 h-4" />
+            <span>System Logs</span>
+          </button>
+        </div>
+
+        {/* ── TAB 1: Groq API Usage Analytics ─────────────────────────────────── */}
+        {activeTab === "groq" && (
+          <div className="space-y-6">
+            
+            {/* Stats Overview Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    Total API Calls
+                  </span>
+                  <Sparkles className="w-4 h-4 text-blue-500" />
+                </div>
+                <div className="text-2xl font-black tracking-tight">
+                  {groqData?.summary?.total_calls_all_time || 0}
+                </div>
+                <p className="text-[11px] text-slate-400 mt-1">All-time Groq LLM requests</p>
+              </div>
+
+              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    Today's Calls
+                  </span>
+                  <Clock className="w-4 h-4 text-emerald-500" />
+                </div>
+                <div className="text-2xl font-black tracking-tight text-emerald-600 dark:text-emerald-400">
+                  {groqData?.summary?.today_calls || 0}
+                </div>
+                <p className="text-[11px] text-slate-400 mt-1">Requests executed today</p>
+              </div>
+
+              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    Estimated Tokens
+                  </span>
+                  <Cpu className="w-4 h-4 text-indigo-500" />
+                </div>
+                <div className="text-2xl font-black tracking-tight">
+                  {(groqData?.summary?.total_tokens_all_time || 0).toLocaleString()}
+                </div>
+                <p className="text-[11px] text-slate-400 mt-1">Tokens processed across requests</p>
+              </div>
+
+              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    Tracked Days
+                  </span>
+                  <Database className="w-4 h-4 text-purple-500" />
+                </div>
+                <div className="text-2xl font-black tracking-tight">
+                  {groqData?.summary?.recorded_days || 0}
+                </div>
+                <p className="text-[11px] text-slate-400 mt-1">Days logged in MongoDB collection</p>
+              </div>
+            </div>
+
+            {/* Graphical Chart */}
+            {loadingGroq ? (
+              <div className="p-12 text-center text-sm text-slate-500">Loading usage statistics...</div>
+            ) : (
+              renderGroqChart()
+            )}
+          </div>
+        )}
+
+        {/* ── TAB 2: User Management (MongoDB Paginated) ────────────────────── */}
+        {activeTab === "users" && (
+          <div className="space-y-4">
+            
+            {/* Filter and Search Bar */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-4 rounded-2xl shadow-sm">
+              <div className="relative w-full sm:w-80">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={userSearch}
+                  onChange={(e) => {
+                    setUserSearch(e.target.value);
+                    fetchUsers(1, pagination.limit, e.target.value);
+                  }}
+                  placeholder="Search by username or email..."
+                  className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                />
+              </div>
+
+              <div className="flex items-center space-x-3 text-xs">
+                <span className="text-slate-500 font-medium">Rows per page:</span>
+                <select
+                  value={pagination.limit}
+                  onChange={(e) => {
+                    const newLimit = Number(e.target.value);
+                    fetchUsers(1, newLimit, userSearch);
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-semibold focus:outline-none"
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                </select>
+
+                <button
+                  onClick={() => fetchUsers(pagination.page, pagination.limit, userSearch)}
+                  className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 border border-slate-200 dark:border-white/10 transition"
+                  title="Refresh User List"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${loadingUsers ? "animate-spin" : ""}`} />
+                </button>
+              </div>
+            </div>
+
+            {/* Users Table */}
+            <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 dark:bg-white/[0.02] border-b border-slate-200 dark:border-white/10 text-slate-500 font-semibold uppercase tracking-wider">
+                    <tr>
+                      <th className="py-3.5 px-4">User</th>
+                      <th className="py-3.5 px-4">Email</th>
+                      <th className="py-3.5 px-4">Role</th>
+                      <th className="py-3.5 px-4">Status</th>
+                      <th className="py-3.5 px-4">Joined Date</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                    {loadingUsers ? (
+                      <tr>
+                        <td colSpan={5} className="py-8 text-center text-slate-400">
+                          Fetching users via MongoDB pagination...
+                        </td>
+                      </tr>
+                    ) : users.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="py-8 text-center text-slate-400">
+                          No users found matching query.
+                        </td>
+                      </tr>
+                    ) : (
+                      users.map((u) => (
+                        <tr key={u._id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition">
+                          <td className="py-3.5 px-4 font-semibold text-slate-800 dark:text-slate-200">
+                            {u.username}
+                          </td>
+                          <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">
+                            {u.email}
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                              u.role === "admin" || u.is_admin
+                                ? "bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300"
+                                : "bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300"
+                            }`}>
+                              {u.role || "user"}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                              u.is_verified
+                                ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300"
+                                : "bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300"
+                            }`}>
+                              {u.is_verified ? "Verified" : "Unverified"}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4 text-slate-500 font-mono text-[11px]">
+                            {u.created_at ? new Date(u.created_at).toLocaleDateString() : "N/A"}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Server-side Pagination Controls */}
+              <div className="flex items-center justify-between px-4 py-3 bg-slate-50/50 dark:bg-white/[0.02] border-t border-slate-200 dark:border-white/10 text-xs text-slate-500">
+                <div>
+                  Showing page <span className="font-semibold text-slate-800 dark:text-slate-200">{pagination.page}</span> of{" "}
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{pagination.total_pages}</span> (
+                  <span className="font-medium">{pagination.total_users} total users</span>)
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <button
+                    disabled={!pagination.has_prev || loadingUsers}
+                    onClick={() => fetchUsers(pagination.page - 1, pagination.limit, userSearch)}
+                    className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 disabled:opacity-40 transition"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    disabled={!pagination.has_next || loadingUsers}
+                    onClick={() => fetchUsers(pagination.page + 1, pagination.limit, userSearch)}
+                    className="p-1.5 rounded-lg border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 disabled:opacity-40 transition"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB 3: Health Check ───────────────────────────────────────────── */}
+        {activeTab === "health" && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+              <div className="flex items-center space-x-3">
+                <div className={`w-3 h-3 rounded-full ${
+                  healthData?.status === "healthy" ? "bg-emerald-500 animate-pulse" : "bg-rose-500"
+                }`} />
+                <div>
+                  <h3 className="font-bold text-base">System Status: {healthData?.status?.toUpperCase() || "CHECKING"}</h3>
+                  <p className="text-xs text-slate-500">Last verified at {healthData?.timestamp ? new Date(healthData.timestamp).toLocaleTimeString() : "N/A"}</p>
+                </div>
+              </div>
+              <button
+                onClick={fetchHealth}
+                disabled={loadingHealth}
+                className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-semibold flex items-center space-x-2 transition hover:bg-blue-700 active:scale-95 shadow-md shadow-blue-500/20"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loadingHealth ? "animate-spin" : ""}`} />
+                <span>Re-check Health</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {/* MongoDB Diagnostics */}
+              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-2">
+                    <Database className="w-5 h-5 text-emerald-500" />
+                    <h4 className="font-bold text-sm">MongoDB Database</h4>
+                  </div>
+                  <span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold rounded-full border border-emerald-200 dark:border-emerald-800">
+                    {healthData?.mongodb?.status || "Unknown"}
+                  </span>
+                </div>
+                <div className="space-y-2 text-xs">
+                  <div className="flex justify-between py-1 border-b border-slate-100 dark:border-white/5">
+                    <span className="text-slate-500">Ping Response:</span>
+                    <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{healthData?.mongodb?.ping_ms} ms</span>
+                  </div>
+                  <div className="flex justify-between py-1">
+                    <span className="text-slate-500">Database Name:</span>
+                    <span className="font-mono text-slate-700 dark:text-slate-300">{healthData?.mongodb?.database_name}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* DuckDB Engine Diagnostics */}
+              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-2">
+                    <Cpu className="w-5 h-5 text-blue-500" />
+                    <h4 className="font-bold text-sm">DuckDB Engine</h4>
+                  </div>
+                  <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-[10px] font-bold rounded-full border border-blue-200 dark:border-blue-800">
+                    Active
+                  </span>
+                </div>
+                <div className="space-y-2 text-xs">
+                  <div className="flex justify-between py-1 border-b border-slate-100 dark:border-white/5">
+                    <span className="text-slate-500">Active Connections:</span>
+                    <span className="font-mono font-bold text-slate-800 dark:text-slate-200">{healthData?.duckdb?.active_connections}</span>
+                  </div>
+                  <div className="flex justify-between py-1">
+                    <span className="text-slate-500">Isolation Mode:</span>
+                    <span className="font-mono text-slate-700 dark:text-slate-300">In-Memory Sandbox</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Groq API Configuration */}
+              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-2">
+                    <Sparkles className="w-5 h-5 text-purple-500" />
+                    <h4 className="font-bold text-sm">Groq LLM Service</h4>
+                  </div>
+                  <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${
+                    healthData?.groq_configured
+                      ? "bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800"
+                      : "bg-rose-50 dark:bg-rose-950 text-rose-600 border-rose-200"
+                  }`}>
+                    {healthData?.groq_configured ? "API Key Loaded" : "Key Missing"}
+                  </span>
+                </div>
+                <div className="space-y-2 text-xs">
+                  <div className="flex justify-between py-1 border-b border-slate-100 dark:border-white/5">
+                    <span className="text-slate-500">App Environment:</span>
+                    <span className="font-mono font-bold text-slate-800 dark:text-slate-200">{healthData?.env}</span>
+                  </div>
+                  <div className="flex justify-between py-1">
+                    <span className="text-slate-500">API Health Latency:</span>
+                    <span className="font-mono text-slate-700 dark:text-slate-300">{healthData?.latency_ms} ms</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── TAB 4: Live System Log Viewer ───────────────────────────────────── */}
+        {activeTab === "logs" && (
+          <div className="space-y-4">
+            
+            {/* Filter and Control Bar */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-4 rounded-2xl shadow-sm">
+              <div className="flex items-center space-x-3 w-full sm:w-auto">
+                <div className="relative w-full sm:w-72">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={logSearch}
+                    onChange={(e) => setLogSearch(e.target.value)}
+                    placeholder="Search backend log text..."
+                    className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 focus:outline-none"
+                  />
+                </div>
+
+                <div className="flex items-center space-x-1 border border-slate-200 dark:border-white/10 rounded-xl p-1 bg-slate-50 dark:bg-white/5">
+                  {["ALL", "INFO", "WARNING", "ERROR"].map((lvl) => (
+                    <button
+                      key={lvl}
+                      onClick={() => setLogLevel(lvl)}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition ${
+                        logLevel === lvl
+                          ? "bg-blue-600 text-white"
+                          : "text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-white/10"
+                      }`}
+                    >
+                      {lvl}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3 text-xs">
+                <label className="flex items-center space-x-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={autoRefreshLogs}
+                    onChange={(e) => setAutoRefreshLogs(e.target.checked)}
+                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="text-slate-600 dark:text-slate-400 font-medium">Live Auto-Stream (3s)</span>
+                </label>
+
+                <button
+                  onClick={fetchLogs}
+                  disabled={loadingLogs}
+                  className="px-3 py-1.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition active:scale-95"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${loadingLogs ? "animate-spin" : ""}`} />
+                  <span>Refresh</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Dark Terminal Log Window */}
+            <div className="bg-[#0d1117] border border-slate-800 rounded-2xl overflow-hidden shadow-2xl font-mono text-xs">
+              <div className="bg-[#161b22] px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 rounded-full bg-rose-500/80" />
+                  <div className="w-3 h-3 rounded-full bg-amber-500/80" />
+                  <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
+                  <span className="text-slate-400 text-[11px] ml-2">backend_system.log (In-Memory Ring Buffer)</span>
+                </div>
+                <span className="text-slate-500 text-[10px]">{logs.length} entries captured</span>
+              </div>
+
+              <div className="p-4 h-[450px] overflow-y-auto space-y-2">
+                {logs.length === 0 ? (
+                  <div className="text-slate-500 text-center py-20">
+                    No backend logs captured for current filter criteria.
+                  </div>
+                ) : (
+                  logs.map((log, idx) => (
+                    <div key={idx} className="flex items-start space-x-3 hover:bg-white/[0.02] p-1 rounded transition">
+                      <span className="text-slate-500 text-[11px] whitespace-nowrap">
+                        {log.timestamp ? new Date(log.timestamp).toLocaleTimeString() : ""}
+                      </span>
+
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase whitespace-nowrap ${
+                        log.level === "ERROR"
+                          ? "bg-rose-500/20 text-rose-400 border border-rose-500/30"
+                          : log.level === "WARNING"
+                          ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                          : "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                      }`}>
+                        {log.level}
+                      </span>
+
+                      <span className="text-slate-400 text-[11px] font-semibold whitespace-nowrap">
+                        [{log.logger}]:
+                      </span>
+
+                      <span className="text-slate-200 text-[11px] break-all">
+                        {log.message}
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+      </main>
+    </div>
+  );
+}

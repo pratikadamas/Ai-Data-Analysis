@@ -43,6 +43,10 @@ def init_db():
         # Google OAuth users: sparse unique index on firebase_uid
         users.create_index("firebase_uid", unique=True, sparse=True)
 
+        # Groq API Usage collection
+        groq_usage = db["groq_usage"]
+        groq_usage.create_index("date", unique=True)
+
         logger.info("MongoDB unique and TTL indexes initialized successfully.")
 
         # ── Seed the Bloom Filter ──────────────────────────────────────────────
@@ -54,5 +58,29 @@ def init_db():
     except Exception as e:
         logger.error(f"Failed to initialize MongoDB connection or indexes: {e}")
 
+def track_groq_usage(call_type: str = "chat", tokens_estimated: int = 150) -> None:
+    """Record daily Groq API usage in MongoDB groq_usage collection."""
+    try:
+        from datetime import datetime
+        today = datetime.utcnow().strftime("%Y-%m-%d")
+        db.groq_usage.update_one(
+            {"date": today},
+            {
+                "$inc": {
+                    "total_calls": 1,
+                    f"calls.{call_type}": 1,
+                    "tokens_estimated": tokens_estimated,
+                },
+                "$set": {
+                    "updated_at": datetime.utcnow(),
+                },
+            },
+            upsert=True,
+        )
+    except Exception as exc:
+        logger.error(f"Failed to track Groq usage: {exc}")
+
+
 # Trigger DB initialization
 init_db()
+

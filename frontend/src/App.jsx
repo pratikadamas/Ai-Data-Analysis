@@ -17,6 +17,9 @@ import Lenis from "lenis";
 import MainAppLoader from "./components/shared/MainAppLoader.jsx";
 import AppLoadingBar from "./components/shared/AppLoadingBar.jsx";
 
+import AdminAuth from "./pages/AdminAuth.jsx";
+import Admin from "./pages/Admin.jsx";
+
 // Protected Route Wrapper
 function ProtectedRoute({ children }) {
   const { user, loading } = useUser();
@@ -86,6 +89,10 @@ export default function App() {
           path="/register" 
           element={user ? <Navigate to="/app" replace /> : <Auth />} 
         />
+
+        {/* Admin Routes */}
+        <Route path="/admin/login" element={<AdminAuth />} />
+        <Route path="/admin" element={<Admin />} />
         
         <Route 
           path="/app" 

@@ -94,6 +94,12 @@ class LLMService:
                     temperature=temperature,
                     max_tokens=max_tokens,
                 )
+                try:
+                    from app.db.mongodb import track_groq_usage
+                    tokens = getattr(getattr(response, "usage", None), "total_tokens", max_tokens)
+                    track_groq_usage(call_type="completion", tokens_estimated=tokens or 150)
+                except Exception:
+                    pass
                 return response
             except Exception as exc:
                 err_msg = str(exc)
