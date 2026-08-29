@@ -177,6 +177,7 @@ npm run dev
 - **Standalone Admin & User Directories**: Independent top-level tabs for **Admin Management** and **User Management** with server-side MongoDB `.skip()` / `.limit()` pagination, regex search, role badges, and verification status.
 - **Active WebApp User Session Tracker**: Thread-safe live session monitoring (`/api/admin/active-sessions`) tracking real-time active user sessions, admin vs standard user breakdown, idle time, and online state.
 - **System Health Diagnostics**: Real-time monitoring of MongoDB connectivity & ping response time (ms), active DuckDB in-memory connections, active webapp sessions, Groq API key readiness, and API latency.
+- **Dark / Light Mode Toggle**: Instant top navbar theme switcher toggling between Apple macOS dark mode (`bg-[#000000]`) and clean light mode (`bg-[#f5f5f7]`) with persistent `localStorage` memory.
 - **Live System Log Streamer**: In-memory ring buffer log capture streaming real-time FastAPI logs with log level filtering (`ALL`, `INFO`, `WARNING`, `ERROR`), search filtering, and 3-second live auto-refresh.
 
 ### 🎨 Modern Apple macOS Studio UI

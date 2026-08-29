@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 import axios from "axios";
+import ThemeToggle from "../components/ThemeToggle.jsx";
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -386,6 +387,7 @@ export default function Admin() {
           </div>
 
           <div className="flex items-center space-x-3">
+            <ThemeToggle />
             <Link
               to="/app"
               className="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 text-xs font-medium flex items-center space-x-1.5 transition"
