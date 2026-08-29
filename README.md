@@ -104,7 +104,7 @@ cp .env.example .env   # 🔑 Add your GROQ_API_KEY, MONGODB_URI, and MAIL crede
 uvicorn app.main:app --reload --port 8000
 ```
 
-*API docs available at [http://localhost:8000/docs](http://localhost:8000/docs) once running.*
+*API docs available at [http://localhost:8000/docs](http://localhost:8000/docs) and Admin API endpoints at [http://localhost:8000/api/admin](http://localhost:8000/api/admin) once running.*
 
 ### 🎨 Frontend Setup
 
@@ -114,7 +114,8 @@ npm install
 npm run dev
 ```
 
-*The Vite dev server proxies `/api/*` to `http://localhost:8000`.*
+*The Vite dev server proxies `/api/*` to `http://localhost:8000`.*  
+*Admin Portal UI available at [http://localhost:5173/admin](http://localhost:5173/admin) (Login page: [http://localhost:5173/admin/login](http://localhost:5173/admin/login)).*
 
 ---
 
@@ -169,7 +170,7 @@ npm run dev
 - **Secure JWT Session Management**: Email verification with 6-digit OTPs, bcrypt hashed passwords, and password resets.
 - **Persistent Header Profile**: Real-time user avatar, username display, modal window with outside-click dismissal, and account settings.
 
-### 🛡️ Admin Portal & Control Center (`/api/admin` & `/admin`)
+### 🛡️ Admin Portal & Control Center (Frontend: `http://localhost:5173/admin` | Backend API: `http://localhost:8000/api/admin`)
 
 - **Role-Protected & Demo Auth**: Access via email/password or 1-click Demo Admin (`admin@demo.com`), secured by JWT Bearer tokens and admin role authorization.
 - **Groq API Usage Tracker**: Custom SVG daily bar chart and summary analytics tracking total LLM API calls, estimated token consumption, today's request count, and recorded days in MongoDB `groq_usage` collection.
