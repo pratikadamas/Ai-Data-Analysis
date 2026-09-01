@@ -68,7 +68,8 @@ export default function Admin() {
   const [loadingLogs, setLoadingLogs] = useState(false);
   const [autoRefreshLogs, setAutoRefreshLogs] = useState(false);
 
-  const API_URL = import.meta.env.VITE_API_URL || "";
+  const rawApiUrl = (import.meta.env.VITE_API_URL || "/api").replace(/\/$/, "");
+  const API_URL = rawApiUrl.endsWith("/api") ? rawApiUrl.slice(0, -4) : rawApiUrl;
 
   // Helper axios instance with Admin Auth Token
   const getAdminAxios = useCallback(() => {

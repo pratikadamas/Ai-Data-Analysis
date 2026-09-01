@@ -26,7 +26,8 @@ export default function AdminAuth() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const API_URL = import.meta.env.VITE_API_URL || "";
+  const rawApiUrl = (import.meta.env.VITE_API_URL || "/api").replace(/\/$/, "");
+  const API_URL = rawApiUrl.endsWith("/api") ? rawApiUrl.slice(0, -4) : rawApiUrl;
 
   const handleAdminLogin = async (e) => {
     if (e) e.preventDefault();
