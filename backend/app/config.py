@@ -27,7 +27,11 @@ class Settings:
         )
     )
     cors_origins: list[str] = field(
-        default_factory=lambda: os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
+        default_factory=lambda: [
+            origin.strip().rstrip("/")
+            for origin in os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000").split(",")
+            if origin.strip()
+        ]
     )
     allowed_extensions: tuple[str, ...] = (".csv", ".xlsx", ".xls", ".db", ".sqlite", ".sql")
 
