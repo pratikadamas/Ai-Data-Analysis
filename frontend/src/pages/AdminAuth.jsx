@@ -57,30 +57,6 @@ export default function AdminAuth() {
     }
   };
 
-  const handleFillDemo = async () => {
-    setEmail("admin@demo.com");
-    setPassword("admin123");
-    toast.info("Demo admin credentials auto-filled. Logging in...");
-    setLoading(true);
-    try {
-      const response = await axios.post(`${API_URL}/api/admin/login`, {
-        email: "admin@demo.com",
-        password: "admin123",
-      });
-
-      const { access_token, user } = response.data;
-      localStorage.setItem("admin_token", access_token);
-      localStorage.setItem("admin_user", JSON.stringify(user));
-
-      toast.success(`Welcome to Admin Portal, ${user.username}!`);
-      navigate("/admin");
-    } catch (err) {
-      toast.error(err.response?.data?.detail || "Demo admin login failed.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen w-full flex bg-white dark:bg-[#050505] text-slate-900 dark:text-white overflow-hidden select-none transition-colors duration-500">
       {/* Left side: Premium Brand & Admin Feature Showcase (Hidden on Mobile) */}
@@ -213,42 +189,6 @@ export default function AdminAuth() {
             <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-medium transition-colors duration-500">
               Sign in to manage system metrics, user accounts, and API analytics
             </p>
-          </div>
-
-          {/* Quick Demo Admin Login Card */}
-          <div className="mb-6 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 transition-all duration-200">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center space-x-2">
-                <Zap className="w-4 h-4 text-amber-500" />
-                <span className="text-xs font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400">
-                  Quick Demo Testing
-                </span>
-              </div>
-              <span className="text-[10px] bg-brand-500/10 text-brand-600 dark:text-brand-300 font-mono font-bold px-2 py-0.5 rounded-full border border-brand-500/20">
-                1-Click
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-3 leading-relaxed">
-              Click below to instantly log in using pre-configured demo admin credentials.
-            </p>
-            <button
-              type="button"
-              onClick={handleFillDemo}
-              disabled={loading}
-              className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-brand-500 to-indigo-600 hover:from-brand-600 hover:to-indigo-700 text-white font-semibold text-xs flex items-center justify-center space-x-2 transition-all duration-200 shadow-md shadow-brand-500/10 active:scale-[0.98] disabled:opacity-50"
-            >
-              <CheckCircle2 className="w-4 h-4" />
-              <span>Login as Demo Admin (admin@demo.com)</span>
-            </button>
-          </div>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3 my-5">
-            <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
-            <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
-              or sign in with credentials
-            </span>
-            <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
           </div>
 
           {/* Credentials Form */}
