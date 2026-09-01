@@ -318,3 +318,73 @@ async def get_groq_usage(
             "recorded_days": len(daily_records),
         },
     }
+# ── 6. Create or Upgrade Administrator Account ─────────────────────────────
+class CreateAdminRequest(BaseModel):
+    username: str = Field(default="", description="Admin username")
+    email: str = Field(..., description="Admin email address")
+    password: str = Field(default="Admin@12345", description="Default password")
+
+
+@router.post("/create-admin")
+async def create_admin_account(
+    payload: CreateAdminRequest,
+    admin_user: dict = Depends(get_admin_user),
+) -> dict[str, Any]:
+    email_clean = payload.email.strip().lower()
+    raw_username = payload.username.strip()
+    raw_password = payload.password.strip() or "Admin@12345"
+
+    if not email_clean or "@" not in email_clean or "." not in email_clean:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Valid email address is required.",
+        )
+
+    users_col = db["users"]
+    existing_user = users_col.find_one({"email": email_clean})
+
+    from app.utils.auth import hash_password
+
+    if existing_user:
+        username_final = raw_username or existing_user.get("username", email_clean.split("@")[0])
+        users_col.update_one(
+            {"_id": existing_user["_id"]},
+            {
+                "$set": {
+                    "username": username_final,
+                    "hashed_password": hash_password(raw_password),
+                    "role": "admin",
+                    "is_admin": True,
+                    "is_active": True,
+                    "is_verified": True,
+                    "updated_at": datetime.utcnow(),
+                }
+            },
+        )
+        message = f"Account '{email_clean}' upgraded to Administrator with password '{raw_password}'."
+    else:
+        username_final = raw_username or email_clean.split("@")[0]
+        admin_doc = {
+            "username": username_final,
+            "email": email_clean,
+            "hashed_password": hash_password(raw_password),
+            "role": "admin",
+            "is_admin": True,
+            "is_active": True,
+            "is_verified": True,
+            "created_at": datetime.utcnow(),
+        }
+        users_col.insert_one(admin_doc)
+        message = f"New Admin account created for '{email_clean}' with default password '{raw_password}'."
+
+    return {
+        "status": "success",
+        "message": message,
+        "admin": {
+            "username": username_final,
+            "email": email_clean,
+            "role": "admin",
+            "default_password": raw_password,
+        },
+    }
+

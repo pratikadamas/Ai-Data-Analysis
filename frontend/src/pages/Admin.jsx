@@ -54,6 +54,13 @@ export default function Admin() {
   const [userSearch, setUserSearch] = useState("");
   const [loadingUsers, setLoadingUsers] = useState(false);
 
+  // --- Create Admin State ---
+  const [newAdminEmail, setNewAdminEmail] = useState("");
+  const [newAdminUsername, setNewAdminUsername] = useState("");
+  const [newAdminPassword, setNewAdminPassword] = useState("Admin@12345");
+  const [creatingAdmin, setCreatingAdmin] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
   // --- Active WebApp Sessions State ---
   const [activeSessions, setActiveSessions] = useState(null);
 
@@ -193,6 +200,34 @@ export default function Admin() {
       setLoadingUsers(false);
     }
   }, [getAdminAxios]);
+
+  // ── Create or Assign Admin Account ─────────────────────────────────────────
+  const handleCreateAdmin = async (e) => {
+    if (e) e.preventDefault();
+    if (!newAdminEmail.trim()) {
+      toast.error("Please enter a valid admin email address.");
+      return;
+    }
+    setCreatingAdmin(true);
+    try {
+      const axiosInst = getAdminAxios();
+      const res = await axiosInst.post("/api/admin/create-admin", {
+        email: newAdminEmail.trim(),
+        username: newAdminUsername.trim(),
+        password: newAdminPassword.trim() || "Admin@12345",
+      });
+      toast.success(res.data.message || "Admin account created successfully!");
+      setNewAdminEmail("");
+      setNewAdminUsername("");
+      setNewAdminPassword("Admin@12345");
+      setShowCreateModal(false);
+      fetchUsers(1, pagination.limit, userSearch, "admin");
+    } catch (err) {
+      toast.error(err.response?.data?.detail || "Failed to create admin account.");
+    } finally {
+      setCreatingAdmin(false);
+    }
+  };
 
   // ── Fetch Health Check ────────────────────────────────────────────────────
   const fetchHealth = useCallback(async () => {
@@ -683,31 +718,132 @@ export default function Admin() {
                 />
               </div>
 
-              <div className="flex items-center space-x-3 text-xs">
-                <span className="text-slate-500 font-medium">Rows per page:</span>
-                <select
-                  value={pagination.limit}
-                  onChange={(e) => {
-                    const newLimit = Number(e.target.value);
-                    fetchUsers(1, newLimit, userSearch, "admin");
-                  }}
-                  className="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-semibold focus:outline-none"
-                >
-                  <option value={5}>5</option>
-                  <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                </select>
-
+              <div className="flex items-center space-x-3 text-xs w-full sm:w-auto justify-between sm:justify-end">
                 <button
-                  onClick={() => fetchUsers(pagination.page, pagination.limit, userSearch, "admin")}
-                  className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 border border-slate-200 dark:border-white/10 transition"
-                  title="Refresh Admin List"
+                  onClick={() => setShowCreateModal(!showCreateModal)}
+                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold rounded-xl text-xs flex items-center space-x-2 transition shadow-md shadow-purple-500/20 active:scale-95"
                 >
-                  <RefreshCw className={`w-3.5 h-3.5 ${loadingUsers ? "animate-spin" : ""}`} />
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>{showCreateModal ? "Cancel" : "+ Add New Admin"}</span>
                 </button>
+
+                <div className="flex items-center space-x-2">
+                  <span className="text-slate-500 font-medium">Rows:</span>
+                  <select
+                    value={pagination.limit}
+                    onChange={(e) => {
+                      const newLimit = Number(e.target.value);
+                      fetchUsers(1, newLimit, userSearch, "admin");
+                    }}
+                    className="px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-semibold focus:outline-none"
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                  </select>
+
+                  <button
+                    onClick={() => fetchUsers(pagination.page, pagination.limit, userSearch, "admin")}
+                    className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 border border-slate-200 dark:border-white/10 transition"
+                    title="Refresh Admin List"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${loadingUsers ? "animate-spin" : ""}`} />
+                  </button>
+                </div>
               </div>
             </div>
+
+            {/* Create Admin Form Card (Collapsible) */}
+            {showCreateModal && (
+              <form onSubmit={handleCreateAdmin} className="bg-gradient-to-r from-purple-900/10 via-indigo-900/10 to-slate-900/10 dark:from-purple-950/40 dark:to-indigo-950/40 border border-purple-500/30 p-6 rounded-2xl space-y-4 shadow-lg backdrop-blur-md">
+                <div className="flex items-center justify-between border-b border-purple-500/20 pb-3">
+                  <div className="flex items-center space-x-2">
+                    <ShieldCheck className="w-5 h-5 text-purple-500" />
+                    <h4 className="font-extrabold text-sm text-purple-900 dark:text-purple-200">
+                      Assign New Administrator Account
+                    </h4>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/30">
+                    Default Password Assisted
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1 uppercase tracking-wider">
+                      Admin Email *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={newAdminEmail}
+                      onChange={(e) => setNewAdminEmail(e.target.value)}
+                      placeholder="admin2@domain.com"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1 uppercase tracking-wider">
+                      Admin Username (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={newAdminUsername}
+                      onChange={(e) => setNewAdminUsername(e.target.value)}
+                      placeholder="admin_john"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1 uppercase tracking-wider">
+                      Default Password *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={newAdminPassword}
+                      onChange={(e) => setNewAdminPassword(e.target.value)}
+                      placeholder="Admin@12345"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    If account exists, it will be upgraded to Admin and assigned this default password.
+                  </p>
+
+                  <div className="flex items-center space-x-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowCreateModal(false)}
+                      className="px-4 py-2 rounded-xl text-xs font-medium text-slate-500 hover:text-slate-700 dark:hover:text-white transition"
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      type="submit"
+                      disabled={creatingAdmin}
+                      className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs flex items-center space-x-2 shadow-md transition disabled:opacity-50"
+                    >
+                      {creatingAdmin ? (
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      ) : (
+                        <>
+                          <CheckCircle2 className="w-4 h-4" />
+                          <span>Create / Assign Admin</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            )}
 
             {/* Admin Table */}
             <div className="bg-white dark:bg-[#161618] border border-purple-200 dark:border-purple-900/40 rounded-2xl overflow-hidden shadow-sm">
