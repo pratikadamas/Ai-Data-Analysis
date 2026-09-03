@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { DatasetProvider } from "./context/DatasetContext.jsx";
 import { useUser } from "./context/UserContext.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
@@ -19,6 +19,30 @@ import AppLoadingBar from "./components/shared/AppLoadingBar.jsx";
 
 import AdminAuth from "./pages/AdminAuth.jsx";
 import Admin from "./pages/Admin.jsx";
+
+function PageTitleUpdater() {
+  const location = useLocation();
+
+  React.useEffect(() => {
+    const titles = {
+      "/": "AI Data Analysis Platform - Talk to Your Data & Get Instant Visuals",
+      "/login": "Sign In | AI Data Analysis Platform",
+      "/register": "Get Started & Create Account | AI Data Analysis Platform",
+      "/app": "Workspace Studio | AI Data Analysis Platform",
+      "/docs": "Documentation & Guides | AI Data Analysis Platform",
+      "/faq": "Frequently Asked Questions | AI Data Analysis Platform",
+      "/faqs": "Frequently Asked Questions | AI Data Analysis Platform",
+      "/privacy": "Privacy Policy | AI Data Analysis Platform",
+      "/terms": "Terms of Service | AI Data Analysis Platform",
+      "/admin/login": "Admin Sign In | AI Data Analysis Platform",
+      "/admin": "Admin Portal | AI Data Analysis Platform",
+    };
+
+    document.title = titles[location.pathname] || "AI Data Analysis Platform";
+  }, [location.pathname]);
+
+  return null;
+}
 
 // Protected Route Wrapper
 function ProtectedRoute({ children }) {
@@ -71,6 +95,7 @@ export default function App() {
 
   return (
     <>
+      <PageTitleUpdater />
       <AppLoadingBar />
       <ScrollToTop />
       <Routes>
