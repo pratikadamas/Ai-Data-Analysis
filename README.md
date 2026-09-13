@@ -209,11 +209,11 @@ Below is the end-to-end engineering blueprint for each remaining feature, detail
 
 ### 1. 📌 Saved & Named Dashboards
 
-**🎯 Feature Objective & User Flow**
+#### 🎯 Objective & Workflow for Saved Dashboards
 
 Allow authenticated users to pin generated charts, KPI widgets, and custom SQL tables from AI Chat or Explore into persistent, named dashboard views that can be reloaded anytime.
 
-**⚙️ Technical Architecture & Implementation Steps**
+#### ⚙️ Technical Architecture for Saved Dashboards
 
 1. **MongoDB Collection (`dashboards`)**:
 
@@ -255,11 +255,11 @@ Allow authenticated users to pin generated charts, KPI widgets, and custom SQL t
 
 ### 2. 🔄 Multi-Turn Conversation Context
 
-**🎯 Feature Objective & User Flow**
+#### 🎯 Objective & Workflow for Multi-Turn Context
 
 Enable contextual follow-up questions in the AI Chat (e.g., *"Show top 5 products by revenue"*, followed by *"Now filter that only for Europe"* or *"What was the total profit for these?"*).
 
-**⚙️ Technical Architecture & Implementation Steps**
+#### ⚙️ Technical Architecture for Multi-Turn Context
 
 1. **Request Schema Update (`ChatRequest`)**:
    - Add `conversation_history: List[ConversationTurn] = []`.
@@ -290,11 +290,11 @@ Enable contextual follow-up questions in the AI Chat (e.g., *"Show top 5 product
 
 ### 3. 🔗 Multi-File Joins
 
-**🎯 Feature Objective & User Flow**
+#### 🎯 Objective & Workflow for Multi-File Joins
 
 Allow users to upload multiple interrelated files (e.g. `orders.csv` and `customers.xlsx`) and ask cross-table analytical questions that require automatic SQL `JOIN` operations.
 
-**⚙️ Technical Architecture & Implementation Steps**
+#### ⚙️ Technical Architecture for Multi-File Joins
 
 1. **Multi-Table Session Registry (`duckdb_manager.py`)**:
    - Register all uploaded files in a session as independent tables within the same DuckDB in-memory database (`conn.register("orders", ...)`, `conn.register("customers", ...)`).
@@ -314,11 +314,11 @@ Allow users to upload multiple interrelated files (e.g. `orders.csv` and `custom
 
 ### 4. 🐘 External Database Connections (MySQL, PostgreSQL, Snowflake)
 
-**🎯 Feature Objective & User Flow**
+#### 🎯 Objective & Workflow for External Databases
 
 Connect directly to live relational and cloud data warehouses without manual CSV/Excel exports.
 
-**⚙️ Technical Architecture & Implementation Steps**
+#### ⚙️ Technical Architecture for External Databases
 
 1. **Native DuckDB Engine Connectors**:
    - Utilize DuckDB's native zero-copy extensions:
@@ -341,11 +341,11 @@ Connect directly to live relational and cloud data warehouses without manual CSV
 
 ### 5. 📄 PDF & PPTX Executive Export
 
-**🎯 Feature Objective & User Flow**
+#### 🎯 Objective & Workflow for PDF and PowerPoint Export
 
 Generate executive-ready PDF analytics reports and formatted PowerPoint slide decks from chat insights, KPI cards, and Plotly charts.
 
-**⚙️ Technical Architecture & Implementation Steps**
+#### ⚙️ Technical Architecture for PDF and PowerPoint Export
 
 1. **Client-Side Instant Export**:
    - **PDF Generation**: Powered by `jspdf` and `html2canvas-pro` to capture vector Plotly charts, executive markdown summaries, and data tables with custom branding and pagination.
@@ -367,11 +367,11 @@ Generate executive-ready PDF analytics reports and formatted PowerPoint slide de
 
 ### 6. 🎙️ Voice Queries (Speech-to-Text)
 
-**🎯 Feature Objective & User Flow**
+#### 🎯 Objective & Workflow for Voice Queries
 
 Enable hands-free data analysis by allowing users to speak their questions directly into the chat input.
 
-**⚙️ Technical Architecture & Implementation Steps**
+#### ⚙️ Technical Architecture for Voice Queries
 
 1. **Dual-Layer Speech Recognition**:
    - **Layer 1 (Browser Web Speech API)**: Native `webkitSpeechRecognition` for zero-latency, client-side streaming transcription with real-time waveform animation.
