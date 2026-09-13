@@ -43,7 +43,7 @@ export default function AppLoadingBar() {
       {loading && (
         <div className="fixed top-0 left-0 right-0 z-[99999] h-[3px] bg-transparent pointer-events-none overflow-hidden">
           <div 
-            className="h-full bg-gradient-to-r from-[#0071e3] via-[#5e5ce6] to-[#af52de] dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 transition-all duration-200 ease-out shadow-[0_0_12px_rgba(0,113,227,1)]"
+            className="h-full bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] dark:from-blue-400 dark:via-sky-400 dark:to-cyan-400 transition-all duration-200 ease-out shadow-[0_0_12px_rgba(0,113,227,1)]"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -68,13 +68,13 @@ export default function AppLoadingBar() {
               className="relative w-14 h-14 flex items-center justify-center"
             >
               {/* Soft blur glow */}
-              <div className="absolute inset-0 rounded-full bg-blue-500/25 dark:bg-blue-400/30 blur-xl" />
+              <div className="absolute inset-0 rounded-full bg-cyan-500/25 dark:bg-cyan-400/30 blur-xl" />
               
               {/* Outer guide circle */}
               <div className="w-12 h-12 rounded-full border-[3px] border-black/[0.15] dark:border-white/[0.2]" />
               
               {/* High-contrast spinning arc */}
-              <div className="absolute inset-0 m-auto w-12 h-12 rounded-full border-[3.5px] border-t-[#0071e3] dark:border-t-blue-400 border-r-[#5e5ce6] dark:border-r-indigo-400 border-b-transparent border-l-transparent animate-spin" />
+              <div className="absolute inset-0 m-auto w-12 h-12 rounded-full border-[3.5px] border-t-[#0071e3] dark:border-t-blue-400 border-r-[#06b6d4] dark:border-r-cyan-400 border-b-transparent border-l-transparent animate-spin" />
             </motion.div>
           </motion.div>
         )}

@@ -118,7 +118,7 @@ export default function ChatPanel() {
       {/* Header Banner */}
       <div className="flex items-center justify-between shrink-0">
         <div>
-          <h2 className="font-outfit font-bold text-xl sm:text-2xl bg-gradient-to-r from-[#1d1d1f] via-[#0071e3] to-[#6366f1] dark:from-[#f5f5f7] dark:via-[#38bdf8] dark:to-[#818cf8] bg-clip-text text-transparent tracking-tight">
+          <h2 className="font-outfit font-bold text-xl sm:text-2xl bg-gradient-to-r from-[#262422] via-[#0071e3] to-[#06b6d4] dark:from-[#f5f5f7] dark:via-[#38bdf8] dark:to-[#06b6d4] bg-clip-text text-transparent tracking-tight">
             Ask AI Assistant
           </h2>
           <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mt-0.5 font-sans">
@@ -171,7 +171,7 @@ export default function ChatPanel() {
               <button
                 key={q}
                 onClick={() => send(q)}
-                className="text-xs px-3 py-1.5 rounded-full bg-white/70 dark:bg-[#1c1c1e]/70 border border-black/[0.06] dark:border-white/[0.08] hover:border-[#0071e3] text-[#515154] dark:text-[#a1a1a6] hover:text-[#0071e3] transition-all cursor-pointer shadow-2xs"
+                className="text-xs px-3 py-1.5 rounded-full bg-[#fcfaf5]/85 dark:bg-[#1c1c1e]/70 border border-stone-200/80 dark:border-white/[0.08] hover:border-[#0071e3] text-[#515154] dark:text-[#a1a1a6] hover:text-[#0071e3] transition-all cursor-pointer shadow-2xs"
               >
                 {q}
               </button>
@@ -190,11 +190,11 @@ export default function ChatPanel() {
                 <div
                   className={`rounded-2xl rounded-tl-xs p-4 shadow-2xs border ${
                     m.warning
-                      ? "bg-amber-500/[0.08] border-amber-500/30 text-amber-900 dark:text-amber-200"
-                      : "bg-white/80 dark:bg-[#1c1c1e]/80 backdrop-blur-xl border-black/[0.06] dark:border-white/[0.08]"
+                       ? "bg-amber-500/[0.08] border-amber-500/30 text-amber-900 dark:text-amber-200"
+                       : "bg-[#fcfaf5]/85 dark:bg-[#1c1c1e]/80 backdrop-blur-xl border-stone-200/80 dark:border-white/[0.08]"
                   }`}
                 >
-                  <div className="prose dark:prose-invert max-w-none text-sm leading-relaxed text-[#1d1d1f] dark:text-[#f5f5f7]">
+                  <div className="prose dark:prose-invert max-w-none text-sm leading-relaxed text-[#262422] dark:text-[#f5f5f7]">
                     {m.answer || m.content}
                   </div>
                   {m.warning && typeof m.warning === "string" && (
@@ -243,7 +243,7 @@ export default function ChatPanel() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask anything about your data… (e.g. Total revenue by region)"
-          className="chat-input w-full rounded-full border border-black/[0.08] dark:border-white/[0.12] bg-white/70 dark:bg-[#1c1c1e]/70 backdrop-blur-2xl pl-5 pr-12 py-3 text-sm text-[#1d1d1f] dark:text-[#f5f5f7] outline-none focus:ring-2 focus:ring-[#0071e3]/40 focus:border-[#0071e3] transition-all shadow-xs"
+          className="chat-input w-full rounded-full border border-stone-300/60 dark:border-white/[0.12] bg-[#fcfaf5]/85 dark:bg-[#1c1c1e]/70 backdrop-blur-2xl pl-5 pr-12 py-3 text-sm text-[#262422] dark:text-[#f5f5f7] outline-none focus:ring-2 focus:ring-[#0071e3]/40 focus:border-[#0071e3] transition-all shadow-xs"
         />
         <button
           type="submit"

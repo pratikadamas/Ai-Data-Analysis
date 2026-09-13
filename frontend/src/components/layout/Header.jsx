@@ -10,10 +10,10 @@ export default function Header() {
   const { dataset } = useDataset();
 
   return (
-    <header className="h-14 flex items-center justify-between px-4 sm:px-6 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-[#161617]/80 backdrop-blur-2xl select-none relative z-50 transition-colors duration-200">
-      <div className="flex items-center gap-3 sm:gap-4">
+    <header className="h-14 flex items-center justify-between px-3 sm:px-6 border-b border-stone-200/50 dark:border-white/[0.06] bg-[#fcfaf5]/45 dark:bg-[#161617]/45 backdrop-blur-2xl select-none relative z-50 transition-all duration-200">
+      <div className="flex items-center gap-2 sm:gap-4 min-w-0">
         {/* macOS Traffic Dots with Apple Gloss */}
-        <div className="hidden sm:flex items-center gap-2 mr-1">
+        <div className="hidden sm:flex items-center gap-2 mr-1 shrink-0">
           <button 
             type="button" 
             title="Close" 
@@ -34,15 +34,16 @@ export default function Header() {
         <Link 
           to="/" 
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="flex items-center gap-2.5 group cursor-pointer"
+          className="flex items-center gap-2 sm:gap-2.5 group cursor-pointer shrink-0"
         >
           <img 
             src="/favicon.webp" 
             alt="AI Data Analysis Logo" 
-            className="w-7 h-7 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_2px_10px_rgba(0,113,227,0.3)]"
+            className="w-7 h-7 object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_2px_10px_rgba(0,113,227,0.3)] shrink-0"
           />
-          <span className="header-title text-base font-bold tracking-tight font-outfit bg-gradient-to-r from-[#0071e3] via-[#4338ca] to-[#a855f7] dark:from-[#38bdf8] dark:via-[#818cf8] dark:to-[#c084fc] bg-clip-text text-transparent group-hover:opacity-90 transition-opacity">
-            AI Data Analysis
+          <span className="header-title text-sm sm:text-base font-bold tracking-tight font-outfit bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] dark:from-[#38bdf8] dark:via-[#0ea5e9] dark:to-[#06b6d4] bg-clip-text text-transparent group-hover:opacity-90 transition-opacity">
+            <span className="hidden sm:inline">AI Data Analysis</span>
+            <span className="sm:hidden">AI Analysis</span>
           </span>
         </Link>
         {dataset && (
@@ -58,14 +59,14 @@ export default function Header() {
         )}
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         {/* Dark Mode Switcher */}
         <button
           onClick={() => setIsDark((d) => !d)}
-          className="text-[#515154] dark:text-[#a1a1a6] p-2 rounded-full border border-black/[0.06] dark:border-white/[0.08] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-[#0071e3] transition-all"
+          className="text-[#515154] dark:text-[#a1a1a6] p-1.5 sm:p-2 rounded-full border border-black/[0.06] dark:border-white/[0.08] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-[#0071e3] transition-all"
           title="Toggle light/dark mode"
         >
-          {isDark ? <Sun size={16} /> : <Moon size={16} />}
+          {isDark ? <Sun size={15} /> : <Moon size={15} />}
         </button>
 
         {/* User Nav Profile with outside click handling */}

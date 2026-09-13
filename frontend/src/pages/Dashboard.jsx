@@ -39,7 +39,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="h-screen flex flex-col relative bg-[#f5f5f7] dark:bg-[#000000] text-[#1d1d1f] dark:text-[#f5f5f7] antialiased selection:bg-[#0071e3] selection:text-white">
+    <div className="h-screen flex flex-col relative bg-[#f7f5f0] dark:bg-[#000000] text-[#262422] dark:text-[#f5f5f7] antialiased selection:bg-[#0071e3] selection:text-white">
       <Header />
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar with show/hide icon rail and hover tooltip */}
@@ -96,17 +96,17 @@ export default function Dashboard() {
           return (
             <button
               key={key}
-              onClick={() => setActiveTab(key)}
+              onClick={() => handleTabChange(key)}
               className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-lg transition-all ${
                 isActive
-                  ? "text-indigo-600 dark:text-indigo-400"
+                  ? "text-[#0071e3] dark:text-cyan-400"
                   : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
               }`}
             >
               <Icon size={20} strokeWidth={isActive ? 2.5 : 1.8} />
               <span className="text-[10px] font-semibold tracking-wide">{label}</span>
               {isActive && (
-                <span className="absolute bottom-1 w-1 h-1 rounded-full bg-indigo-500" />
+                <span className="absolute bottom-1 w-1 h-1 rounded-full bg-[#0071e3] dark:bg-cyan-400" />
               )}
             </button>
           );

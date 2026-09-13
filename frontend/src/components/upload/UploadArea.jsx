@@ -177,13 +177,13 @@ export default function UploadArea() {
           {/* Animated Glowing Cloud Icon */}
           <div className={`mb-3 w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ${
             isDragging 
-              ? "bg-gradient-to-tr from-[#0071e3] to-[#818cf8] text-white scale-110 shadow-[0_8px_25px_rgba(0,113,227,0.5)]" 
-              : "bg-gradient-to-tr from-[#0071e3]/10 to-[#818cf8]/15 text-[#0071e3] dark:text-blue-400 border border-[#0071e3]/20"
+              ? "bg-gradient-to-tr from-[#0071e3] to-[#06b6d4] text-white scale-110 shadow-[0_8px_25px_rgba(0,113,227,0.5)]" 
+              : "bg-gradient-to-tr from-[#0071e3]/10 to-[#06b6d4]/15 text-[#0071e3] dark:text-blue-400 border border-[#0071e3]/20"
           }`}>
             <UploadCloud size={26} strokeWidth={1.8} className={isDragging ? "animate-bounce" : ""} />
           </div>
 
-          <h3 className="font-outfit font-bold text-lg sm:text-xl bg-gradient-to-r from-[#1d1d1f] via-[#0071e3] to-[#4338ca] dark:from-[#f5f5f7] dark:via-[#38bdf8] dark:to-[#818cf8] bg-clip-text text-transparent tracking-tight mb-1">
+          <h3 className="font-outfit font-bold text-lg sm:text-xl bg-gradient-to-r from-[#262422] via-[#0071e3] to-[#06b6d4] dark:from-[#f5f5f7] dark:via-[#38bdf8] dark:to-[#06b6d4] bg-clip-text text-transparent tracking-tight mb-1">
             Drop your dataset files here
           </h3>
           <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] max-w-sm mb-4 leading-relaxed font-sans">

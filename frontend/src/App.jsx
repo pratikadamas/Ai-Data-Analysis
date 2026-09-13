@@ -12,7 +12,6 @@ import Terms from "./pages/Terms.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Lenis from "lenis";
 
 import MainAppLoader from "./components/shared/MainAppLoader.jsx";
 import AppLoadingBar from "./components/shared/AppLoadingBar.jsx";

@@ -12,7 +12,7 @@ const NAV_ITEMS = [
 export default function Sidebar({ active, onSelect, isOpen = true, onToggle }) {
   return (
     <aside 
-      className={`sidebar-wrapper shrink-0 border-r border-black/[0.06] dark:border-white/[0.08] bg-white/75 dark:bg-[#161617]/75 backdrop-blur-2xl select-none transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-between relative z-40 ${
+      className={`sidebar-wrapper shrink-0 border-r border-stone-200/80 dark:border-white/[0.08] bg-[#f8f5ee]/85 dark:bg-[#161617]/75 backdrop-blur-2xl select-none transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-between relative z-40 ${
         isOpen ? "w-56 p-3" : "w-16 p-2"
       }`}
     >
@@ -51,7 +51,7 @@ export default function Sidebar({ active, onSelect, isOpen = true, onToggle }) {
                       : "justify-center p-2.5"
                   } ${
                     isActive
-                      ? "bg-gradient-to-r from-[#0071e3] to-[#4338ca] dark:from-[#0071e3] dark:to-[#6366f1] text-white shadow-[0_4px_14px_rgba(0,113,227,0.35)] scale-[1.02]"
+                      ? "bg-gradient-to-r from-[#0071e3] to-[#0284c7] dark:from-[#0071e3] dark:to-[#06b6d4] text-white shadow-[0_4px_14px_rgba(0,113,227,0.35)] scale-[1.02]"
                       : "text-[#515154] dark:text-[#a1a1a6] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7]"
                   }`}
                 >

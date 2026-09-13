@@ -101,7 +101,7 @@ export default function ExplorePanel() {
     <div className="space-y-4 max-w-5xl mx-auto animate-fade-in pb-4">
       {/* Header Banner */}
       <div>
-        <h2 className="font-outfit font-bold text-xl sm:text-2xl bg-gradient-to-r from-[#1d1d1f] via-[#0071e3] to-[#6366f1] dark:from-[#f5f5f7] dark:via-[#38bdf8] dark:to-[#818cf8] bg-clip-text text-transparent tracking-tight">
+        <h2 className="font-outfit font-bold text-xl sm:text-2xl bg-gradient-to-r from-[#262422] via-[#0071e3] to-[#06b6d4] dark:from-[#f5f5f7] dark:via-[#38bdf8] dark:to-[#06b6d4] bg-clip-text text-transparent tracking-tight">
           Explore & Visualize
         </h2>
         <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] mt-0.5 font-sans">
@@ -111,7 +111,7 @@ export default function ExplorePanel() {
 
       {/* Controls Container */}
       {hasMultipleFiles && (
-        <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.06] dark:border-white/[0.08] backdrop-blur-2xl">
+        <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-[#fcfaf5]/85 dark:bg-[#1c1c1e]/75 border border-stone-200/80 dark:border-white/[0.08] backdrop-blur-2xl">
           <div className="flex items-center gap-2 text-xs font-bold text-[#6e6e73] dark:text-[#a1a1a6] uppercase tracking-wider shrink-0">
             <Database size={14} className="text-[#0071e3]" />
             Select Dataset
@@ -119,7 +119,7 @@ export default function ExplorePanel() {
           <select
             value={selectedFileIndex}
             onChange={(e) => setSelectedFileIndex(Number(e.target.value))}
-            className="flex-1 rounded-xl border border-black/[0.08] dark:border-white/[0.12] bg-black/[0.02] dark:bg-white/[0.04] px-3.5 py-2 text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7] outline-none focus:ring-2 focus:ring-[#0071e3]/40 focus:border-[#0071e3] transition-all cursor-pointer"
+            className="flex-1 rounded-xl border border-stone-300/60 dark:border-white/[0.12] bg-[#f8f5ee] dark:bg-white/[0.04] px-3.5 py-2 text-sm font-medium text-[#262422] dark:text-[#f5f5f7] outline-none focus:ring-2 focus:ring-[#0071e3]/40 focus:border-[#0071e3] transition-all cursor-pointer"
           >
             {files.map((f, idx) => (
               <option key={f.table_name} value={idx}>
@@ -131,7 +131,7 @@ export default function ExplorePanel() {
       )}
 
       {/* Control Grid in Apple Frosted Glass Box */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-white/75 dark:bg-[#1c1c1e]/75 border border-black/[0.06] dark:border-white/[0.08] backdrop-blur-2xl shadow-sm space-y-5">
+      <div className="p-5 sm:p-6 rounded-3xl bg-[#fcfaf5]/85 dark:bg-[#1c1c1e]/75 border border-stone-200/80 dark:border-white/[0.08] backdrop-blur-2xl shadow-sm space-y-5">
         <div className="explore-controls-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <Select label="X-axis" value={xColumn} onChange={setXColumn} options={["", ...columns]} />
           <Select label="Y-axis (optional)" value={yColumn} onChange={setYColumn} options={["", ...columns]} />
@@ -180,12 +180,12 @@ export default function ExplorePanel() {
 
 function Select({ label, value, onChange, options }) {
   return (
-    <label className="text-xs text-gray-500 dark:text-gray-400 flex flex-col gap-1">
+    <label className="text-xs text-[#6e6e73] dark:text-gray-400 flex flex-col gap-1">
       {label}
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-1.5 text-sm text-gray-900 dark:text-gray-100"
+        className="rounded-xl border border-stone-300/60 dark:border-gray-700 bg-[#fcfaf5] dark:bg-gray-900 px-2.5 py-1.5 text-sm text-[#262422] dark:text-gray-100 outline-none focus:ring-2 focus:ring-[#0071e3]/40"
       >
         {options.map((opt) => (
           <option key={opt} value={opt}>

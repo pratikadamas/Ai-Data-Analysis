@@ -3,21 +3,21 @@ import { motion } from "framer-motion";
 
 export default function MainAppLoader({ text = "Loading AI Data Analysis..." }) {
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#fbfbfd] dark:bg-[#161617] text-[#1d1d1f] dark:text-[#f5f5f7] transition-colors duration-300">
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#f7f5f0] dark:bg-[#161617] text-[#262422] dark:text-[#f5f5f7] transition-colors duration-300">
       
       {/* Background ambient lighting */}
-      <div className="absolute w-96 h-96 rounded-full bg-gradient-to-tr from-[#0071e3]/20 via-[#5e5ce6]/15 to-[#af52de]/15 dark:from-blue-500/20 dark:via-indigo-500/15 dark:to-purple-500/15 blur-3xl pointer-events-none" />
+      <div className="absolute w-96 h-96 rounded-full bg-gradient-to-tr from-[#0071e3]/20 via-[#0284c7]/15 to-[#06b6d4]/15 dark:from-blue-500/20 dark:via-sky-500/15 dark:to-cyan-500/15 blur-3xl pointer-events-none" />
       
       {/* macOS Glass Center Container */}
       <motion.div 
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="relative flex flex-col items-center p-10 rounded-3xl bg-white/80 dark:bg-[#1d1d1f]/90 border border-black/[0.08] dark:border-white/[0.12] shadow-[0_20px_60px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.6)] backdrop-blur-2xl"
+        className="relative flex flex-col items-center p-10 rounded-3xl bg-[#fcfaf5]/85 dark:bg-[#1d1d1f]/90 border border-stone-200/80 dark:border-white/[0.12] shadow-[0_20px_60px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.6)] backdrop-blur-2xl"
       >
         {/* Brand Logo with Ambient Ring */}
         <div className="relative mb-6 flex items-center justify-center">
-          <div className="absolute inset-0 w-20 h-20 -m-2 rounded-2xl bg-gradient-to-tr from-[#0071e3]/30 to-[#af52de]/30 animate-pulse blur-md" />
+          <div className="absolute inset-0 w-20 h-20 -m-2 rounded-2xl bg-gradient-to-tr from-[#0071e3]/30 to-[#06b6d4]/30 animate-pulse blur-md" />
           <motion.img 
             src="/favicon.webp" 
             alt="AI Data Analysis Brand Logo" 
@@ -29,13 +29,13 @@ export default function MainAppLoader({ text = "Loading AI Data Analysis..." }) 
 
         {/* Apple Style Circle Spinner */}
         <div className="relative w-8 h-8 flex items-center justify-center mb-4">
-          <div className="w-8 h-8 rounded-full border-[2.5px] border-black/[0.08] dark:border-white/[0.12]" />
+          <div className="w-8 h-8 rounded-full border-[2.5px] border-stone-300/50 dark:border-white/[0.12]" />
           <div className="absolute inset-0 w-8 h-8 rounded-full border-[2.5px] border-t-[#0071e3] dark:border-t-blue-400 border-r-transparent border-b-transparent border-l-transparent animate-spin" />
         </div>
         
         {/* Brand title & loading status */}
         <div className="text-center space-y-1">
-          <h3 className="font-semibold text-base tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+          <h3 className="font-bold text-base tracking-tight bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] dark:from-[#38bdf8] dark:via-[#0ea5e9] dark:to-[#06b6d4] bg-clip-text text-transparent">
             AI Data Analysis
           </h3>
           <p className="text-xs font-medium text-[#6e6e73] dark:text-[#a1a1a6]">

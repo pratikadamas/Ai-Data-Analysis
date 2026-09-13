@@ -32,11 +32,14 @@ export default function ThemeToggle() {
 
   return (
     <button
-      onClick={toggleTheme}
-      className="p-2 rounded-full text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-brand-500"
+      onClick={(e) => {
+        toggleTheme();
+        e.currentTarget.blur();
+      }}
+      className="p-2 rounded-full text-[#515154] hover:text-[#1d1d1f] dark:text-[#a1a1a6] dark:hover:text-[#f5f5f7] bg-black/[0.04] hover:bg-black/[0.08] dark:bg-white/[0.06] dark:hover:bg-white/[0.1] border border-black/[0.06] dark:border-white/[0.08] transition-all duration-200 outline-none select-none cursor-pointer active:scale-95 focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-[#0071e3]"
       aria-label="Toggle Dark Mode"
     >
-      {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+      {isDark ? <Sun className="w-4.5 h-4.5 text-amber-400" /> : <Moon className="w-4.5 h-4.5 text-[#515154]" />}
     </button>
   );
 }
