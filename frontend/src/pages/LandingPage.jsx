@@ -638,8 +638,9 @@ export default function LandingPage() {
                 transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                 className="text-base sm:text-lg md:text-xl text-[#6e6e73] dark:text-[#a1a1a6] max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-8 font-normal"
               >
-                Upload any spreadsheet, SQLite, or SQL file and ask questions naturally. 
-                <strong className="text-[#262422] dark:text-[#f5f5f7] font-semibold"> AI Data Analysis</strong> turns natural language into high-speed DuckDB SQL, interactive Plotly charts, and business intelligence in seconds.
+                Upload any spreadsheet, SQLite, or SQL file and ask questions naturally.
+                <br />
+                <strong className="text-[#262422] dark:text-[#f5f5f7] font-semibold">AI Data Analysis</strong> turns natural language into high-speed DuckDB SQL, interactive Plotly charts, and business intelligence in seconds.
               </motion.p>
 
               {/* CTAs */}
