@@ -201,6 +201,187 @@ npm run dev
 - [ ] 📄 PDF/PPTX export
 - [ ] 🎙️ Voice queries
 
+---
+
+## 🛠️ Remaining Roadmap Features: Implementation Blueprints
+
+Below is the end-to-end engineering blueprint for each remaining feature, detailing how it will be built, the underlying architecture, data flows, and UI integration:
+
+### 1. 📌 Saved & Named Dashboards
+
+#### 🎯 Objective & Workflow for Saved Dashboards
+
+Allow authenticated users to pin generated charts, KPI widgets, and custom SQL tables from AI Chat or Explore into persistent, named dashboard views that can be reloaded anytime.
+
+#### ⚙️ Technical Architecture for Saved Dashboards
+
+1. **MongoDB Collection (`dashboards`)**:
+
+   ```json
+   {
+     "_id": "ObjectId(...)",
+     "user_id": "user_id_string",
+     "name": "Q3 Executive Revenue Overview",
+     "description": "Quarterly breakdown of margins and category growth",
+     "dataset_name": "sales_q3.csv",
+     "widgets": [
+       {
+         "id": "w_01",
+         "title": "Profit Margin by Category",
+         "type": "chart",
+         "sql": "SELECT category, SUM(profit) FROM sales_q3 GROUP BY 1",
+         "chart_type": "bar",
+         "chart_spec": { },
+         "layout": { "x": 0, "y": 0, "w": 6, "h": 4 }
+       }
+     ],
+     "created_at": "ISO-8601",
+     "updated_at": "ISO-8601"
+   }
+   ```
+
+2. **Backend API Endpoints (`/api/dashboards`)**:
+   - `POST /api/dashboards`: Create/save a dashboard configuration with widget queries and layouts.
+   - `GET /api/dashboards`: Retrieve all saved dashboards belonging to the authenticated user.
+   - `GET /api/dashboards/{id}`: Fetch a specific dashboard and execute saved queries against the active DuckDB in-memory session.
+   - `PUT /api/dashboards/{id}`: Update widget layout, titles, or chart configurations.
+   - `DELETE /api/dashboards/{id}`: Delete a saved dashboard.
+
+3. **Frontend Implementation**:
+   - **Pin Button**: Added to each AI chat result card and Explore view: `"Pin to Dashboard"`.
+   - **Dashboard Studio View (`DashboardsPanel.jsx`)**: Responsive CSS Grid / Bento Grid displaying saved widgets with auto-refresh and export capabilities.
+
+---
+
+### 2. 🔄 Multi-Turn Conversation Context
+
+#### 🎯 Objective & Workflow for Multi-Turn Context
+
+Enable contextual follow-up questions in the AI Chat (e.g., *"Show top 5 products by revenue"*, followed by *"Now filter that only for Europe"* or *"What was the total profit for these?"*).
+
+#### ⚙️ Technical Architecture for Multi-Turn Context
+
+1. **Request Schema Update (`ChatRequest`)**:
+   - Add `conversation_history: List[ConversationTurn] = []`.
+   - Each turn contains `{ role: "user" | "assistant", question: str, sql?: str, summary?: str }`.
+
+2. **Sliding-Window Context Ingestion (`llm_service.py`)**:
+   - Build a contextual system prompt incorporating the last 4–6 conversational turns.
+   - Structure prompt with clear demarcations:
+
+     ```text
+     PREVIOUS CONTEXT:
+     User: "Show top 5 products by revenue"
+     Executed SQL: SELECT product_name, SUM(revenue) FROM sales GROUP BY 1 ORDER BY 2 DESC LIMIT 5
+     Assistant Summary: Here are the top 5 products leading sales...
+
+     CURRENT FOLLOW-UP:
+     User: "Now filter that only for Europe"
+     INSTRUCTION: Modify or extend the previous SQL query using the conversation context above.
+     ```
+
+3. **Contextual Intent Guard**:
+   - Ensure the intent classifier evaluates follow-up questions against previous context so queries like *"Now show Europe"* are recognized as data refinements rather than ambiguous inputs.
+
+4. **Frontend State Management**:
+   - `ChatPanel.jsx` persists conversation state and passes recent turn history in each `/api/chat` request with an option to `"Start New Topic"` to reset context.
+
+---
+
+### 3. 🔗 Multi-File Joins
+
+#### 🎯 Objective & Workflow for Multi-File Joins
+
+Allow users to upload multiple interrelated files (e.g. `orders.csv` and `customers.xlsx`) and ask cross-table analytical questions that require automatic SQL `JOIN` operations.
+
+#### ⚙️ Technical Architecture for Multi-File Joins
+
+1. **Multi-Table Session Registry (`duckdb_manager.py`)**:
+   - Register all uploaded files in a session as independent tables within the same DuckDB in-memory database (`conn.register("orders", ...)`, `conn.register("customers", ...)`).
+
+2. **Cross-Table Relationship Discovery (`schema_service.py`)**:
+   - Inspect primary/foreign key naming conventions (e.g. `customer_id` present in both `orders` and `customers`).
+   - Sample column values to check intersection overlap and suggest join paths.
+
+3. **Join-Aware LLM Prompting (`llm_service.py`)**:
+   - Feed the schema of *all* session tables into the LLM prompt.
+   - Instruct the LLM to generate explicit ANSI SQL joins (`FROM orders INNER JOIN customers ON orders.customer_id = customers.id`) using table aliases.
+
+4. **Frontend Schema Explorer**:
+   - Schema tree displays interrelated tables with connection link badges and suggested join queries.
+
+---
+
+### 4. 🐘 External Database Connections (MySQL, PostgreSQL, Snowflake)
+
+#### 🎯 Objective & Workflow for External Databases
+
+Connect directly to live relational and cloud data warehouses without manual CSV/Excel exports.
+
+#### ⚙️ Technical Architecture for External Databases
+
+1. **Native DuckDB Engine Connectors**:
+   - Utilize DuckDB's native zero-copy extensions:
+     - `INSTALL postgres; LOAD postgres;` $\rightarrow$ `ATTACH 'dbname=... host=...' AS pg_db (TYPE POSTGRES);`
+     - `INSTALL mysql; LOAD mysql;` $\rightarrow$ `ATTACH 'host=... user=...' AS my_db (TYPE MYSQL);`
+     - Snowflake / BigQuery connector via SQLAlchemy and Apache Arrow record batch streaming.
+
+2. **Secure Credential Vault (`backend/app/db/connections.py`)**:
+   - Credentials stored in MongoDB with AES-256 field-level encryption.
+   - Enforce strictly read-only connections (`read_only=True`) to guarantee database safety.
+
+3. **Connection Endpoints (`/api/connectors`)**:
+   - `POST /api/connectors/test`: Performs connection handshake, latency ping, and schema inspection.
+   - `POST /api/connectors/attach`: Mounts remote tables into the session DuckDB instance.
+
+4. **Frontend Modal (`DatabaseConnectorModal.jsx`)**:
+   - Tabbed setup form for PostgreSQL, MySQL, SQLite, and Snowflake with test connection validation.
+
+---
+
+### 5. 📄 PDF & PPTX Executive Export
+
+#### 🎯 Objective & Workflow for PDF and PowerPoint Export
+
+Generate executive-ready PDF analytics reports and formatted PowerPoint slide decks from chat insights, KPI cards, and Plotly charts.
+
+#### ⚙️ Technical Architecture for PDF and PowerPoint Export
+
+1. **Client-Side Instant Export**:
+   - **PDF Generation**: Powered by `jspdf` and `html2canvas-pro` to capture vector Plotly charts, executive markdown summaries, and data tables with custom branding and pagination.
+   - **PowerPoint (.pptx) Generation**: Powered by `pptxgenjs`:
+     - **Slide 1**: Title slide with dataset name, author, and timestamp.
+     - **Slide 2**: Executive Summary & high-level KPI cards.
+     - **Slides 3+**: One slide per query with the question, high-res chart image, and AI insight bullets.
+
+2. **Backend Server-Side Export (`/api/export/report`)**:
+   - Python `reportlab` / `python-pptx` pipeline for automated scheduled reports.
+
+3. **Frontend UI**:
+   - Dedicated export dropdown in `Header.jsx` and `ChatPanel.jsx`:
+     - 🌐 *Export as Interactive HTML* (Live)
+     - 📄 *Export as PDF Document* (Formatted executive document)
+     - 📊 *Export as PowerPoint (.pptx)* (Slide deck presentation)
+
+---
+
+### 6. 🎙️ Voice Queries (Speech-to-Text)
+
+#### 🎯 Objective & Workflow for Voice Queries
+
+Enable hands-free data analysis by allowing users to speak their questions directly into the chat input.
+
+#### ⚙️ Technical Architecture for Voice Queries
+
+1. **Dual-Layer Speech Recognition**:
+   - **Layer 1 (Browser Web Speech API)**: Native `webkitSpeechRecognition` for zero-latency, client-side streaming transcription with real-time waveform animation.
+   - **Layer 2 (Groq Whisper Fallback)**: For browsers without native speech recognition (Firefox/custom browsers), records audio via `MediaRecorder` and sends audio chunks to `/api/chat/transcribe` powered by Groq's high-speed `whisper-large-v3-turbo` model (<300ms turnaround).
+
+2. **Frontend UI/UX (`VoiceInputButton.jsx`)**:
+   - Microphone button integrated inside the chat input bar.
+   - Pulsating audio wave animation while listening.
+   - Auto-stops on silence detection and automatically triggers the analytical query.
+
 <div align="center">
   <i>Built with ❤️ for data analysts everywhere! Happy Querying! 📊✨</i>
 </div>
