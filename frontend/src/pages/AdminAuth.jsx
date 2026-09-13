@@ -58,15 +58,15 @@ export default function AdminAuth() {
   };
 
   return (
-    <div className="min-h-screen w-full flex bg-white dark:bg-[#050505] text-slate-900 dark:text-white overflow-hidden select-none transition-colors duration-500">
+    <div className="min-h-screen w-full flex bg-[#f7f5f0] dark:bg-[#050505] text-stone-900 dark:text-white overflow-hidden select-none transition-colors duration-500">
       {/* Left side: Premium Brand & Admin Feature Showcase (Hidden on Mobile) */}
-      <div className="hidden lg:flex lg:w-[50%] relative bg-slate-50 dark:bg-slate-900/40 flex-col justify-between p-12 overflow-hidden border-r border-slate-200 dark:border-slate-800 transition-colors duration-500">
+      <div className="hidden lg:flex lg:w-[50%] relative bg-[#f4efe6] dark:bg-slate-900/40 flex-col justify-between p-12 overflow-hidden border-r border-stone-200/80 dark:border-slate-800 transition-colors duration-500">
         {/* SVG Grid Overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_at_center,white,transparent_80%)] pointer-events-none transition-colors duration-500" />
 
         {/* Moving glowing background gradients */}
         <div className="absolute top-[-20%] left-[-20%] w-[70%] h-[70%] rounded-full bg-brand-500/10 blur-[120px] pointer-events-none animate-pulse duration-[6000ms]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-indigo-500/10 blur-[100px] pointer-events-none animate-pulse duration-[8000ms]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-cyan-500/10 blur-[100px] pointer-events-none animate-pulse duration-[8000ms]" />
 
         {/* Brand Header */}
         <Link
@@ -79,7 +79,7 @@ export default function AdminAuth() {
             alt="AI Data Analysis Logo"
             className="w-8 h-8 object-contain group-hover:scale-110 transition-transform duration-300 drop-shadow-sm"
           />
-          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-700 dark:from-white dark:via-indigo-200 dark:to-slate-300 bg-clip-text text-transparent">
+          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-slate-900 via-cyan-900 to-slate-700 dark:from-white dark:via-cyan-200 dark:to-slate-300 bg-clip-text text-transparent">
             AI Data Analysis
           </span>
         </Link>
@@ -92,7 +92,7 @@ export default function AdminAuth() {
 
           <h2 className="text-4xl font-extrabold tracking-tight leading-tight mb-8">
             Comprehensive system <br />
-            <span className="bg-gradient-to-r from-brand-600 via-indigo-600 to-brand-500 dark:from-brand-400 dark:via-indigo-400 dark:to-brand-300 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-brand-600 via-cyan-600 to-brand-500 dark:from-brand-400 dark:via-cyan-400 dark:to-brand-300 bg-clip-text text-transparent">
               administration & metrics.
             </span>
           </h2>
@@ -116,7 +116,7 @@ export default function AdminAuth() {
             {/* Admin Feature 2 */}
             <div className="flex gap-4 group">
               <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center group-hover:bg-brand-500/10 group-hover:border-brand-500/30 transition-all duration-300 shadow-sm">
-                <Users className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
+                <Users className="w-5 h-5 text-sky-500 dark:text-sky-400" />
               </div>
               <div>
                 <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
@@ -130,8 +130,8 @@ export default function AdminAuth() {
 
             {/* Admin Feature 3 */}
             <div className="flex gap-4 group">
-              <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center group-hover:bg-brand-500/10 group-hover:border-brand-500/30 transition-all duration-300 shadow-sm">
-                <Activity className="w-5 h-5 text-purple-500 dark:text-purple-400" />
+              <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-[#fcfaf5] dark:bg-slate-900 border border-stone-200/80 dark:border-slate-800 flex items-center justify-center group-hover:bg-brand-500/10 group-hover:border-brand-500/30 transition-all duration-300 shadow-sm">
+                <Activity className="w-5 h-5 text-cyan-500 dark:text-cyan-400" />
               </div>
               <div>
                 <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
@@ -153,7 +153,7 @@ export default function AdminAuth() {
       </div>
 
       {/* Right side: Admin Auth Form Container */}
-      <div className="w-full lg:w-[50%] flex items-center justify-center p-6 sm:p-12 relative bg-white dark:bg-[#050505] transition-colors duration-500">
+      <div className="w-full lg:w-[50%] flex items-center justify-center p-6 sm:p-12 relative bg-[#f7f5f0] dark:bg-[#050505] transition-colors duration-500">
         {/* Top Actions: Back to Home & Theme Toggle */}
         <div className="absolute top-6 left-6 right-6 sm:top-10 sm:left-10 sm:right-10 flex items-center justify-between z-20 pointer-events-auto">
           <Link
@@ -168,15 +168,15 @@ export default function AdminAuth() {
         {/* Glow circles for mobile/tablet background */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.02),transparent_70%)] dark:bg-[radial-gradient(ellipse_at_center,#1e293b,transparent_70%)] opacity-20 lg:hidden pointer-events-none transition-colors duration-500" />
         <div className="absolute top-10 left-10 w-64 h-64 rounded-full bg-brand-500/5 blur-[120px] lg:hidden pointer-events-none" />
-        <div className="absolute bottom-10 right-10 w-64 h-64 rounded-full bg-indigo-500/5 blur-[120px] lg:hidden pointer-events-none" />
+        <div className="absolute bottom-10 right-10 w-64 h-64 rounded-full bg-cyan-500/5 blur-[120px] lg:hidden pointer-events-none" />
 
         <div className="w-full max-w-[400px] relative z-10">
           {/* Logo for mobile only */}
           <div className="flex items-center gap-2.5 mb-8 lg:hidden justify-center mt-8 sm:mt-0">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-brand-500/25">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-500 to-cyan-600 flex items-center justify-center shadow-lg shadow-brand-500/25">
               <ShieldCheck className="w-5 h-5 text-white" />
             </div>
-            <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-700 dark:from-white dark:via-indigo-200 dark:to-slate-300 bg-clip-text text-transparent">
+            <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-slate-900 via-cyan-900 to-slate-700 dark:from-white dark:via-cyan-200 dark:to-slate-300 bg-clip-text text-transparent">
               AI Data Analysis Admin
             </span>
           </div>
@@ -257,7 +257,7 @@ export default function AdminAuth() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-indigo-600 hover:from-brand-600 hover:to-indigo-700 text-white font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 shadow-lg shadow-brand-500/10 hover:shadow-brand-500/20 focus:ring-2 focus:ring-brand-500/50 outline-none flex justify-center items-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
+              className="w-full mt-2 py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-cyan-600 hover:from-brand-600 hover:to-cyan-700 text-white font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 shadow-lg shadow-brand-500/10 hover:shadow-brand-500/20 focus:ring-2 focus:ring-brand-500/50 outline-none flex justify-center items-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

@@ -16,9 +16,9 @@ export default function ResultChart({ chartType, chartSpec }) {
   if (chartType === "kpi") {
     const value = chartSpec.y?.[0] ?? chartSpec.x?.[0];
     return (
-      <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-6 text-center">
-        <p className="text-sm text-gray-500 dark:text-gray-400">{chartSpec.y_label || chartSpec.x_label}</p>
-        <p className="text-4xl font-bold mt-1">{formatValue(value)}</p>
+      <div className="rounded-xl border border-stone-200/80 dark:border-gray-800 bg-[#fcfaf5] dark:bg-[#1c1c1e] p-6 text-center">
+        <p className="text-sm text-[#6e6e73] dark:text-gray-400">{chartSpec.y_label || chartSpec.x_label}</p>
+        <p className="text-4xl font-bold mt-1 text-[#262422] dark:text-[#f5f5f7]">{formatValue(value)}</p>
       </div>
     );
   }
@@ -26,7 +26,7 @@ export default function ResultChart({ chartType, chartSpec }) {
   const trace = buildTrace(chartType, chartSpec);
 
   return (
-    <div className="rounded-2xl border border-black/[0.06] dark:border-white/[0.08] bg-white/70 dark:bg-[#1c1c1e]/70 backdrop-blur-xl p-2 sm:p-3 shadow-xs">
+    <div className="rounded-2xl border border-stone-200/80 dark:border-white/[0.08] bg-[#fcfaf5]/85 dark:bg-[#1c1c1e]/70 backdrop-blur-xl p-2 sm:p-3 shadow-xs">
       <Plot
         data={[trace]}
         layout={{

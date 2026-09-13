@@ -17,12 +17,12 @@ import UserNavProfile from "../components/layout/UserNavProfile.jsx";
 export default function Terms() {
   const { user } = useUser();
   return (
-    <div className="min-h-screen bg-[#fbfbfd] text-[#1d1d1f] dark:bg-[#161617] dark:text-[#f5f5f7] font-sans antialiased overflow-x-hidden selection:bg-blue-500/20 transition-colors duration-300">
+    <div className="min-h-screen bg-[#f7f5f0] text-[#262422] dark:bg-[#161617] dark:text-[#f5f5f7] font-sans antialiased overflow-x-hidden selection:bg-blue-500/20 transition-colors duration-300">
       
       {/* Subtle macOS Ambient Aura Background */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-[90vw] h-[550px] bg-gradient-to-b from-blue-400/10 via-indigo-300/6 to-transparent dark:from-blue-500/15 dark:via-purple-500/10 blur-[140px] rounded-full" />
-        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#2d2d30_1px,transparent_1px)] [background-size:24px_24px] opacity-60 dark:opacity-40" />
+        <div className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-[90vw] h-[550px] bg-gradient-to-b from-blue-400/10 via-sky-300/6 to-transparent dark:from-blue-500/15 dark:via-cyan-500/10 blur-[140px] rounded-full" />
+        <div className="absolute inset-0 bg-[radial-gradient(#ded7cc_1px,transparent_1px)] dark:bg-[radial-gradient(#2d2d30_1px,transparent_1px)] [background-size:24px_24px] opacity-60 dark:opacity-40" />
       </div>
 
       {/* Floating Apple/macOS Styled Navigation Bar */}
@@ -32,7 +32,7 @@ export default function Terms() {
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         className="fixed top-4 left-0 right-0 z-50 max-w-5xl mx-auto px-4"
       >
-        <div className="bg-white/65 dark:bg-[#1d1d1f]/65 backdrop-blur-2xl border border-black/[0.06] dark:border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.35)] rounded-full px-6 h-16 flex items-center justify-between transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.07)] dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
+        <div className="bg-[#fcfaf5]/45 dark:bg-[#1d1d1f]/45 backdrop-blur-2xl border border-stone-300/40 dark:border-white/[0.08] shadow-[0_8px_32px_rgba(40,30,20,0.04)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.35)] rounded-full px-6 h-16 flex items-center justify-between transition-all duration-300 hover:shadow-[0_12px_40px_rgba(40,30,20,0.06)] dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)]">
           
           {/* Logo with Favicon */}
           <Link to="/" className="flex items-center space-x-3 group cursor-pointer select-none">
@@ -41,7 +41,7 @@ export default function Terms() {
               alt="AI Data Analysis Logo" 
               className="w-8 h-8 object-contain transition-transform duration-300 group-hover:scale-105"
             />
-            <span className="font-semibold text-lg tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+            <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] dark:from-[#38bdf8] dark:via-[#0ea5e9] dark:to-[#06b6d4] bg-clip-text text-transparent group-hover:opacity-90 transition-opacity">
               AI Data Analysis
             </span>
           </Link>
@@ -91,22 +91,22 @@ export default function Terms() {
       {/* Main Content */}
       <section className="pt-36 pb-28 relative z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white/80 dark:bg-gray-900/40 backdrop-blur-md rounded-3xl p-8 md:p-12 border border-gray-200/50 dark:border-gray-800/50 shadow-sm">
+          <div className="bg-[#fcfaf5]/85 dark:bg-gray-900/40 backdrop-blur-md rounded-3xl p-8 md:p-12 border border-stone-200/80 dark:border-gray-800/50 shadow-sm">
             
             <div className="mb-8">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-4">
                 <FileCheck className="w-4 h-4" /> Legal & Service Agreement
               </div>
-              <h1 className="text-4xl md:text-5xl tracking-tight mb-2 text-[#1d1d1f] dark:text-[#f5f5f7]">
-                <span className="font-kaushan text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] via-[#5e5ce6] to-[#af52de] dark:from-blue-400 dark:via-indigo-300 dark:to-purple-300">
+              <h1 className="text-4xl md:text-5xl tracking-tight mb-2 text-[#262422] dark:text-[#f5f5f7]">
+                <span className="font-kaushan text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] dark:from-blue-400 dark:via-sky-300 dark:to-cyan-300">
                   Terms of Service
                 </span>
               </h1>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Last updated: {new Date().toLocaleDateString()}</p>
+              <p className="text-stone-500 dark:text-gray-400 text-sm">Last updated: {new Date().toLocaleDateString()}</p>
             </div>
             
             <div className="prose prose-lg dark:prose-invert max-w-none space-y-8">
-              <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+              <p className="text-base text-stone-700 dark:text-gray-300 leading-relaxed">
                 Welcome to AI Data Analysis. By accessing or using our platform, you agree to be bound by these Terms of Service.
               </p>
               
@@ -115,7 +115,7 @@ export default function Terms() {
                   <div className="w-10 h-10 bg-blue-50 text-[#0071e3] rounded-xl flex items-center justify-center shrink-0">
                     <Globe className="w-5 h-5" />
                   </div>
-                  <h3 className="text-xl font-semibold m-0 text-[#1d1d1f] dark:text-[#f5f5f7]">1. Acceptable Use of the Platform</h3>
+                  <h3 className="text-xl font-semibold m-0 text-[#262422] dark:text-[#f5f5f7]">1. Acceptable Use of the Platform</h3>
                 </div>
                 <p className="text-sm text-[#6e6e73] dark:text-[#a1a1a6] leading-relaxed font-normal">
                   You agree to use the platform only for lawful analytics purposes. You are strictly prohibited from uploading datasets that contain malicious code, illegal material, or data that you do not have the explicit right to process.
@@ -127,7 +127,7 @@ export default function Terms() {
                   <div className="w-10 h-10 bg-blue-50 text-[#0071e3] rounded-xl flex items-center justify-center shrink-0">
                     <Shield className="w-5 h-5" />
                   </div>
-                  <h3 className="text-xl font-semibold m-0 text-[#1d1d1f] dark:text-[#f5f5f7]">2. Intellectual Property Rights</h3>
+                  <h3 className="text-xl font-semibold m-0 text-[#262422] dark:text-[#f5f5f7]">2. Intellectual Property Rights</h3>
                 </div>
                 <p className="text-sm text-[#6e6e73] dark:text-[#a1a1a6] leading-relaxed font-normal">
                   The service, including its original software codebase, algorithms, and interface functionality, is owned by AI Data Analysis and protected by copyright and intellectual property standards. You retain all ownership rights to your uploaded data.
@@ -139,7 +139,7 @@ export default function Terms() {
                   <div className="w-10 h-10 bg-blue-50 text-[#0071e3] rounded-xl flex items-center justify-center shrink-0">
                     <AlertTriangle className="w-5 h-5" />
                   </div>
-                  <h3 className="text-xl font-semibold m-0 text-[#1d1d1f] dark:text-[#f5f5f7]">3. AI Insights Disclaimer</h3>
+                  <h3 className="text-xl font-semibold m-0 text-[#262422] dark:text-[#f5f5f7]">3. AI Insights Disclaimer</h3>
                 </div>
                 <p className="text-sm text-[#6e6e73] dark:text-[#a1a1a6] leading-relaxed font-normal">
                   The platform is provided on an "AS IS" basis. While our AI engine executes verified DuckDB SQL to deliver accurate analytics, you should always review critical automated conclusions prior to high-stakes business decision-making.
@@ -151,7 +151,7 @@ export default function Terms() {
                   <div className="w-10 h-10 bg-blue-50 text-[#0071e3] rounded-xl flex items-center justify-center shrink-0">
                     <Scale className="w-5 h-5" />
                   </div>
-                  <h3 className="text-xl font-semibold m-0 text-[#1d1d1f] dark:text-[#f5f5f7]">4. Limitation of Liability</h3>
+                  <h3 className="text-xl font-semibold m-0 text-[#262422] dark:text-[#f5f5f7]">4. Limitation of Liability</h3>
                 </div>
                 <p className="text-sm text-[#6e6e73] dark:text-[#a1a1a6] leading-relaxed font-normal">
                   In no event shall AI Data Analysis, nor its developers, be liable for any indirect, incidental, or consequential damages resulting from your use of or inability to use the platform.
@@ -163,9 +163,9 @@ export default function Terms() {
       </section>
 
       {/* Static Footer */}
-      <footer className="bg-white dark:bg-[#050505] border-t border-gray-200 dark:border-gray-800/50 py-12 text-gray-500 dark:text-gray-400 select-none">
+      <footer className="bg-[#fcfaf5] dark:bg-[#050505] border-t border-stone-200/80 dark:border-gray-800/50 py-12 text-stone-500 dark:text-gray-400 select-none">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <span className="font-medium">&copy; {new Date().getFullYear()} AI Data Analysis</span>
+          <span className="font-medium">&copy; {new Date().getFullYear()} <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] to-[#06b6d4]">AI Data Analysis</span></span>
           <div className="flex space-x-6 text-sm">
             <Link to="/docs" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="text-gray-500 dark:text-gray-400">Documentation</Link>
             <Link to="/faq" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="text-gray-500 dark:text-gray-400">FAQs</Link>

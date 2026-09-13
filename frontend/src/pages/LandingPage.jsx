@@ -24,7 +24,18 @@ import {
   Layers,
   Terminal,
   Cpu,
-  Check
+  Check,
+  FileSpreadsheet,
+  ArrowUpRight,
+  Copy,
+  ExternalLink,
+  TrendingDown,
+  LayoutDashboard,
+  Menu,
+  X,
+  User,
+  Download,
+  Share2
 } from "lucide-react";
 import ThemeToggle from "../components/ThemeToggle.jsx";
 import { useUser } from "../context/UserContext.jsx";
@@ -43,21 +54,21 @@ const features = [
     badge: "Smart Ingestion",
     title: "Multi-Format Instant Loader",
     description: "Drag and drop CSV, Excel (.xlsx, .xls), SQLite (.db), or SQL files. Automatic type detection, smart parsing, and zero complex setup.",
-    gradient: "from-blue-500/10 to-indigo-500/10"
+    gradient: "from-blue-500/10 to-cyan-500/10"
   },
   {
-    icon: <MessageSquare className="w-5 h-5 text-[#5e5ce6]" />,
+    icon: <MessageSquare className="w-5 h-5 text-[#0284c7] dark:text-sky-400" />,
     badge: "Natural Language AI",
     title: "Conversational Query Assistant",
     description: "Ask questions in plain English like 'Show me monthly revenue by region with growth rates'. AI crafts sanitized, safe DuckDB SQL queries automatically.",
-    gradient: "from-indigo-500/10 to-purple-500/10"
+    gradient: "from-sky-500/10 to-cyan-500/10"
   },
   {
-    icon: <LineChart className="w-5 h-5 text-[#af52de]" />,
+    icon: <LineChart className="w-5 h-5 text-cyan-500 dark:text-cyan-400" />,
     badge: "Plotly Interactive",
     title: "Dynamic Smart Visualizations",
     description: "Automatic visual charting: scatter, line, grouped bar, and pie charts with interactive zoom, hover tooltips, and instant PNG/SVG exports.",
-    gradient: "from-purple-500/10 to-pink-500/10"
+    gradient: "from-cyan-500/10 to-teal-500/10"
   },
   {
     icon: <Zap className="w-5 h-5 text-amber-500" />,
@@ -86,26 +97,89 @@ const interactiveDemos = [
   {
     id: "chat",
     tab: "1. Ask Natural Questions",
+    shortTitle: "NL to DuckDB SQL",
+    dataset: "ecommerce_sales_q3.duckdb",
+    rows: "1.42M rows",
+    execTime: "18ms",
     prompt: "Compare average customer spend between Desktop and Mobile in Q3",
-    sql: "SELECT device_type, ROUND(AVG(total_amount), 2) AS avg_spend, COUNT(*) as orders\nFROM sales_data\nWHERE quarter = 'Q3'\nGROUP BY device_type;",
-    explanation: "Mobile users averaged $142.50 per order (+18% higher than Desktop at $120.75), accounting for 64% of total order volume.",
-    chartType: "Grouped Bar Chart"
+    sql: `SELECT 
+  device_type, 
+  ROUND(AVG(total_amount), 2) AS avg_spend, 
+  COUNT(*) AS total_orders
+FROM sales_data
+WHERE quarter = 'Q3'
+GROUP BY device_type;`,
+    explanation: "Mobile users averaged $142.50 per order (+18% higher than Desktop at $120.75), driving 64.2% of total Q3 checkout volume.",
+    chartType: "Comparative Spend Breakdown",
+    metrics: [
+      { label: "Avg Mobile Spend", value: "$142.50", change: "+18.0%", trend: "up", sub: "vs Desktop $120.75" },
+      { label: "Mobile Volume Share", value: "64.2%", change: "+6.5%", trend: "up", sub: "54,062 orders" },
+      { label: "DuckDB Latency", value: "18ms", change: "In-Memory", trend: "neutral", sub: "1.42M rows scanned" }
+    ],
+    bars: [
+      { name: "Mobile (iOS & Android)", value: "$142.50", pct: 90, share: "64.2% volume", color: "from-[#0071e3] to-[#06b6d4]", badge: "Highest Spend" },
+      { name: "Desktop Browsers", value: "$120.75", pct: 74, share: "29.4% volume", color: "from-sky-500 to-cyan-400", badge: "Baseline" },
+      { name: "Tablet Devices", value: "$96.40", pct: 58, share: "6.4% volume", color: "from-stone-400 to-stone-500 dark:from-stone-500 dark:to-stone-600", badge: "Secondary" }
+    ]
   },
   {
     id: "visualize",
     tab: "2. Automatic Visual Insights",
-    prompt: "Show the top 5 product categories by revenue margin",
-    sql: "SELECT category, SUM(revenue) as total_rev, ROUND(AVG(margin_pct), 1) as avg_margin\nFROM products\nGROUP BY category\nORDER BY total_rev DESC\nLIMIT 5;",
-    explanation: "Electronics generated $450k revenue with a 38% margin, followed by Home Goods at $310k with the highest margin of 52%.",
-    chartType: "Plotly Interactive Chart"
+    shortTitle: "Visual Intelligence",
+    dataset: "global_products_2026.parquet",
+    rows: "824K rows",
+    execTime: "12ms",
+    prompt: "Show the top product categories by revenue and their profit margin",
+    sql: `SELECT 
+  category, 
+  SUM(revenue) AS total_revenue, 
+  ROUND(AVG(margin_pct), 1) AS avg_margin
+FROM products
+GROUP BY category
+ORDER BY total_revenue DESC
+LIMIT 4;`,
+    explanation: "Electronics generated $450k revenue at 38% margin, while Home & Kitchen delivered the highest profit margin of 52% on $310k revenue.",
+    chartType: "Ranked Profitability Bars",
+    metrics: [
+      { label: "Top Revenue Sector", value: "$450,000", change: "Electronics", trend: "up", sub: "38.2% gross margin" },
+      { label: "Peak Profit Margin", value: "52.0%", change: "Home Goods", trend: "up", sub: "Highest yield category" },
+      { label: "Vector Scan Time", value: "12ms", change: "Parquet", trend: "neutral", sub: "824,500 catalog items" }
+    ],
+    bars: [
+      { name: "Electronics & Tech", value: "$450,000", pct: 94, share: "Margin: 38%", color: "from-[#0071e3] to-[#06b6d4]", badge: "#1 Revenue" },
+      { name: "Home & Kitchen", value: "$310,000", pct: 70, share: "Margin: 52%", color: "from-emerald-500 to-teal-400", badge: "#1 Profit %" },
+      { name: "Apparel & Shoes", value: "$285,000", pct: 62, share: "Margin: 44%", color: "from-sky-500 to-cyan-400", badge: "Balanced" },
+      { name: "Fitness & Sport", value: "$195,000", pct: 45, share: "Margin: 41%", color: "from-amber-500 to-orange-400", badge: "High Growth" }
+    ]
   },
   {
     id: "sql",
     tab: "3. Advanced Multi-File Joins",
+    shortTitle: "Vectorized Multi-Join",
+    dataset: "crm_accounts_x_churn.duckdb",
+    rows: "520K rows",
+    execTime: "24ms",
     prompt: "Join customers with churn_risk and calculate high-risk counts by tier",
-    sql: "SELECT c.plan_tier, COUNT(*) as at_risk_users\nFROM customers c\nJOIN churn_scores s ON c.user_id = s.user_id\nWHERE s.risk_score > 0.75\nGROUP BY c.plan_tier;",
-    explanation: "Identified 284 high-risk enterprise users and 612 pro users, allowing proactive retention campaigns.",
-    chartType: "Risk Distribution Donut"
+    sql: `SELECT 
+  c.plan_tier, 
+  COUNT(*) AS at_risk_users, 
+  SUM(c.mrr) AS mrr_at_risk
+FROM customers c
+JOIN churn_scores s ON c.user_id = s.user_id
+WHERE s.risk_score > 0.75
+GROUP BY c.plan_tier;`,
+    explanation: "Vectorized cross-table join flagged 284 high-risk enterprise accounts representing $142k in monthly ARR for immediate CSM retention alert.",
+    chartType: "Risk Segment Distribution",
+    metrics: [
+      { label: "At-Risk Enterprise", value: "284 orgs", change: "$142k MRR", trend: "down", sub: "High tier alert" },
+      { label: "At-Risk Pro Users", value: "612 orgs", change: "$73k MRR", trend: "down", sub: "Mid tier pool" },
+      { label: "Join Latency", value: "24ms", change: "In-Memory", trend: "neutral", sub: "520k joined records" }
+    ],
+    bars: [
+      { name: "Enterprise Tier ($142k ARR)", value: "284 Orgs", pct: 78, share: "$142k MRR at risk", color: "from-rose-500 to-amber-500", badge: "Critical Action" },
+      { name: "Pro Plan Tier ($73k ARR)", value: "612 Orgs", pct: 48, share: "$73k MRR at risk", color: "from-amber-500 to-yellow-400", badge: "Monitor" },
+      { name: "Starter Tier ($0 at risk)", value: "0 Orgs", pct: 10, share: "0% churn risk", color: "from-emerald-500 to-teal-400", badge: "Healthy" }
+    ]
   }
 ];
 
@@ -140,10 +214,58 @@ const testimonials = [
   }
 ];
 
+const SQLHighlight = ({ code }) => {
+  const lines = code.trim().split("\n");
+  return (
+    <div className="font-mono text-xs leading-5 select-text overflow-x-auto py-1">
+      {lines.map((line, idx) => {
+        const tokens = line.split(/(\b(?:SELECT|ROUND|AVG|SUM|COUNT|AS|FROM|JOIN|ON|WHERE|GROUP BY|ORDER BY|LIMIT|DESC)\b|'[^']*'|\b\d+\b)/g);
+        return (
+          <div key={idx} className="table-row">
+            <span className="table-cell pr-3 text-stone-500 dark:text-stone-600 text-right select-none text-[11px] w-5">
+              {idx + 1}
+            </span>
+            <span className="table-cell whitespace-pre">
+              {tokens.map((token, tIdx) => {
+                if (/^(?:SELECT|FROM|JOIN|ON|WHERE|GROUP BY|ORDER BY|LIMIT)$/.test(token)) {
+                  return <span key={tIdx} className="text-cyan-400 font-semibold">{token}</span>;
+                }
+                if (/^(?:ROUND|AVG|SUM|COUNT)$/.test(token)) {
+                  return <span key={tIdx} className="text-sky-300 font-medium">{token}</span>;
+                }
+                if (token === "AS" || token === "DESC") {
+                  return <span key={tIdx} className="text-purple-400 font-medium">{token}</span>;
+                }
+                if (token.startsWith("'") && token.endsWith("'")) {
+                  return <span key={tIdx} className="text-amber-300">{token}</span>;
+                }
+                if (/^\d+$/.test(token)) {
+                  return <span key={tIdx} className="text-emerald-300">{token}</span>;
+                }
+                return <span key={tIdx} className="text-stone-300">{token}</span>;
+              })}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 export default function LandingPage() {
   const { user } = useUser();
   const [activeDemo, setActiveDemo] = useState(0);
   const [isDemoHovered, setIsDemoHovered] = useState(false);
+  const [copiedSql, setCopiedSql] = useState(false);
+  const [cardView, setCardView] = useState("visual"); // 'visual' | 'sql'
+
+  const handleCopySql = (sqlText) => {
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(sqlText);
+      setCopiedSql(true);
+      setTimeout(() => setCopiedSql(false), 2000);
+    }
+  };
 
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [isTestimonialHovered, setIsTestimonialHovered] = useState(false);
@@ -167,6 +289,7 @@ export default function LandingPage() {
   }, [isTestimonialHovered]);
 
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Track scroll position to morph navbar from full width (top) to floating pill (scrolled)
   useEffect(() => {
@@ -184,46 +307,44 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fbfbfd] text-[#1d1d1f] dark:bg-[#161617] dark:text-[#f5f5f7] font-sans antialiased overflow-x-hidden selection:bg-blue-500/20 transition-colors duration-300">
+    <div className="min-h-screen bg-[#f7f5f0] text-[#262422] dark:bg-[#161617] dark:text-[#f5f5f7] font-sans antialiased overflow-x-hidden selection:bg-blue-500/20 transition-colors duration-300">
       
       {/* Subtle macOS Ambient Aura Background */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-[90vw] h-[600px] bg-gradient-to-b from-blue-400/10 via-indigo-300/6 to-transparent dark:from-blue-500/15 dark:via-purple-500/10 blur-[140px] rounded-full" />
-        <div className="absolute top-[35%] -left-[10%] w-[45vw] h-[450px] bg-purple-300/8 dark:bg-purple-600/10 blur-[130px] rounded-full" />
+        <div className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-[90vw] h-[600px] bg-gradient-to-b from-blue-400/10 via-sky-300/6 to-transparent dark:from-blue-500/15 dark:via-cyan-500/10 blur-[140px] rounded-full" />
+        <div className="absolute top-[35%] -left-[10%] w-[45vw] h-[450px] bg-cyan-300/8 dark:bg-cyan-600/10 blur-[130px] rounded-full" />
         <div className="absolute top-[65%] -right-[10%] w-[45vw] h-[450px] bg-blue-300/8 dark:bg-blue-600/10 blur-[130px] rounded-full" />
-        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#2d2d30_1px,transparent_1px)] [background-size:24px_24px] opacity-60 dark:opacity-40" />
       </div>
 
-      {/* Dynamic Apple/macOS Navigation Bar (Full width at top -> Floating pill on scroll) */}
+      {/* Dynamic Apple/macOS Navigation Bar (Full width at top -> Floating squeezed pill on scroll) */}
       <motion.nav 
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed left-0 right-0 z-50 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-          isScrolled 
-            ? "top-3.5 max-w-7xl mx-auto px-4 sm:px-6" 
-            : "top-0 w-full px-4 sm:px-10 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-[#161617]/80 backdrop-blur-2xl"
-        }`}
+        className="fixed top-0 left-0 right-0 z-50 flex justify-center px-3 sm:px-6 pointer-events-none"
       >
-        <div className={`flex items-center justify-between transition-all duration-300 ${
-          isScrolled
-            ? "bg-white/80 dark:bg-[#1d1d1f]/85 backdrop-blur-2xl border border-black/[0.08] dark:border-white/[0.1] shadow-[0_12px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)] rounded-2xl sm:rounded-full px-6 sm:px-8 h-16"
-            : "max-w-7xl mx-auto h-20 px-2 sm:px-4"
-        }`}>
+        <div className="w-full flex flex-col items-center">
+          {/* Main Squeezable Bar (Single morphing container: no flickering lines, pure smooth transition) */}
+          <div className={`pointer-events-auto flex items-center justify-between transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            isScrolled
+              ? "mt-2.5 sm:mt-3 w-full max-w-5xl h-14 sm:h-16 px-3.5 sm:px-7 rounded-2xl sm:rounded-full bg-[#fcfaf5]/75 dark:bg-[#1d1d1f]/75 backdrop-blur-2xl shadow-[0_12px_36px_rgba(40,30,20,0.06)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.45)] border border-stone-300/50 dark:border-white/[0.08]"
+              : "mt-0 w-full max-w-7xl h-16 sm:h-20 px-3 sm:px-8 bg-transparent border-transparent shadow-none"
+          }`}>
           
           {/* Logo with Favicon */}
-          <a href="#" onClick={handleScrollToTop} className="flex items-center space-x-3 group cursor-pointer select-none">
+          <a href="#" onClick={handleScrollToTop} className="flex items-center space-x-2 sm:space-x-3 group cursor-pointer select-none shrink-0">
             <img 
               src="/favicon.webp" 
               alt="AI Data Analysis Logo" 
-              className="w-8 h-8 object-contain transition-transform duration-300 group-hover:scale-105"
+              className="w-7 h-7 sm:w-8 sm:h-8 object-contain transition-transform duration-300 group-hover:scale-105 shrink-0"
             />
-            <span className="font-semibold text-lg tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
-              AI Data Analysis
+            <span className="font-bold text-base sm:text-lg tracking-tight bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] dark:from-[#38bdf8] dark:via-[#0ea5e9] dark:to-[#06b6d4] bg-clip-text text-transparent group-hover:opacity-90 transition-opacity">
+              <span className="hidden sm:inline">AI Data Analysis</span>
+              <span className="sm:hidden">AI Analysis</span>
             </span>
           </a>
 
-          {/* Navigation Links */}
+          {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center space-x-7 text-sm font-medium text-[#515154] dark:text-[#a1a1a6]">
             <a href="#features" className="hover:text-[#0071e3] dark:hover:text-white transition-colors duration-200">Features</a>
             <a href="#demo" className="hover:text-[#0071e3] dark:hover:text-white transition-colors duration-200">Interactive Demo</a>
@@ -231,17 +352,23 @@ export default function LandingPage() {
             <a href="#testimonials" className="hover:text-[#0071e3] dark:hover:text-white transition-colors duration-200">Reviews</a>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center space-x-3">
+          {/* Action Controls */}
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             <ThemeToggle />
             
             {user ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 sm:gap-3">
                 <UserNavProfile />
                 <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-                  <Link to="/app" className="relative group inline-flex items-center justify-center px-4 py-2 rounded-full text-white text-sm font-medium bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] transition-all duration-300 cursor-pointer">
+                  <Link 
+                    to="/app" 
+                    className="relative group inline-flex items-center justify-center p-2 sm:px-4 sm:py-2 rounded-full text-white text-xs sm:text-sm font-medium bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] transition-all duration-300 cursor-pointer"
+                    title="Launch Analytics Studio"
+                  >
                     <span className="relative flex items-center gap-1.5">
-                      Launch App <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                      <LayoutDashboard className="w-4 h-4 sm:hidden" />
+                      <span className="hidden sm:inline">Launch App</span>
+                      <ArrowRight className="hidden sm:inline w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                     </span>
                   </Link>
                 </motion.div>
@@ -252,7 +379,7 @@ export default function LandingPage() {
                   Sign In
                 </Link>
                 <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-                  <Link to="/register" className="relative group inline-flex items-center justify-center px-4 py-2 rounded-full text-white text-sm font-medium bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] transition-all duration-300 cursor-pointer">
+                  <Link to="/register" className="relative group inline-flex items-center justify-center px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-white text-xs sm:text-sm font-medium bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_4px_14px_rgba(0,113,227,0.35)] hover:shadow-[0_6px_20px_rgba(0,113,227,0.45)] transition-all duration-300 cursor-pointer">
                     <span className="relative flex items-center gap-1.5">
                       Get Started <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                     </span>
@@ -260,8 +387,190 @@ export default function LandingPage() {
                 </motion.div>
               </>
             )}
+
+            {/* Mobile Hamburger Menu Toggle Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+              className="md:hidden p-1.5 sm:p-2 rounded-full text-[#515154] dark:text-[#a1a1a6] hover:text-[#0071e3] dark:hover:text-white bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.06] dark:border-white/[0.08] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-all cursor-pointer select-none"
+              aria-label="Toggle navigation menu"
+              aria-expanded={isMobileMenuOpen}
+            >
+              {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            </button>
           </div>
 
+        </div>
+
+        {/* Mobile Navigation Dropdown Drawer */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0, y: -10 }}
+              animate={{ opacity: 1, height: "auto", y: 0 }}
+              exit={{ opacity: 0, height: 0, y: -10 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="pointer-events-auto md:hidden w-full max-w-5xl mt-2 p-3.5 rounded-2xl bg-[#fcfaf5]/95 dark:bg-[#1d1d1f]/95 border border-stone-200/80 dark:border-white/[0.12] shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-2xl overflow-hidden"
+            >
+              {user ? (
+                /* Logged In Mobile Drawer Content */
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-2.5 rounded-xl bg-[#f8f5ee] dark:bg-white/[0.04] border border-stone-200/60 dark:border-white/[0.06]">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#0071e3] to-[#06b6d4] flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-sm">
+                      {user.username ? user.username.substring(0, 2).toUpperCase() : "US"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7] truncate">
+                          {user.username}
+                        </p>
+                        <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                          Logged In
+                        </span>
+                      </div>
+                      <p className="text-xs text-[#6e6e73] dark:text-[#a1a1a6] truncate font-normal">
+                        {user.email || "Active Session"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Primary Mobile Action */}
+                  <Link
+                    to="/app"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0071e3] to-[#0284c7] text-white text-sm font-semibold shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all"
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    <span>Open Analytics Studio</span>
+                    <ArrowRight className="w-4 h-4 ml-auto" />
+                  </Link>
+
+                  <div className="grid grid-cols-2 gap-2 pt-1">
+                    <Link
+                      to="/app?tab=preview"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-2 p-2 rounded-lg text-xs font-medium text-[#515154] dark:text-[#a1a1a6] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-[#0071e3] dark:hover:text-white transition-colors"
+                    >
+                      <Database className="w-3.5 h-3.5 text-[#0071e3]" />
+                      <span>Data Tables</span>
+                    </Link>
+                    <Link
+                      to="/app?tab=chat"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-2 p-2 rounded-lg text-xs font-medium text-[#515154] dark:text-[#a1a1a6] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-[#0071e3] dark:hover:text-white transition-colors"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5 text-[#0284c7]" />
+                      <span>Ask AI Assistant</span>
+                    </Link>
+                    <Link
+                      to="/app?tab=explore"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-2 p-2 rounded-lg text-xs font-medium text-[#515154] dark:text-[#a1a1a6] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-[#0071e3] dark:hover:text-white transition-colors"
+                    >
+                      <LineChart className="w-3.5 h-3.5 text-cyan-500" />
+                      <span>Visualizations</span>
+                    </Link>
+                    <Link
+                      to="/app?tab=profile"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-2 p-2 rounded-lg text-xs font-medium text-[#515154] dark:text-[#a1a1a6] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-[#0071e3] dark:hover:text-white transition-colors"
+                    >
+                      <User className="w-3.5 h-3.5 text-indigo-500" />
+                      <span>My Profile</span>
+                    </Link>
+                  </div>
+
+                  <div className="h-px bg-stone-200/60 dark:bg-white/[0.08]" />
+
+                  {/* Section Jump Links */}
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#6e6e73] dark:text-[#a1a1a6] px-2 mb-1">
+                      Quick Jump
+                    </p>
+                    <a
+                      href="#features"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#515154] dark:text-[#a1a1a6] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors"
+                    >
+                      Features & Architecture
+                    </a>
+                    <a
+                      href="#demo"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#515154] dark:text-[#a1a1a6] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors"
+                    >
+                      Interactive Demo
+                    </a>
+                    <a
+                      href="#workflow"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#515154] dark:text-[#a1a1a6] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors"
+                    >
+                      How It Works
+                    </a>
+                    <a
+                      href="#testimonials"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#515154] dark:text-[#a1a1a6] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors"
+                    >
+                      User Reviews
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                /* Logged Out Mobile Drawer Content */
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-2">
+                    <Link
+                      to="/login"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center justify-center px-4 py-2 rounded-xl border border-stone-300 dark:border-white/10 text-xs font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      to="/register"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center justify-center px-4 py-2 rounded-xl bg-[#0071e3] text-white text-xs font-semibold shadow-md shadow-blue-500/20 hover:bg-[#0077ed] transition-colors"
+                    >
+                      Get Started
+                    </Link>
+                  </div>
+                  <div className="h-px bg-stone-200/60 dark:bg-white/[0.08]" />
+                  <div className="space-y-1">
+                    <a
+                      href="#features"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#515154] dark:text-[#a1a1a6] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors"
+                    >
+                      Features
+                    </a>
+                    <a
+                      href="#demo"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#515154] dark:text-[#a1a1a6] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors"
+                    >
+                      Interactive Demo
+                    </a>
+                    <a
+                      href="#workflow"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#515154] dark:text-[#a1a1a6] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors"
+                    >
+                      Workflow
+                    </a>
+                    <a
+                      href="#testimonials"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#515154] dark:text-[#a1a1a6] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors"
+                    >
+                      Reviews
+                    </a>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
         </div>
       </motion.nav>
 
@@ -276,12 +585,12 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="inline-flex items-center gap-2.5 mb-8 px-4 py-1.5 rounded-full border border-black/[0.08] dark:border-white/[0.12] bg-white/85 dark:bg-[#1d1d1f]/85 shadow-[0_2px_12px_rgba(0,0,0,0.04)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.3)] backdrop-blur-xl hover:border-black/[0.15] dark:hover:border-white/[0.2] transition-all duration-300 cursor-default"
+              className="inline-flex items-center gap-2.5 mb-8 px-4 py-1.5 rounded-full border border-stone-200/80 dark:border-white/[0.12] bg-[#fcfaf5]/85 dark:bg-[#1d1d1f]/85 shadow-[0_2px_12px_rgba(0,0,0,0.04)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.3)] backdrop-blur-xl hover:border-stone-300 dark:hover:border-white/[0.2] transition-all duration-300 cursor-default"
             >
               <div className="w-5 h-5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-[#0071e3] dark:text-blue-400 flex items-center justify-center">
                 <Sparkles className="w-3.5 h-3.5 animate-pulse" />
               </div>
-              <span className="text-xs sm:text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7]">
+              <span className="text-xs sm:text-sm font-medium text-[#262422] dark:text-[#f5f5f7]">
                 Next-Gen Conversational Data Intelligence
               </span>
             </motion.div>
@@ -291,13 +600,13 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight mb-8 leading-[1.12] text-[#1d1d1f] dark:text-[#f5f5f7]"
+              className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight mb-8 leading-[1.12] text-[#262422] dark:text-[#f5f5f7]"
             >
-              <span className="font-kaushan tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] via-[#5e5ce6] to-[#af52de] dark:from-blue-400 dark:via-indigo-300 dark:to-purple-300">
+              <span className="font-kaushan tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] dark:from-blue-400 dark:via-sky-300 dark:to-cyan-300">
                 Talk to Your Data.
               </span>
               <br />
-              <span className="font-kaushan tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-[#af52de] via-[#ff2d55] to-[#ff9500] dark:from-purple-300 dark:via-pink-400 dark:to-amber-300">
+              <span className="font-kaushan tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-[#06b6d4] via-[#0284c7] to-[#0071e3] dark:from-cyan-300 dark:via-sky-400 dark:to-blue-400">
                 Get Instant Visuals.
               </span>
             </motion.h1>
@@ -310,7 +619,7 @@ export default function LandingPage() {
               className="text-lg sm:text-xl md:text-2xl text-[#6e6e73] dark:text-[#a1a1a6] max-w-3xl mx-auto leading-relaxed mb-10 font-normal"
             >
               Upload any spreadsheet, SQLite, or SQL file and ask questions naturally. 
-              <strong className="text-[#1d1d1f] dark:text-[#f5f5f7] font-semibold"> AI Data Analysis</strong> turns natural language into high-speed DuckDB SQL, interactive Plotly charts, and business intelligence in seconds.
+              <strong className="text-[#262422] dark:text-[#f5f5f7] font-semibold"> AI Data Analysis</strong> turns natural language into high-speed DuckDB SQL, interactive Plotly charts, and business intelligence in seconds.
             </motion.p>
 
             {/* CTAs */}
@@ -328,7 +637,7 @@ export default function LandingPage() {
               </Link>
               <a 
                 href="#demo" 
-                className="w-full sm:w-auto px-8 py-3.5 rounded-full font-medium text-base text-[#1d1d1f] dark:text-[#f5f5f7] bg-white/90 dark:bg-[#1d1d1f]/90 border border-black/[0.08] dark:border-white/[0.1] hover:bg-gray-50 dark:hover:bg-[#252528] flex items-center justify-center gap-2 shadow-[0_2px_8px_rgba(0,0,0,0.04)] backdrop-blur-md transition-all duration-300"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-full font-medium text-base text-[#262422] dark:text-[#f5f5f7] bg-[#fcfaf5]/90 dark:bg-[#1d1d1f]/90 border border-stone-200/80 dark:border-white/[0.1] hover:bg-[#f3ede3] dark:hover:bg-[#252528] flex items-center justify-center gap-2 shadow-[0_2px_8px_rgba(0,0,0,0.04)] backdrop-blur-md transition-all duration-300"
               >
                 Explore Live Demo <ChevronRight className="w-4 h-4 text-[#86868b]" />
               </a>
@@ -349,7 +658,7 @@ export default function LandingPage() {
                 <span>100% In-Memory Privacy</span>
               </span>
               <span className="hidden sm:flex group items-center gap-2 cursor-default hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors duration-200">
-                <div className="p-1 rounded-md bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/60 transition-colors duration-200">
+                <div className="p-1 rounded-md bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 group-hover:bg-cyan-100 dark:group-hover:bg-cyan-900/60 transition-colors duration-200">
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <span>Free to explore</span>
@@ -363,175 +672,220 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            className="max-w-5xl mx-auto macos-window overflow-hidden"
+            className="max-w-5xl mx-auto rounded-3xl overflow-hidden border border-stone-300/70 dark:border-white/[0.1] shadow-[0_25px_70px_rgba(40,30,20,0.08)] dark:shadow-[0_25px_70px_rgba(0,0,0,0.6)] backdrop-blur-2xl"
           >
             {/* macOS Window Titlebar */}
-            <div className="px-5 py-3.5 border-b border-black/[0.06] dark:border-white/[0.08] bg-[#f5f5f7]/90 dark:bg-[#1f1f22]/90 backdrop-blur-md flex items-center justify-between select-none">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e]" />
-                <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]" />
-                <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29]" />
-                <span className="ml-3 text-xs font-medium text-[#86868b] dark:text-[#a1a1a6]">AI Data Analysis Studio · ecommerce_q3_report.csv</span>
+            <div className="px-5 py-3 border-b border-stone-200/80 dark:border-white/[0.08] bg-[#f4efe6]/95 dark:bg-[#1a1a1d]/95 backdrop-blur-md flex items-center justify-between select-none">
+              <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e] shadow-[0_0_6px_rgba(255,95,86,0.35)]" />
+                  <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123] shadow-[0_0_6px_rgba(255,189,46,0.35)]" />
+                  <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29] shadow-[0_0_6px_rgba(39,201,63,0.35)]" />
+                </div>
+                <div className="flex items-center gap-1.5 ml-2 pl-3 border-l border-stone-300/60 dark:border-white/10">
+                  <FileSpreadsheet className="w-3.5 h-3.5 text-[#0071e3] dark:text-cyan-400" />
+                  <span className="text-xs font-semibold text-[#262422] dark:text-[#f5f5f7]">ecommerce_q3_report.csv</span>
+                  <span className="text-[11px] text-stone-500 dark:text-[#a1a1a6] hidden sm:inline">· AI Analytics Studio</span>
+                </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/40">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5" /> DuckDB Connected
+                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/70 dark:border-emerald-800/40 shadow-2xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse" /> DuckDB Connected
                 </span>
               </div>
             </div>
 
             {/* macOS Window Body */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[400px] bg-white dark:bg-[#161617]">
+            <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[420px] bg-[#fdfcf9] dark:bg-[#161617]">
               
               {/* Left Side: Conversational Chat Prompt */}
-              <div className="lg:col-span-5 p-6 border-b lg:border-b-0 lg:border-r border-black/[0.06] dark:border-white/[0.08] bg-[#fafafa] dark:bg-[#1a1a1d] flex flex-col justify-between">
+              <div className="lg:col-span-5 p-5 sm:p-6 border-b lg:border-b-0 lg:border-r border-stone-200/70 dark:border-white/[0.08] bg-[#f8f5ee]/70 dark:bg-[#1a1a1d]/60 flex flex-col justify-between">
                 <div className="space-y-4">
-                  <div className="text-xs font-semibold uppercase tracking-wider text-[#0071e3] dark:text-blue-400 flex items-center gap-1.5">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-[#0071e3] dark:text-cyan-400 flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5" /> Natural Language Query
                   </div>
                   
-                  {/* User Bubble */}
-                  <div className="p-3.5 rounded-2xl rounded-tr-none bg-[#0071e3] text-white text-sm font-medium shadow-[0_4px_12px_rgba(0,113,227,0.25)]">
-                    "Which product categories generated the highest profit margin with over $50k revenue?"
+                  {/* User Prompt Bubble - Refined Glass Tint with Accent Gradient */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-br from-[#0071e3]/8 via-[#0284c7]/6 to-[#06b6d4]/10 dark:from-[#0071e3]/20 dark:to-[#06b6d4]/15 border border-[#0071e3]/20 dark:border-[#0071e3]/40 shadow-xs relative overflow-hidden">
+                    <div className="flex items-center gap-1.5 mb-2 text-[10px] font-bold text-[#0071e3] dark:text-cyan-400 uppercase tracking-wider">
+                      <div className="w-4 h-4 rounded-full bg-gradient-to-tr from-[#0071e3] to-[#06b6d4] text-white flex items-center justify-center text-[9px] font-bold shadow-2xs">Q</div>
+                      <span>User Query</span>
+                    </div>
+                    <p className="text-sm font-medium text-[#262422] dark:text-[#f5f5f7] leading-relaxed">
+                      "Which product categories generated the highest profit margin with over $50k revenue?"
+                    </p>
                   </div>
 
                   {/* AI Response Card */}
-                  <div className="p-4 rounded-2xl bg-white dark:bg-[#222226] border border-black/[0.06] dark:border-white/[0.08] shadow-sm space-y-2.5 text-xs text-[#515154] dark:text-[#a1a1a6]">
-                    <div className="flex items-center gap-2 font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
-                      <div className="w-5 h-5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-[#5e5ce6] dark:text-indigo-400 flex items-center justify-center">
-                        <Zap className="w-3.5 h-3.5" />
+                  <div className="p-4 rounded-2xl bg-[#ffffff]/95 dark:bg-[#202024]/95 border border-stone-200/80 dark:border-white/[0.08] shadow-[0_4px_16px_rgba(0,0,0,0.03)] space-y-3 text-xs">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 font-bold text-[#262422] dark:text-[#f5f5f7]">
+                        <div className="w-5 h-5 rounded-lg bg-gradient-to-tr from-[#0071e3] to-[#06b6d4] text-white flex items-center justify-center shadow-xs">
+                          <Zap className="w-3 h-3" />
+                        </div>
+                        <span>AI Generated Analysis</span>
                       </div>
-                      AI Generated Analysis
+                      <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200/60">Confidence 99.4%</span>
                     </div>
-                    <p className="leading-relaxed font-normal">
-                      Top performing is <strong className="text-[#1d1d1f] dark:text-[#f5f5f7]">Electronics</strong> ($184,200 rev, <strong className="text-[#1d1d1f] dark:text-[#f5f5f7]">42.1% margin</strong>) followed by <strong className="text-[#1d1d1f] dark:text-[#f5f5f7]">Home Office</strong> ($92,400 rev, <strong className="text-[#1d1d1f] dark:text-[#f5f5f7]">38.6% margin</strong>).
+                    <p className="text-stone-600 dark:text-[#a1a1a6] leading-relaxed font-normal">
+                      Top performing is <strong className="text-[#262422] dark:text-[#f5f5f7] font-semibold">Electronics</strong> ($184,200 rev, <strong className="text-cyan-700 dark:text-cyan-400 font-semibold">42.1% margin</strong>) followed by <strong className="text-[#262422] dark:text-[#f5f5f7] font-semibold">Home Office</strong> ($92,400 rev, <strong className="text-cyan-700 dark:text-cyan-400 font-semibold">38.6% margin</strong>).
                     </p>
-                    <div className="p-2.5 rounded-lg bg-[#1e1e24] text-emerald-400 font-mono text-[11px] overflow-x-auto">
-                      SELECT category, SUM(rev), AVG(margin) FROM sales GROUP BY 1 HAVING SUM(rev) &gt; 50000;
+                    
+                    {/* Syntax-Colored SQL Box */}
+                    <div className="p-3 rounded-xl bg-[#1c1b1f] border border-stone-800 text-stone-200 font-mono text-[11px] overflow-x-auto shadow-inner">
+                      <div className="flex items-center justify-between text-[10px] text-stone-400 mb-1.5 pb-1 border-b border-stone-800">
+                        <span className="text-cyan-400 font-semibold">DuckDB SQL</span>
+                        <span className="text-emerald-400 font-medium">8.2ms exec</span>
+                      </div>
+                      <div className="leading-relaxed">
+                        <span className="text-sky-400 font-semibold">SELECT</span> category, <span className="text-amber-300">SUM</span>(rev), <span className="text-amber-300">AVG</span>(margin)<br/>
+                        <span className="text-sky-400 font-semibold">FROM</span> sales<br/>
+                        <span className="text-sky-400 font-semibold">GROUP BY</span> 1 <span className="text-sky-400 font-semibold">HAVING</span> <span className="text-amber-300">SUM</span>(rev) &gt; <span className="text-cyan-300">50000</span>;
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-black/[0.06] dark:border-white/[0.08] flex items-center justify-between text-xs text-[#86868b] dark:text-[#a1a1a6]">
-                  <span className="flex items-center gap-1">
-                    <Zap className="w-3.5 h-3.5 text-amber-500" /> Latency: <strong className="text-[#1d1d1f] dark:text-[#f5f5f7]">142ms</strong>
+                <div className="mt-4 pt-3.5 border-t border-stone-200/70 dark:border-white/[0.08] flex items-center justify-between text-xs text-stone-500 dark:text-[#a1a1a6]">
+                  <span className="flex items-center gap-1.5 font-medium">
+                    <Zap className="w-3.5 h-3.5 text-amber-500" /> Latency: <strong className="text-[#262422] dark:text-[#f5f5f7]">142ms</strong>
                   </span>
-                  <span>Rows analyzed: <strong className="text-[#1d1d1f] dark:text-[#f5f5f7]">128,450</strong></span>
+                  <span className="font-medium">Rows analyzed: <strong className="text-[#262422] dark:text-[#f5f5f7]">128,450</strong></span>
                 </div>
               </div>
 
               {/* Right Side: Interactive Chart Mockup */}
-              <div className="lg:col-span-7 p-6 flex flex-col justify-between bg-white dark:bg-[#161617]">
+              <div className="lg:col-span-7 p-6 sm:p-7 flex flex-col justify-between bg-[#fdfcf9] dark:bg-[#161617]">
                 <div>
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
                     <div>
-                      <h4 className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">Category Profitability vs Revenue</h4>
-                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">Interactive Plotly Chart visualization</p>
+                      <div className="flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4 text-[#0071e3] dark:text-cyan-400" />
+                        <h4 className="text-base font-bold text-[#262422] dark:text-[#f5f5f7] tracking-tight">Category Profitability vs Revenue</h4>
+                      </div>
+                      <p className="text-xs text-stone-500 dark:text-[#a1a1a6] mt-0.5">Interactive Plotly Chart visualization · Dynamic aggregation</p>
                     </div>
-                    <div className="flex gap-1.5">
-                      <span className="px-2.5 py-1 rounded-md bg-blue-50 dark:bg-blue-950/60 text-[#0071e3] dark:text-blue-400 text-[11px] font-semibold border border-blue-100 dark:border-blue-800/40">
-                        Bar Chart
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-[#0071e3] dark:text-cyan-300 text-xs font-semibold border border-blue-200/60 dark:border-blue-800/40 shadow-2xs flex items-center gap-1">
+                        <BarChart3 className="w-3 h-3" /> Bar Chart
                       </span>
-                      <span className="px-2.5 py-1 rounded-md bg-[#f5f5f7] dark:bg-[#222226] text-[#515154] dark:text-[#a1a1a6] text-[11px] font-medium border border-black/[0.04] dark:border-white/[0.06]">
-                        Export PNG
+                      <span className="px-2.5 py-1 rounded-lg bg-[#f4efe6] dark:bg-[#222226] text-stone-700 dark:text-[#a1a1a6] text-xs font-medium border border-stone-300/60 dark:border-white/[0.06] hover:bg-[#ede5d8] transition-colors cursor-pointer flex items-center gap-1">
+                        <ArrowUpRight className="w-3 h-3" /> Export PNG
                       </span>
                     </div>
                   </div>
 
                   {/* Visual Bar Representation */}
-                  <div className="space-y-3.5 pt-2">
-                    <div>
-                      <div className="flex justify-between text-xs font-medium mb-1.5 text-[#1d1d1f] dark:text-[#f5f5f7]">
-                        <span>Electronics</span>
-                        <span className="text-[#0071e3] dark:text-blue-400 font-semibold">$184.2k (42.1% margin)</span>
+                  <div className="space-y-3.5 pt-1">
+                    <div className="p-3 rounded-xl bg-[#f7f5f0]/80 dark:bg-white/[0.02] border border-stone-200/60 dark:border-white/[0.06] hover:border-stone-300 transition-all">
+                      <div className="flex justify-between items-center text-xs font-semibold mb-2">
+                        <span className="text-[#262422] dark:text-[#f5f5f7]">Electronics</span>
+                        <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-[#0071e3] dark:text-cyan-300 font-bold border border-blue-200/50 text-[11px]">
+                          $184.2k <span className="text-stone-400 font-normal">|</span> 42.1% margin
+                        </span>
                       </div>
-                      <div className="w-full h-3.5 rounded-full bg-[#f5f5f7] dark:bg-[#222226] overflow-hidden">
+                      <div className="w-full h-3.5 rounded-full bg-[#ede7dc] dark:bg-[#26262a] overflow-hidden p-0.5">
                         <motion.div 
                           initial={{ width: 0 }}
                           whileInView={{ width: "92%" }}
                           viewport={{ once: true }}
                           transition={{ duration: 1.2, delay: 0.3 }}
-                          className="h-full rounded-full bg-gradient-to-r from-[#0071e3] to-[#5e5ce6]"
+                          className="h-full rounded-full bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] shadow-[0_0_12px_rgba(0,113,227,0.3)]"
                         />
                       </div>
                     </div>
 
-                    <div>
-                      <div className="flex justify-between text-xs font-medium mb-1.5 text-[#1d1d1f] dark:text-[#f5f5f7]">
-                        <span>Home Office Furniture</span>
-                        <span className="text-[#5e5ce6] dark:text-indigo-400 font-semibold">$92.4k (38.6% margin)</span>
+                    <div className="p-3 rounded-xl bg-[#f7f5f0]/80 dark:bg-white/[0.02] border border-stone-200/60 dark:border-white/[0.06] hover:border-stone-300 transition-all">
+                      <div className="flex justify-between items-center text-xs font-semibold mb-2">
+                        <span className="text-[#262422] dark:text-[#f5f5f7]">Home Office Furniture</span>
+                        <span className="px-2 py-0.5 rounded-md bg-sky-50 dark:bg-sky-950/60 text-[#0284c7] dark:text-sky-300 font-bold border border-sky-200/50 text-[11px]">
+                          $92.4k <span className="text-stone-400 font-normal">|</span> 38.6% margin
+                        </span>
                       </div>
-                      <div className="w-full h-3.5 rounded-full bg-[#f5f5f7] dark:bg-[#222226] overflow-hidden">
+                      <div className="w-full h-3.5 rounded-full bg-[#ede7dc] dark:bg-[#26262a] overflow-hidden p-0.5">
                         <motion.div 
                           initial={{ width: 0 }}
                           whileInView={{ width: "68%" }}
                           viewport={{ once: true }}
                           transition={{ duration: 1.2, delay: 0.4 }}
-                          className="h-full rounded-full bg-gradient-to-r from-[#5e5ce6] to-[#af52de]"
+                          className="h-full rounded-full bg-gradient-to-r from-[#0284c7] to-[#06b6d4] shadow-[0_0_12px_rgba(2,132,199,0.3)]"
                         />
                       </div>
                     </div>
 
-                    <div>
-                      <div className="flex justify-between text-xs font-medium mb-1.5 text-[#1d1d1f] dark:text-[#f5f5f7]">
-                        <span>Audio & Accessories</span>
-                        <span className="text-[#af52de] dark:text-purple-400 font-semibold">$64.8k (34.2% margin)</span>
+                    <div className="p-3 rounded-xl bg-[#f7f5f0]/80 dark:bg-white/[0.02] border border-stone-200/60 dark:border-white/[0.06] hover:border-stone-300 transition-all">
+                      <div className="flex justify-between items-center text-xs font-semibold mb-2">
+                        <span className="text-[#262422] dark:text-[#f5f5f7]">Audio & Accessories</span>
+                        <span className="px-2 py-0.5 rounded-md bg-cyan-50 dark:bg-cyan-950/60 text-[#06b6d4] dark:text-cyan-300 font-bold border border-cyan-200/50 text-[11px]">
+                          $64.8k <span className="text-stone-400 font-normal">|</span> 34.2% margin
+                        </span>
                       </div>
-                      <div className="w-full h-3.5 rounded-full bg-[#f5f5f7] dark:bg-[#222226] overflow-hidden">
+                      <div className="w-full h-3.5 rounded-full bg-[#ede7dc] dark:bg-[#26262a] overflow-hidden p-0.5">
                         <motion.div 
                           initial={{ width: 0 }}
                           whileInView={{ width: "48%" }}
                           viewport={{ once: true }}
                           transition={{ duration: 1.2, delay: 0.5 }}
-                          className="h-full rounded-full bg-gradient-to-r from-[#af52de] to-[#ff2d55]"
+                          className="h-full rounded-full bg-gradient-to-r from-[#06b6d4] to-[#38bdf8] shadow-[0_0_12px_rgba(6,182,212,0.3)]"
                         />
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-black/[0.06] dark:border-white/[0.08] flex items-center justify-between text-xs font-medium">
-                  <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                    <TrendingUp className="w-4 h-4" /> +24% YoY margin growth detected
+                <div className="mt-6 pt-4 border-t border-stone-200/70 dark:border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-medium">
+                  <span className="text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-1 rounded-full border border-emerald-200/60 w-fit">
+                    <TrendingUp className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> +24% YoY margin growth detected
                   </span>
-                  <Link to="/register" className="text-[#0071e3] dark:text-blue-400 hover:underline flex items-center gap-1 font-semibold">
-                    Try with your dataset <ArrowRight className="w-3.5 h-3.5" />
+                  <Link to="/register" className="text-[#0071e3] hover:text-[#0077ed] dark:text-cyan-300 dark:hover:text-cyan-200 flex items-center gap-1 font-semibold group transition-colors">
+                    Try with your dataset <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
               </div>
 
             </div>
           </motion.div>
-        </div>
-      </section>
 
-      {/* Metrics Counter Section */}
-      <section className="py-20 relative z-10 border-y border-black/[0.06] dark:border-white/[0.08] bg-white/70 dark:bg-[#161617]/70 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {stats.map((stat, idx) => {
-              const Icon = stat.icon;
-              return (
-                <motion.div 
-                  key={idx}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.6, delay: idx * 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="macos-card p-6"
-                >
-                  <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#0071e3] dark:text-blue-400 flex items-center justify-center mb-3">
-                    <Icon className="w-4 h-4" />
-                  </div>
-                  <div className="text-4xl sm:text-5xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] via-[#5e5ce6] to-[#af52de] dark:from-blue-400 dark:via-indigo-300 dark:to-purple-300 mb-1">
-                    {stat.value}
-                  </div>
-                  <div className="text-base font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] mb-0.5">{stat.label}</div>
-                  <div className="text-xs text-[#86868b] dark:text-[#a1a1a6]">{stat.sub}</div>
-                </motion.div>
-              );
-            })}
+          {/* Floating Key Performance Stats - No separate section, floating directly on screen */}
+          <div className="max-w-5xl mx-auto mt-12 sm:mt-16">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {stats.map((stat, idx) => {
+                const Icon = stat.icon;
+                return (
+                  <motion.div 
+                    key={idx}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ duration: 0.7, delay: idx * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                    whileHover={{ y: -6, transition: { duration: 0.25 } }}
+                    className="group relative p-5 sm:p-6 rounded-3xl bg-[#fcfaf5]/70 dark:bg-[#1d1d1f]/60 backdrop-blur-2xl border border-stone-200/80 dark:border-white/[0.08] shadow-[0_12px_36px_rgba(40,30,20,0.05)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.45)] hover:shadow-[0_20px_50px_rgba(0,113,227,0.12)] hover:border-[#0071e3]/30 dark:hover:border-cyan-400/30 transition-all duration-300 select-none overflow-hidden"
+                  >
+                    {/* Ambient Glow on Card Hover */}
+                    <div className="absolute -right-8 -bottom-8 w-28 h-28 rounded-full bg-gradient-to-br from-[#0071e3]/10 to-[#06b6d4]/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#0071e3]/10 to-[#06b6d4]/15 dark:from-blue-500/20 dark:to-cyan-500/20 text-[#0071e3] dark:text-cyan-400 flex items-center justify-center border border-[#0071e3]/15 dark:border-cyan-500/20 group-hover:scale-110 transition-transform duration-300 shadow-2xs">
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <span className="w-2 h-2 rounded-full bg-emerald-500/70 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                    </div>
+
+                    <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] dark:from-blue-400 dark:via-sky-300 dark:to-cyan-300 mb-1">
+                      {stat.value}
+                    </div>
+                    <div className="text-sm font-bold text-[#262422] dark:text-[#f5f5f7] mb-1 group-hover:text-[#0071e3] dark:group-hover:text-cyan-400 transition-colors">
+                      {stat.label}
+                    </div>
+                    <div className="text-xs text-stone-500 dark:text-[#a1a1a6] leading-relaxed">
+                      {stat.sub}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
+
         </div>
       </section>
 
@@ -550,7 +904,7 @@ export default function LandingPage() {
               Comprehensive Analytics Capabilities
             </div>
             <h2 className="text-4xl sm:text-5xl tracking-tight mb-4 text-[#1d1d1f] dark:text-[#f5f5f7]">
-              <span className="font-kaushan text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] via-[#5e5ce6] to-[#af52de] dark:from-blue-400 dark:via-indigo-300 dark:to-purple-300">
+              <span className="font-kaushan text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] dark:from-blue-400 dark:via-sky-300 dark:to-cyan-300">
                 Engineered for Speed, Intelligence & Accuracy
               </span>
             </h2>
@@ -599,103 +953,275 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Interactive Live Demo Playground Section */}
+      {/* Interactive Live Demo Section (Compact & Mobile-Optimized) */}
       <section 
         id="demo" 
-        className="py-28 relative z-10 bg-[#f5f5f7]/60 dark:bg-[#1a1a1d]/60 border-y border-black/[0.06] dark:border-white/[0.08]"
+        className="py-16 sm:py-20 relative z-10 bg-[#f8f5ee]/70 dark:bg-[#18181b]/70 border-y border-stone-300/60 dark:border-white/[0.08]"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
           
           <motion.div 
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="text-center max-w-3xl mx-auto mb-14"
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="text-center max-w-xl mx-auto mb-6 sm:mb-8"
           >
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-purple-50 dark:bg-purple-950/60 text-[#af52de] dark:text-purple-400 text-xs font-semibold uppercase tracking-wider mb-4 border border-purple-100 dark:border-purple-800/40">
-              Interactive 2s Playground Carousel {isDemoHovered && "(Paused on Card Hover)"}
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-[#0284c7] dark:text-cyan-300 text-xs font-semibold uppercase tracking-wider mb-2.5 border border-cyan-200/80 dark:border-cyan-800/50 shadow-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
+              <span>Interactive Preview</span>
+              {isDemoHovered && (
+                <span className="ml-1 text-[10px] font-mono text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.2 rounded">
+                  Paused
+                </span>
+              )}
             </div>
-            <h2 className="text-4xl sm:text-5xl tracking-tight mb-4 text-[#1d1d1f] dark:text-[#f5f5f7]">
-              <span className="font-kaushan text-transparent bg-clip-text bg-gradient-to-r from-[#af52de] via-[#0071e3] to-[#5e5ce6] dark:from-purple-300 dark:via-blue-300 dark:to-indigo-300">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl tracking-tight mb-2.5 text-[#1d1d1f] dark:text-[#f5f5f7]">
+              <span className="font-kaushan text-transparent bg-clip-text bg-gradient-to-r from-[#06b6d4] via-[#0071e3] to-[#0284c7] dark:from-cyan-300 dark:via-blue-300 dark:to-sky-300">
                 Experience the AI Assistant in Action
               </span>
             </h2>
-            <p className="text-lg text-[#6e6e73] dark:text-[#a1a1a6]">
-              Rotates every 2 seconds automatically. Hovering directly over the card pauses rotation.
+            <p className="text-xs sm:text-sm text-[#6e6e73] dark:text-[#a1a1a6] leading-relaxed">
+              Ask in plain English. Get instant DuckDB SQL queries, summary metrics, and presentation-ready charts in milliseconds.
             </p>
           </motion.div>
 
-          {/* Tab Switcher */}
-          <div className="flex flex-wrap justify-center gap-2.5 mb-10">
+          {/* Step Switcher (Fully visible and responsive on mobile with flex-wrap, centered on desktop) */}
+          <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5 mb-5 px-2 max-w-full">
             {interactiveDemos.map((demo, idx) => (
               <button
                 key={demo.id}
                 onClick={() => setActiveDemo(idx)}
-                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer ${
                   activeDemo === idx 
-                    ? "bg-[#0071e3] text-white shadow-[0_4px_14px_rgba(0,113,227,0.3)]" 
-                    : "bg-white dark:bg-[#222226] text-[#515154] dark:text-[#a1a1a6] border border-black/[0.06] dark:border-white/[0.08] hover:bg-gray-50 dark:hover:bg-[#2c2c30] shadow-sm"
+                    ? "bg-[#0071e3] text-white shadow-[0_4px_14px_rgba(0,113,227,0.3)] scale-[1.02]" 
+                    : "bg-[#fcfaf5] dark:bg-[#202024] text-[#515154] dark:text-[#a1a1a6] border border-stone-300/70 dark:border-white/[0.08] hover:bg-white dark:hover:bg-[#27272b] hover:text-[#1d1d1f] dark:hover:text-white shadow-xs"
                 }`}
               >
-                {demo.tab}
+                <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                  activeDemo === idx 
+                    ? "bg-white/25 text-white" 
+                    : "bg-stone-200/80 dark:bg-white/10 text-stone-600 dark:text-stone-300"
+                }`}>
+                  {idx + 1}
+                </span>
+                <span className="font-semibold whitespace-nowrap">{demo.shortTitle}</span>
               </button>
             ))}
           </div>
 
-          {/* Interactive Card with pause strictly on card hover */}
-          <AnimatePresence mode="wait">
-            <motion.div 
-              key={activeDemo}
-              initial={{ opacity: 0, y: 15, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -15, scale: 0.98 }}
-              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              onMouseEnter={() => setIsDemoHovered(true)}
-              onMouseLeave={() => setIsDemoHovered(false)}
-              className="max-w-4xl mx-auto macos-card p-6 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.06)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)]"
-            >
-              <div className="space-y-6">
-                
-                {/* Natural prompt box */}
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-wider text-[#86868b] dark:text-[#a1a1a6] mb-2">User Question Prompt</div>
-                  <div className="p-4 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-800/40 text-base font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-white dark:bg-[#1d1d1f] text-[#0071e3] dark:text-blue-400 shadow-sm shrink-0">
-                      <MessageSquare className="w-4 h-4" />
+          {/* Compact macOS Card */}
+          <div className="relative">
+            {/* Ambient Background Aura Glow */}
+            <div className="absolute -inset-1 sm:-inset-2 bg-gradient-to-r from-cyan-500/10 via-[#0071e3]/10 to-sky-500/10 rounded-2xl blur-lg opacity-60 dark:opacity-30 pointer-events-none -z-10" />
+
+            <AnimatePresence mode="wait">
+              <motion.div 
+                key={activeDemo}
+                initial={{ opacity: 0, y: 8, scale: 0.99 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.99 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                onMouseEnter={() => setIsDemoHovered(true)}
+                onMouseLeave={() => setIsDemoHovered(false)}
+                className="macos-window overflow-hidden border border-stone-300/80 dark:border-white/[0.12] shadow-[0_16px_40px_rgba(40,30,20,0.06)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.45)]"
+              >
+                {/* Header Bar */}
+                <div className="flex items-center justify-between px-3.5 sm:px-4 py-2 bg-stone-100/90 dark:bg-white/[0.04] border-b border-stone-200/80 dark:border-white/[0.08]">
+                  {/* Traffic Lights + Dataset */}
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
                     </div>
-                    "{interactiveDemos[activeDemo].prompt}"
+                    <div className="flex items-center gap-1 ml-1 text-xs text-stone-600 dark:text-stone-300 font-mono truncate">
+                      <Database className="w-3 h-3 text-[#0071e3] dark:text-cyan-400 shrink-0" />
+                      <span className="truncate max-w-[110px] sm:max-w-none">{interactiveDemos[activeDemo].dataset}</span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Generated SQL snippet */}
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-wider text-[#86868b] dark:text-[#a1a1a6] mb-2 flex items-center justify-between">
-                    <span>Generated DuckDB SQL</span>
-                    <span className="text-emerald-600 dark:text-emerald-400 text-[11px] font-mono font-bold">100% Sanitized & Read-Only</span>
-                  </div>
-                  <pre className="p-4 rounded-xl bg-[#1e1e24] text-emerald-400 font-mono text-xs sm:text-sm overflow-x-auto leading-relaxed border border-black/10 dark:border-white/10 shadow-inner">
-                    {interactiveDemos[activeDemo].sql}
-                  </pre>
-                </div>
+                  {/* Mode Switcher: Chart vs SQL */}
+                  <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center p-0.5 rounded-lg bg-stone-200/80 dark:bg-white/10 text-xs font-medium">
+                      <button
+                        onClick={() => setCardView("visual")}
+                        className={`flex items-center gap-1 px-2.5 py-0.5 rounded-md transition-all cursor-pointer ${
+                          cardView === "visual"
+                            ? "bg-white dark:bg-[#1e1e22] text-[#0071e3] dark:text-cyan-300 font-semibold shadow-xs"
+                            : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white"
+                        }`}
+                      >
+                        <BarChart3 className="w-3 h-3" />
+                        <span>Chart</span>
+                      </button>
+                      <button
+                        onClick={() => setCardView("sql")}
+                        className={`flex items-center gap-1 px-2.5 py-0.5 rounded-md transition-all cursor-pointer ${
+                          cardView === "sql"
+                            ? "bg-white dark:bg-[#1e1e22] text-[#0071e3] dark:text-cyan-300 font-semibold shadow-xs"
+                            : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white"
+                        }`}
+                      >
+                        <Terminal className="w-3 h-3" />
+                        <span>SQL</span>
+                      </button>
+                    </div>
 
-                {/* Generated Explanation */}
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-wider text-[#86868b] dark:text-[#a1a1a6] mb-2">AI Summary & Chart Selection</div>
-                  <div className="p-4 rounded-xl bg-[#f5f5f7] dark:bg-[#222226] border border-black/[0.04] dark:border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <p className="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7]">
-                      {interactiveDemos[activeDemo].explanation}
-                    </p>
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-[#0071e3] dark:text-blue-400 text-xs font-semibold shrink-0 border border-blue-100 dark:border-blue-800/40">
-                      <BarChart3 className="w-3.5 h-3.5" /> 
-                      {interactiveDemos[activeDemo].chartType}
+                    <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                      <Zap className="w-3 h-3 text-amber-500 fill-amber-500/20 shrink-0" />
+                      {interactiveDemos[activeDemo].execTime}
                     </span>
                   </div>
                 </div>
 
-              </div>
-            </motion.div>
-          </AnimatePresence>
+                {/* Card Body */}
+                <div className="p-3.5 sm:p-5 space-y-3">
+                  
+                  {/* User Question Capsule */}
+                  <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/30">
+                    <div className="p-1.5 rounded-lg bg-white dark:bg-[#202025] text-[#0071e3] dark:text-cyan-400 shrink-0 shadow-xs">
+                      <MessageSquare className="w-3.5 h-3.5" />
+                    </div>
+                    <p className="text-xs sm:text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] leading-snug truncate">
+                      "{interactiveDemos[activeDemo].prompt}"
+                    </p>
+                  </div>
+
+                  {/* Mode 1: Visual Chart View */}
+                  {cardView === "visual" && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="space-y-3"
+                    >
+                      {/* Interactive Visual Bars Container */}
+                      <div className="p-3 sm:p-3.5 rounded-xl bg-white/80 dark:bg-[#1a1a1e]/80 border border-stone-200/90 dark:border-white/[0.08] shadow-xs space-y-2">
+                        <div className="flex items-center justify-between text-xs pb-1.5 border-b border-stone-200/60 dark:border-white/[0.06]">
+                          <span className="font-semibold text-stone-800 dark:text-stone-200 flex items-center gap-1.5">
+                            <BarChart3 className="w-3.5 h-3.5 text-[#0071e3] dark:text-cyan-400" />
+                            {interactiveDemos[activeDemo].chartType}
+                          </span>
+                          <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.2 rounded-full">
+                            Live Result
+                          </span>
+                        </div>
+
+                        {/* Bars */}
+                        <div className="space-y-2 pt-0.5">
+                          {interactiveDemos[activeDemo].bars.slice(0, 3).map((bar, bIdx) => (
+                            <div key={bar.name} className="space-y-0.5">
+                              <div className="flex items-center justify-between text-xs">
+                                <span className="font-medium text-stone-700 dark:text-stone-300 truncate max-w-[180px] sm:max-w-none">
+                                  {bar.name}
+                                </span>
+                                <span className="font-mono font-bold text-[#0071e3] dark:text-cyan-300">
+                                  {bar.value}
+                                </span>
+                              </div>
+                              <div className="w-full h-2 rounded-full bg-stone-200/70 dark:bg-white/10 overflow-hidden relative">
+                                <motion.div
+                                  key={`${activeDemo}-${bar.name}`}
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${bar.pct}%` }}
+                                  transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: bIdx * 0.08 }}
+                                  className={`h-full rounded-full bg-gradient-to-r ${bar.color}`}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* AI Executive Takeaway & Key Metrics */}
+                      <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-2.5 items-stretch">
+                        <div className="sm:col-span-7 p-2.5 sm:p-3 rounded-xl bg-stone-100/80 dark:bg-white/[0.04] border border-stone-200/80 dark:border-white/[0.06] text-xs leading-relaxed text-stone-700 dark:text-stone-300 flex items-start gap-2">
+                          <Sparkles className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                          <span>{interactiveDemos[activeDemo].explanation}</span>
+                        </div>
+
+                        <div className="sm:col-span-5 grid grid-cols-2 gap-2">
+                          {interactiveDemos[activeDemo].metrics.slice(0, 2).map((metric) => (
+                            <div
+                              key={metric.label}
+                              className="p-2 sm:p-2.5 rounded-xl bg-stone-100/70 dark:bg-white/[0.04] border border-stone-200/80 dark:border-white/[0.06] flex flex-col justify-between"
+                            >
+                              <div className="text-[10px] font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wider truncate">
+                                {metric.label}
+                              </div>
+                              <div className="my-0.5 text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7] font-mono truncate">
+                                {metric.value}
+                              </div>
+                              <div className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold truncate">
+                                {metric.change}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Mode 2: DuckDB SQL Code View */}
+                  {cardView === "sql" && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="rounded-xl bg-[#12141c] text-stone-100 border border-black/20 dark:border-white/10 overflow-hidden"
+                    >
+                      <div className="flex items-center justify-between px-3 py-1.5 bg-[#191b26] border-b border-white/[0.06] text-[11px] font-mono">
+                        <div className="flex items-center gap-1.5 text-cyan-400 font-semibold">
+                          <Terminal className="w-3.5 h-3.5" />
+                          <span>DuckDB Vector SQL</span>
+                        </div>
+                        <button
+                          onClick={() => handleCopySql(interactiveDemos[activeDemo].sql)}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-medium text-stone-300 bg-white/10 hover:bg-white/20 transition-all cursor-pointer"
+                        >
+                          {copiedSql ? (
+                            <>
+                              <Check className="w-3 h-3 text-emerald-400" />
+                              <span className="text-emerald-400">Copied</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3 h-3" />
+                              <span>Copy</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                      <div className="p-3 text-xs">
+                        <SQLHighlight code={interactiveDemos[activeDemo].sql} />
+                      </div>
+                      <div className="px-3 py-1 bg-[#161822] border-t border-white/[0.04] flex items-center justify-between text-[10px] font-mono text-stone-400">
+                        <span>Read-Only In-Memory Execution</span>
+                        <span>{interactiveDemos[activeDemo].rows} scanned in {interactiveDemos[activeDemo].execTime}</span>
+                      </div>
+                    </motion.div>
+                  )}
+
+                </div>
+
+                {/* Compact Bottom Footer */}
+                <div className="px-3.5 sm:px-4 py-2 bg-stone-100/80 dark:bg-white/[0.02] border-t border-stone-200/80 dark:border-white/[0.06] flex items-center justify-between text-xs text-stone-500 dark:text-stone-400">
+                  <div className="flex items-center gap-1.5 text-[11px]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    <span>In-Memory DuckDB • 0 persistent disk rows</span>
+                  </div>
+                  <Link 
+                    to="/login"
+                    className="inline-flex items-center gap-1 text-[#0071e3] dark:text-cyan-300 hover:underline font-semibold text-[11px]"
+                  >
+                    Try live <ArrowRight className="w-3 h-3" />
+                  </Link>
+                </div>
+
+              </motion.div>
+            </AnimatePresence>
+          </div>
 
         </div>
       </section>
@@ -715,7 +1241,7 @@ export default function LandingPage() {
               Simple 3-Step Flow
             </div>
             <h2 className="text-4xl sm:text-5xl tracking-tight mb-4 text-[#1d1d1f] dark:text-[#f5f5f7]">
-              <span className="font-kaushan text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-[#0071e3] to-[#5e5ce6] dark:from-emerald-400 dark:via-blue-300 dark:to-indigo-300">
+              <span className="font-kaushan text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-[#0071e3] to-[#06b6d4] dark:from-emerald-400 dark:via-blue-300 dark:to-cyan-300">
                 From Raw Files to Decisions in 60 Seconds
               </span>
             </h2>
@@ -738,15 +1264,24 @@ export default function LandingPage() {
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-50 dark:bg-blue-950/60 text-[#0071e3] dark:text-blue-400 font-bold text-xs mb-4 border border-blue-100 dark:border-blue-800/40">
                   STEP 01
                 </div>
-                <h3 className="text-3xl sm:text-4xl font-bold mb-4 text-[#1d1d1f] dark:text-[#f5f5f7]">Drop Your Data Files</h3>
+                <h3 className="text-3xl sm:text-4xl mb-4">
+                  <span className="font-kaushan tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] dark:from-blue-400 dark:via-sky-300 dark:to-cyan-300">
+                    Drop Your Data Files
+                  </span>
+                </h3>
                 <p className="text-[#6e6e73] dark:text-[#a1a1a6] text-lg leading-relaxed mb-6 font-normal">
                   Upload CSVs, Excel workbooks, or database snapshots. Our engine parses schemas in milliseconds, cleans column mappings, and loads them safely into an in-memory session.
                 </p>
-                <div className="flex flex-wrap gap-2 text-xs font-semibold text-[#515154] dark:text-[#a1a1a6]">
-                  <span className="px-3 py-1.5 rounded-lg bg-[#f5f5f7] dark:bg-[#222226] border border-black/[0.06] dark:border-white/[0.08]">.CSV</span>
-                  <span className="px-3 py-1.5 rounded-lg bg-[#f5f5f7] dark:bg-[#222226] border border-black/[0.06] dark:border-white/[0.08]">.XLSX</span>
-                  <span className="px-3 py-1.5 rounded-lg bg-[#f5f5f7] dark:bg-[#222226] border border-black/[0.06] dark:border-white/[0.08]">.SQLITE</span>
-                  <span className="px-3 py-1.5 rounded-lg bg-[#f5f5f7] dark:bg-[#222226] border border-black/[0.06] dark:border-white/[0.08]">.SQL</span>
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  {[".CSV", ".XLSX", ".SQLITE", ".SQL"].map((ext) => (
+                    <span
+                      key={ext}
+                      className="group inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-mono font-medium text-stone-600 dark:text-stone-300 bg-stone-200/60 dark:bg-white/5 border border-stone-300/60 dark:border-white/10 hover:border-[#0071e3]/60 dark:hover:border-cyan-400/60 hover:bg-white dark:hover:bg-cyan-500/10 hover:text-[#0071e3] dark:hover:text-cyan-300 hover:scale-105 hover:-translate-y-0.5 hover:shadow-xs hover:shadow-[#0071e3]/10 dark:hover:shadow-[0_2px_10px_rgba(6,182,212,0.15)] transition-all duration-200 cursor-default select-none"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-stone-400/70 dark:bg-stone-500 group-hover:bg-[#0071e3] dark:group-hover:bg-cyan-400 group-hover:scale-125 transition-all duration-200" />
+                      {ext}
+                    </span>
+                  ))}
                 </div>
               </div>
               <div className="flex-1 order-1 md:order-2">
@@ -798,32 +1333,88 @@ export default function LandingPage() {
                     }}
                     src="/assets/img2.webp" 
                     alt="Interactive Charting" 
-                    className="w-full max-w-[340px] sm:max-w-[380px] h-auto object-contain drop-shadow-[0_20px_35px_rgba(94,92,230,0.25)] transition-transform duration-500 hover:scale-[1.05]" 
+                    className="w-full max-w-[340px] sm:max-w-[380px] h-auto object-contain drop-shadow-[0_20px_35px_rgba(6,182,212,0.25)] transition-transform duration-500 hover:scale-[1.05]" 
                   />
                 </motion.div>
               </div>
               <div className="flex-1">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-[#5e5ce6] dark:text-indigo-400 font-bold text-xs mb-4 border border-indigo-100 dark:border-indigo-800/40">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-cyan-50 dark:bg-cyan-950/60 text-[#0284c7] dark:text-cyan-400 font-bold text-xs mb-4 border border-cyan-100 dark:border-cyan-800/40">
                   STEP 02
                 </div>
-                <h3 className="text-3xl sm:text-4xl font-bold mb-4 text-[#1d1d1f] dark:text-[#f5f5f7]">Ask, Explore & Visualize</h3>
+                <h3 className="text-3xl sm:text-4xl mb-4">
+                  <span className="font-kaushan tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-[#06b6d4] via-[#0284c7] to-[#0071e3] dark:from-cyan-300 dark:via-sky-400 dark:to-blue-400">
+                    Ask, Explore & Visualize
+                  </span>
+                </h3>
                 <p className="text-[#6e6e73] dark:text-[#a1a1a6] text-lg leading-relaxed mb-6 font-normal">
                   Chat with your data or build custom charts in the visual explore panel. The system handles aggregations, filters, mathematical transforms, and Plotly renders seamlessly.
                 </p>
-                <div className="flex flex-wrap items-center gap-5 text-sm font-medium text-[#5e5ce6] dark:text-indigo-400">
-                  <span className="group flex items-center gap-2 cursor-default hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors duration-200">
-                    <div className="p-1 rounded-md bg-indigo-50 dark:bg-indigo-950/60 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/60 transition-colors duration-200">
-                      <Sparkles className="w-4 h-4" />
-                    </div>
-                    <span>AI SQL Execution</span>
+                <div className="flex flex-wrap items-center gap-6 text-sm font-medium">
+                  <span className="group flex items-center gap-2 text-[#262422] dark:text-[#f5f5f7] cursor-default transition-colors duration-200">
+                    <Sparkles className="w-4 h-4 text-[#0071e3] dark:text-blue-400 transition-transform duration-200 group-hover:scale-110" />
+                    <span className="group-hover:text-[#0071e3] dark:group-hover:text-blue-400 transition-colors">AI SQL Execution</span>
                   </span>
-                  <span className="group flex items-center gap-2 cursor-default hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors duration-200">
-                    <div className="p-1 rounded-md bg-indigo-50 dark:bg-indigo-950/60 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/60 transition-colors duration-200">
-                      <BarChart3 className="w-4 h-4" />
-                    </div>
-                    <span>Real-time Plotly charts</span>
+                  <span className="group flex items-center gap-2 text-[#262422] dark:text-[#f5f5f7] cursor-default transition-colors duration-200">
+                    <BarChart3 className="w-4 h-4 text-[#0284c7] dark:text-cyan-400 transition-transform duration-200 group-hover:scale-110" />
+                    <span className="group-hover:text-[#0284c7] dark:group-hover:text-cyan-400 transition-colors">Real-time Plotly charts</span>
                   </span>
                 </div>
+              </div>
+            </motion.div>
+
+            {/* Step 3: Decide, Export & Share */}
+            <motion.div 
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="flex flex-col md:flex-row items-center gap-12 lg:gap-16"
+            >
+              <div className="flex-1 order-2 md:order-1">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-50 dark:bg-blue-950/60 text-[#0071e3] dark:text-blue-400 font-bold text-xs mb-4 border border-blue-100 dark:border-blue-800/40">
+                  STEP 03
+                </div>
+                <h3 className="text-3xl sm:text-4xl mb-4">
+                  <span className="font-kaushan tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] dark:from-blue-400 dark:via-sky-300 dark:to-cyan-300">
+                    Decide, Export & Share
+                  </span>
+                </h3>
+                <p className="text-[#6e6e73] dark:text-[#a1a1a6] text-lg leading-relaxed mb-6 font-normal">
+                  Turn discoveries into immediate business actions. Export presentation-ready Plotly charts in SVG or PNG, download cleaned analytical datasets in Excel or CSV, and share instant executive summaries with your team in one click.
+                </p>
+                <div className="flex flex-wrap items-center gap-6 text-sm font-medium">
+                  <span className="group flex items-center gap-2 text-[#262422] dark:text-[#f5f5f7] cursor-default transition-colors duration-200">
+                    <FileSpreadsheet className="w-4 h-4 text-[#0071e3] dark:text-blue-400 transition-transform duration-200 group-hover:scale-110" />
+                    <span className="group-hover:text-[#0071e3] dark:group-hover:text-blue-400 transition-colors">Instant CSV & Excel Download</span>
+                  </span>
+                  <span className="group flex items-center gap-2 text-[#262422] dark:text-[#f5f5f7] cursor-default transition-colors duration-200">
+                    <Download className="w-4 h-4 text-[#0284c7] dark:text-cyan-400 transition-transform duration-200 group-hover:scale-110" />
+                    <span className="group-hover:text-[#0284c7] dark:group-hover:text-cyan-400 transition-colors">High-Res Vector Visuals</span>
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex-1 order-1 md:order-2">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.85, y: 30 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                  className="flex items-center justify-center p-2 relative"
+                >
+                  <motion.img 
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ 
+                      duration: 4.8, 
+                      repeat: Infinity, 
+                      ease: "easeInOut",
+                      delay: 0.3
+                    }}
+                    src="/assets/img3.webp" 
+                    alt="Export & Decision Flow" 
+                    className="w-full max-w-[340px] sm:max-w-[380px] h-auto object-contain drop-shadow-[0_20px_35px_rgba(0,113,227,0.22)] transition-transform duration-500 hover:scale-[1.05]" 
+                  />
+                </motion.div>
               </div>
             </motion.div>
 
@@ -845,16 +1436,13 @@ export default function LandingPage() {
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="text-center max-w-3xl mx-auto mb-14"
           >
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200/60 dark:border-amber-800/40 text-xs font-semibold uppercase tracking-wider mb-4">
-              Auto Carousel · 2s Interval {isTestimonialHovered && "(Paused on Card Hover)"}
-            </div>
             <h2 className="text-4xl sm:text-5xl tracking-tight mb-4 text-[#1d1d1f] dark:text-[#f5f5f7]">
-              <span className="font-kaushan text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] via-[#af52de] to-[#ff2d55] dark:from-blue-400 dark:via-purple-300 dark:to-pink-300">
+              <span className="font-kaushan text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] dark:from-blue-400 dark:via-sky-300 dark:to-cyan-300">
                 Loved by Data Pros & Teams
               </span>
             </h2>
             <p className="text-lg text-[#6e6e73] dark:text-[#a1a1a6]">
-              Hover directly over the testimonial card to pause rotation.
+              Real feedback from data analysts, engineers, and product teams.
             </p>
           </motion.div>
 
@@ -884,7 +1472,7 @@ export default function LandingPage() {
 
                 <div className="flex items-center justify-between pt-6 border-t border-black/[0.06] dark:border-white/[0.08]">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#0071e3] to-[#5e5ce6] flex items-center justify-center text-white font-semibold text-sm shadow-sm">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#0071e3] to-[#06b6d4] flex items-center justify-center text-white font-semibold text-sm shadow-sm">
                       {testimonials[currentTestimonial].avatar}
                     </div>
                     <div>
@@ -916,15 +1504,15 @@ export default function LandingPage() {
           </div>
 
           {/* Carousel Dot Indicators */}
-          <div className="flex justify-center gap-2 mt-8">
+          <div className="flex items-center justify-center gap-2.5 mt-8">
             {testimonials.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setCurrentTestimonial(idx)}
-                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
                   currentTestimonial === idx 
-                    ? "w-8 bg-[#0071e3]" 
-                    : "w-2 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600"
+                    ? "w-8 bg-[#0071e3] shadow-[0_2px_10px_rgba(0,113,227,0.4)]" 
+                    : "w-2.5 bg-stone-300 dark:bg-stone-600 hover:bg-stone-400 dark:hover:bg-stone-500"
                 }`}
                 aria-label={`Go to slide ${idx + 1}`}
               />
@@ -937,31 +1525,31 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="py-24 relative z-10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative rounded-3xl p-10 sm:p-16 bg-[#1d1d1f] dark:bg-[#1a1a1d] text-white border border-transparent dark:border-white/[0.1] shadow-[0_24px_60px_rgba(0,0,0,0.18)] dark:shadow-[0_24px_60px_rgba(0,0,0,0.5)] overflow-hidden text-center">
+          <div className="relative rounded-3xl p-10 sm:p-16 bg-gradient-to-b from-[#fcfaf5] to-[#f6f1e8] dark:from-[#1a1a1d] dark:to-[#161618] border border-stone-300/80 dark:border-white/[0.1] shadow-[0_24px_60px_rgba(40,30,20,0.07)] dark:shadow-[0_24px_60px_rgba(0,0,0,0.5)] overflow-hidden text-center">
             
-            {/* Background Glow */}
-            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
+            {/* Background Ambient Glow */}
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-[#0071e3]/10 dark:bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-[#06b6d4]/10 dark:bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
             
             <div className="relative z-10 max-w-2xl mx-auto">
-              <h2 className="text-4xl sm:text-5xl tracking-tight mb-4 text-white">
-                <span className="font-kaushan text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-pink-300">
+              <h2 className="text-4xl sm:text-5xl tracking-tight mb-4">
+                <span className="font-kaushan tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] dark:from-blue-400 dark:via-sky-300 dark:to-cyan-300">
                   Start Exploring Your Data Today
                 </span>
               </h2>
-              <p className="text-lg text-[#a1a1a6] mb-8 leading-relaxed font-normal">
+              <p className="text-lg text-stone-600 dark:text-[#a1a1a6] mb-8 leading-relaxed font-normal">
                 Join data teams and analysts turning static files into interactive SQL intelligence and visualizations.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Link
                   to="/register"
-                  className="px-8 py-3.5 rounded-full font-medium text-base text-[#1d1d1f] bg-white hover:bg-gray-100 shadow-xl transition-all duration-300"
+                  className="px-8 py-3.5 rounded-full font-medium text-base text-white bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_6px_20px_rgba(0,113,227,0.35)] hover:shadow-[0_8px_25px_rgba(0,113,227,0.45)] transition-all duration-300 cursor-pointer"
                 >
                   Create Free Account
                 </Link>
                 <Link
                   to="/login"
-                  className="px-8 py-3.5 rounded-full font-medium text-base text-white border border-white/20 hover:bg-white/10 transition-all duration-300"
+                  className="px-8 py-3.5 rounded-full font-medium text-base text-[#262422] dark:text-[#f5f5f7] bg-[#fcfaf5] dark:bg-white/10 border border-stone-300/80 dark:border-white/20 hover:bg-[#f4efe6] dark:hover:bg-white/15 transition-all duration-300 cursor-pointer"
                 >
                   Sign In
                 </Link>
@@ -972,19 +1560,19 @@ export default function LandingPage() {
       </section>
 
       {/* Static Footer with Icons and Scroll-to-Top Navigation */}
-      <footer className="border-t border-black/[0.06] dark:border-white/[0.08] bg-white/80 dark:bg-[#161617]/80 backdrop-blur-xl relative z-10">
+      <footer id="footer" className="border-t border-stone-200/80 dark:border-white/[0.08] bg-[#fcfaf5]/85 dark:bg-[#161617]/80 backdrop-blur-xl relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             
             {/* Brand column */}
             <div className="md:col-span-2 space-y-4">
-              <a href="#" onClick={handleScrollToTop} className="flex items-center space-x-3 cursor-pointer select-none">
+              <a href="#" onClick={handleScrollToTop} className="flex items-center space-x-3 cursor-pointer select-none group">
                 <img 
                   src="/favicon.webp" 
                   alt="AI Data Analysis Logo" 
-                  className="w-8 h-8 object-contain"
+                  className="w-8 h-8 object-contain transition-transform duration-300 group-hover:scale-105"
                 />
-                <span className="font-semibold text-lg tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+                <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] dark:from-[#38bdf8] dark:via-[#0ea5e9] dark:to-[#06b6d4] bg-clip-text text-transparent group-hover:opacity-90 transition-opacity">
                   AI Data Analysis
                 </span>
               </a>
@@ -1005,7 +1593,7 @@ export default function LandingPage() {
                 </li>
                 <li>
                   <Link to="/faq" className="flex items-center gap-2 hover:text-[#0071e3] dark:hover:text-blue-400 transition-colors">
-                    <HelpCircle className="w-4 h-4 text-[#5e5ce6] dark:text-indigo-400 shrink-0" />
+                    <HelpCircle className="w-4 h-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
                     <span>FAQs</span>
                   </Link>
                 </li>
@@ -1034,7 +1622,7 @@ export default function LandingPage() {
           </div>
 
           <div className="mt-8 pt-8 border-t border-black/[0.06] dark:border-white/[0.08] flex flex-col sm:flex-row justify-between items-center text-xs text-[#86868b] dark:text-[#a1a1a6] gap-4">
-            <p>© {new Date().getFullYear()} AI Data Analysis. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] to-[#06b6d4]">AI Data Analysis</span>. All rights reserved.</p>
             <p>Crafted for fast in-browser data intelligence.</p>
           </div>
         </div>

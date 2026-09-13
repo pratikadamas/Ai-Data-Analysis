@@ -314,7 +314,7 @@ export default function Admin() {
     const chartHeight = 220;
 
     return (
-      <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-sm">
+      <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 rounded-2xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className="text-base font-bold tracking-tight">Groq API Calls Per Day</h3>
@@ -322,7 +322,7 @@ export default function Admin() {
               Recorded in MongoDB <code className="text-blue-600 dark:text-blue-400 font-mono">groq_usage</code> collection
             </p>
           </div>
-          <span className="text-xs font-semibold px-3 py-1 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-full border border-indigo-200 dark:border-indigo-500/20">
+          <span className="text-xs font-semibold px-3 py-1 bg-cyan-50 dark:bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 rounded-full border border-cyan-200 dark:border-cyan-500/20">
             Daily Aggregated
           </span>
         </div>
@@ -369,7 +369,7 @@ export default function Admin() {
                       width={barWidth}
                       height={barHeight}
                       rx="6"
-                      className="fill-gradient-to-t fill-blue-600 dark:fill-blue-500 group-hover:fill-indigo-500 transition-all duration-300"
+                      className="fill-gradient-to-t fill-blue-600 dark:fill-blue-500 group-hover:fill-cyan-400 transition-all duration-300"
                     />
                     {/* Value Badge on bar */}
                     <text
@@ -400,43 +400,47 @@ export default function Admin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f5f7] dark:bg-[#000000] text-slate-900 dark:text-white font-sans transition-colors duration-300 pb-16">
+    <div className="min-h-screen bg-[#f7f5f0] dark:bg-[#000000] text-stone-900 dark:text-white font-sans transition-colors duration-300 pb-16">
       
       {/* Top Admin Navbar */}
-      <header className="sticky top-0 z-30 bg-white/80 dark:bg-[#161618]/80 backdrop-blur-xl border-b border-slate-200 dark:border-white/10 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-md shadow-blue-500/20">
-              <ShieldCheck className="w-5 h-5 text-white" />
+      <header className="sticky top-0 z-30 bg-[#fcfaf5]/45 dark:bg-[#161618]/45 backdrop-blur-xl border-b border-stone-200/50 dark:border-white/10 px-3.5 sm:px-6 py-3 sm:py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+          <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-600 flex items-center justify-center shadow-md shadow-blue-500/20 shrink-0">
+              <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <h1 className="font-bold text-lg tracking-tight">Admin Portal</h1>
-                <span className="text-[10px] bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-bold px-2 py-0.5 rounded-full uppercase">
+            <div className="min-w-0">
+              <div className="flex items-center space-x-1.5 sm:space-x-2">
+                <h1 className="font-bold text-base sm:text-lg tracking-tight bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] bg-clip-text text-transparent truncate">
+                  Admin Portal
+                </h1>
+                <span className="hidden sm:inline-block text-[10px] bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-bold px-2 py-0.5 rounded-full uppercase shrink-0">
                   Control Center
                 </span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="hidden xs:block text-xs text-slate-500 dark:text-slate-400 truncate">
                 Logged in as <span className="font-medium text-slate-800 dark:text-slate-200">{adminUser?.email || "Admin"}</span>
               </p>
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-1.5 sm:space-x-3 shrink-0">
             <ThemeToggle />
             <Link
               to="/app"
-              className="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 text-xs font-medium flex items-center space-x-1.5 transition"
+              className="p-2 sm:px-3.5 sm:py-2 rounded-xl border border-stone-200/80 dark:border-white/10 hover:bg-[#f3ede3] dark:hover:bg-white/5 text-xs font-medium flex items-center space-x-1.5 transition"
+              title="Go to App"
             >
               <ArrowUpRight className="w-3.5 h-3.5" />
-              <span>Go to App</span>
+              <span className="hidden sm:inline">Go to App</span>
             </Link>
             <button
               onClick={handleLogout}
-              className="px-3.5 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-xs font-semibold flex items-center space-x-1.5 transition border border-rose-200 dark:border-rose-800/40"
+              className="p-2 sm:px-3.5 sm:py-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-xs font-semibold flex items-center space-x-1.5 transition border border-rose-200 dark:border-rose-800/40"
+              title="Logout"
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span>Logout</span>
+              <span className="hidden sm:inline">Logout</span>
             </button>
           </div>
         </div>
@@ -463,11 +467,11 @@ export default function Admin() {
             onClick={() => setActiveTab("admins")}
             className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-xs transition-all whitespace-nowrap ${
               activeTab === "admins"
-                ? "bg-purple-600 text-white shadow-md shadow-purple-500/20"
+                ? "bg-cyan-600 text-white shadow-md shadow-cyan-500/20"
                 : "text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-white/5"
             }`}
           >
-            <ShieldCheck className="w-4 h-4 text-purple-200" />
+            <ShieldCheck className="w-4 h-4 text-cyan-200" />
             <span>Admin Management</span>
           </button>
 
@@ -514,7 +518,7 @@ export default function Admin() {
             
             {/* Stats Overview Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+              <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     Total API Calls
@@ -540,12 +544,12 @@ export default function Admin() {
                 <p className="text-[11px] text-slate-400 mt-1">Groq LLM calls executed today</p>
               </div>
 
-              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+              <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     Estimated Tokens
                   </span>
-                  <Cpu className="w-4 h-4 text-indigo-500" />
+                  <Cpu className="w-4 h-4 text-sky-500" />
                 </div>
                 <div className="text-2xl font-black tracking-tight">
                   {(groqData?.summary?.total_tokens_all_time || 0).toLocaleString()}
@@ -553,12 +557,12 @@ export default function Admin() {
                 <p className="text-[11px] text-slate-400 mt-1">Tokens processed across requests</p>
               </div>
 
-              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+              <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     Tracked Days
                   </span>
-                  <Database className="w-4 h-4 text-purple-500" />
+                  <Database className="w-4 h-4 text-cyan-500" />
                 </div>
                 <div className="text-2xl font-black tracking-tight">
                   {groqData?.summary?.recorded_days || 0}
@@ -568,7 +572,7 @@ export default function Admin() {
             </div>
 
             {/* Groq API Usage Date Filter Control Bar */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-4 rounded-2xl shadow-sm">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-4 rounded-2xl shadow-sm">
               <div className="flex items-center space-x-2">
                 <Calendar className="w-4 h-4 text-blue-500" />
                 <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
@@ -670,20 +674,20 @@ export default function Admin() {
           <div className="space-y-6">
             {/* Header Cards Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-900/40 p-5 rounded-2xl shadow-sm">
+              <div className="bg-cyan-50/50 dark:bg-cyan-950/20 border border-cyan-200 dark:border-cyan-900/40 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
+                  <span className="text-xs font-semibold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider">
                     Total Administrator Accounts
                   </span>
-                  <ShieldCheck className="w-5 h-5 text-purple-500" />
+                  <ShieldCheck className="w-5 h-5 text-cyan-500" />
                 </div>
-                <div className="text-3xl font-black text-purple-600 dark:text-purple-400">
+                <div className="text-3xl font-black text-cyan-600 dark:text-cyan-400">
                   {pagination.admin_count || pagination.total_users || 0}
                 </div>
                 <p className="text-[11px] text-slate-400 mt-1">Users with administrator privileges</p>
               </div>
 
-              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+              <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Active Admin Sessions</span>
                   <CheckCircle2 className="w-5 h-5 text-emerald-500" />
@@ -692,10 +696,10 @@ export default function Admin() {
                 <p className="text-[11px] text-slate-400 mt-1">Current logged-in admin session</p>
               </div>
 
-              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+              <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Security Access Level</span>
-                  <Sparkles className="w-5 h-5 text-indigo-500" />
+                  <Sparkles className="w-5 h-5 text-sky-500" />
                 </div>
                 <div className="text-3xl font-black text-slate-800 dark:text-slate-200">Super Admin</div>
                 <p className="text-[11px] text-slate-400 mt-1">MongoDB & DuckDB system control</p>
@@ -703,7 +707,7 @@ export default function Admin() {
             </div>
 
             {/* Admin Controls & Search Bar */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-4 rounded-2xl shadow-sm">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-4 rounded-2xl shadow-sm">
               <div className="relative w-full sm:w-80">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
@@ -714,14 +718,14 @@ export default function Admin() {
                     fetchUsers(1, pagination.limit, e.target.value, "admin");
                   }}
                   placeholder="Search admin username or email..."
-                  className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                  className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
                 />
               </div>
 
               <div className="flex items-center space-x-3 text-xs w-full sm:w-auto justify-between sm:justify-end">
                 <button
                   onClick={() => setShowCreateModal(!showCreateModal)}
-                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold rounded-xl text-xs flex items-center space-x-2 transition shadow-md shadow-purple-500/20 active:scale-95"
+                  className="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold rounded-xl text-xs flex items-center space-x-2 transition shadow-md shadow-cyan-500/20 active:scale-95"
                 >
                   <ShieldCheck className="w-3.5 h-3.5" />
                   <span>{showCreateModal ? "Cancel" : "+ Add New Admin"}</span>
@@ -756,15 +760,15 @@ export default function Admin() {
 
             {/* Create Admin Form Card (Collapsible) */}
             {showCreateModal && (
-              <form onSubmit={handleCreateAdmin} className="bg-gradient-to-r from-purple-900/10 via-indigo-900/10 to-slate-900/10 dark:from-purple-950/40 dark:to-indigo-950/40 border border-purple-500/30 p-6 rounded-2xl space-y-4 shadow-lg backdrop-blur-md">
-                <div className="flex items-center justify-between border-b border-purple-500/20 pb-3">
+              <form onSubmit={handleCreateAdmin} className="bg-gradient-to-r from-blue-900/10 via-cyan-900/10 to-slate-900/10 dark:from-blue-950/40 dark:to-cyan-950/40 border border-cyan-500/30 p-6 rounded-2xl space-y-4 shadow-lg backdrop-blur-md">
+                <div className="flex items-center justify-between border-b border-cyan-500/20 pb-3">
                   <div className="flex items-center space-x-2">
-                    <ShieldCheck className="w-5 h-5 text-purple-500" />
-                    <h4 className="font-extrabold text-sm text-purple-900 dark:text-purple-200">
+                    <ShieldCheck className="w-5 h-5 text-cyan-500" />
+                    <h4 className="font-extrabold text-sm text-cyan-900 dark:text-cyan-200">
                       Assign New Administrator Account
                     </h4>
                   </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/30">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-600 dark:text-cyan-300 border border-cyan-500/30">
                     Default Password Assisted
                   </span>
                 </div>
@@ -780,7 +784,7 @@ export default function Admin() {
                       value={newAdminEmail}
                       onChange={(e) => setNewAdminEmail(e.target.value)}
                       placeholder="admin2@domain.com"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
                     />
                   </div>
 
@@ -793,7 +797,7 @@ export default function Admin() {
                       value={newAdminUsername}
                       onChange={(e) => setNewAdminUsername(e.target.value)}
                       placeholder="admin_john"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
                     />
                   </div>
 
@@ -807,7 +811,7 @@ export default function Admin() {
                       value={newAdminPassword}
                       onChange={(e) => setNewAdminPassword(e.target.value)}
                       placeholder="Admin@12345"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
                     />
                   </div>
                 </div>
@@ -829,7 +833,7 @@ export default function Admin() {
                     <button
                       type="submit"
                       disabled={creatingAdmin}
-                      className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs flex items-center space-x-2 shadow-md transition disabled:opacity-50"
+                      className="px-5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs flex items-center space-x-2 shadow-md transition disabled:opacity-50"
                     >
                       {creatingAdmin ? (
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -846,15 +850,15 @@ export default function Admin() {
             )}
 
             {/* Admin Table */}
-            <div className="bg-white dark:bg-[#161618] border border-purple-200 dark:border-purple-900/40 rounded-2xl overflow-hidden shadow-sm">
-              <div className="px-5 py-3.5 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/40 dark:to-indigo-950/40 border-b border-purple-200/60 dark:border-purple-800/30 flex items-center justify-between">
+            <div className="bg-white dark:bg-[#161618] border border-cyan-200 dark:border-cyan-900/40 rounded-2xl overflow-hidden shadow-sm">
+              <div className="px-5 py-3.5 bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-950/40 dark:to-blue-950/40 border-b border-cyan-200/60 dark:border-cyan-800/30 flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <ShieldCheck className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                  <h3 className="font-bold text-xs uppercase tracking-wider text-purple-900 dark:text-purple-200">
+                  <ShieldCheck className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+                  <h3 className="font-bold text-xs uppercase tracking-wider text-cyan-900 dark:text-cyan-200">
                     Administrator Accounts Directory
                   </h3>
                 </div>
-                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-purple-200/60 dark:bg-purple-900/60 text-purple-800 dark:text-purple-200">
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-cyan-200/60 dark:bg-cyan-900/60 text-cyan-800 dark:text-cyan-200">
                   {pagination.total_users || 0} Admins Found
                 </span>
               </div>
@@ -881,16 +885,16 @@ export default function Admin() {
                       </tr>
                     ) : (
                       users.map((u) => (
-                        <tr key={u._id} className="hover:bg-purple-50/30 dark:hover:bg-purple-950/10 transition">
+                        <tr key={u._id} className="hover:bg-cyan-50/30 dark:hover:bg-cyan-950/10 transition">
                           <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white flex items-center space-x-2">
-                            <div className="w-7 h-7 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-xs">
+                            <div className="w-7 h-7 rounded-full bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center font-bold text-xs">
                               {u.username?.[0]?.toUpperCase() || "A"}
                             </div>
                             <span>{u.username}</span>
                           </td>
                           <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">{u.email}</td>
                           <td className="py-3.5 px-4">
-                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-800">
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-cyan-100 dark:bg-cyan-950/80 text-cyan-700 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-800">
                               ADMINISTRATOR
                             </span>
                           </td>
@@ -943,14 +947,14 @@ export default function Admin() {
           <div className="space-y-6">
             {/* Header Cards Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-              <div className="bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-900/40 p-5 rounded-2xl shadow-sm">
+              <div className="bg-sky-50/50 dark:bg-sky-950/20 border border-sky-200 dark:border-sky-900/40 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+                  <span className="text-xs font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wider">
                     Total Standard Users
                   </span>
-                  <Users className="w-5 h-5 text-indigo-500" />
+                  <Users className="w-5 h-5 text-sky-500" />
                 </div>
-                <div className="text-3xl font-black text-indigo-600 dark:text-indigo-400">
+                <div className="text-3xl font-black text-sky-600 dark:text-sky-400">
                   {pagination.standard_user_count || pagination.total_users || 0}
                 </div>
                 <p className="text-[11px] text-slate-400 mt-1">Application end-user accounts</p>
@@ -972,7 +976,7 @@ export default function Admin() {
                 <p className="text-[11px] text-slate-400 mt-1">Live active user sessions</p>
               </div>
 
-              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+              <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Verified Accounts</span>
                   <CheckCircle2 className="w-5 h-5 text-emerald-500" />
@@ -983,7 +987,7 @@ export default function Admin() {
                 <p className="text-[11px] text-slate-400 mt-1">OTP verified user emails</p>
               </div>
 
-              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+              <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Database Isolation</span>
                   <Database className="w-5 h-5 text-blue-500" />
@@ -994,7 +998,7 @@ export default function Admin() {
             </div>
 
             {/* User Controls & Search Bar */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-4 rounded-2xl shadow-sm">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-4 rounded-2xl shadow-sm">
               <div className="relative w-full sm:w-80">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
@@ -1005,7 +1009,7 @@ export default function Admin() {
                     fetchUsers(1, pagination.limit, e.target.value, "user");
                   }}
                   placeholder="Search standard user username or email..."
-                  className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                  className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
                 />
               </div>
 
@@ -1036,10 +1040,10 @@ export default function Admin() {
             </div>
 
             {/* Standard User Table */}
-            <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">
+            <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">
               <div className="px-5 py-3.5 bg-slate-50/80 dark:bg-white/[0.03] border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <Users className="w-4 h-4 text-indigo-500" />
+                  <Users className="w-4 h-4 text-sky-500" />
                   <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800 dark:text-slate-200">
                     Standard User Accounts Directory
                   </h3>
@@ -1079,7 +1083,7 @@ export default function Admin() {
                       users.map((u) => (
                         <tr key={u._id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition">
                           <td className="py-3.5 px-4 font-semibold text-slate-800 dark:text-slate-200 flex items-center space-x-2">
-                            <div className="w-7 h-7 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs">
+                            <div className="w-7 h-7 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold text-xs">
                               {u.username?.[0]?.toUpperCase() || "U"}
                             </div>
                             <span>{u.username}</span>
@@ -1141,7 +1145,7 @@ export default function Admin() {
         {/* ── TAB 3: Health Check ───────────────────────────────────────────── */}
         {activeTab === "health" && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+            <div className="flex items-center justify-between bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
               <div className="flex items-center space-x-3">
                 <div className={`w-3 h-3 rounded-full ${
                   healthData?.status === "healthy" ? "bg-emerald-500 animate-pulse" : "bg-rose-500"
@@ -1163,7 +1167,7 @@ export default function Admin() {
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
               {/* MongoDB Diagnostics */}
-              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+              <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
                     <Database className="w-5 h-5 text-emerald-500" />
@@ -1186,7 +1190,7 @@ export default function Admin() {
               </div>
 
               {/* DuckDB Engine Diagnostics */}
-              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+              <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
                     <Cpu className="w-5 h-5 text-blue-500" />
@@ -1209,20 +1213,20 @@ export default function Admin() {
               </div>
 
               {/* Live WebApp Sessions */}
-              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+              <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
-                    <Users className="w-5 h-5 text-indigo-500" />
+                    <Users className="w-5 h-5 text-sky-500" />
                     <h4 className="font-bold text-sm">Active WebApp Sessions</h4>
                   </div>
-                  <span className="px-2 py-0.5 bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold rounded-full border border-indigo-200 dark:border-indigo-800">
+                  <span className="px-2 py-0.5 bg-sky-50 dark:bg-sky-950 text-sky-600 dark:text-sky-400 text-[10px] font-bold rounded-full border border-sky-200 dark:border-sky-800">
                     Live Tracking
                   </span>
                 </div>
                 <div className="space-y-2 text-xs">
                   <div className="flex justify-between py-1 border-b border-slate-100 dark:border-white/5">
                     <span className="text-slate-500">Active Sessions (5m):</span>
-                    <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                    <span className="font-mono font-bold text-sky-600 dark:text-sky-400">
                       {activeSessions?.sessions?.length ?? activeSessions?.total_active_sessions ?? healthData?.active_sessions?.total_active_sessions ?? 0} Live
                     </span>
                   </div>
@@ -1236,15 +1240,15 @@ export default function Admin() {
               </div>
 
               {/* Groq API Configuration */}
-              <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+              <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
-                    <Sparkles className="w-5 h-5 text-purple-500" />
+                    <Sparkles className="w-5 h-5 text-cyan-500" />
                     <h4 className="font-bold text-sm">Groq LLM Service</h4>
                   </div>
                   <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${
                     healthData?.groq_configured
-                      ? "bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800"
+                      ? "bg-cyan-50 dark:bg-cyan-950 text-cyan-600 dark:text-cyan-400 border-cyan-200 dark:border-cyan-800"
                       : "bg-rose-50 dark:bg-rose-950 text-rose-600 border-rose-200"
                   }`}>
                     {healthData?.groq_configured ? "API Key Loaded" : "Key Missing"}
@@ -1264,15 +1268,15 @@ export default function Admin() {
             </div>
 
             {/* Live Active Sessions Table */}
-            <div className="bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">
+            <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">
               <div className="px-5 py-3.5 bg-slate-50/80 dark:bg-white/[0.03] border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <Users className="w-4 h-4 text-indigo-500" />
+                  <Users className="w-4 h-4 text-sky-500" />
                   <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800 dark:text-slate-200">
                     Live Active User Sessions
                   </h3>
                 </div>
-                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
                   {activeSessions?.sessions?.length ?? 1} Active Session(s)
                 </span>
               </div>
@@ -1292,13 +1296,13 @@ export default function Admin() {
                     {(!activeSessions?.sessions || activeSessions.sessions.length === 0) ? (
                       <tr className="hover:bg-slate-50/50 dark:hover:bg-white/[0.01] transition">
                         <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white flex items-center space-x-2">
-                          <div className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-[10px]">
+                          <div className="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 flex items-center justify-center font-bold text-[10px]">
                             A
                           </div>
                           <span>{adminUser?.email || "admin@demo.com"}</span>
                         </td>
                         <td className="py-3.5 px-4">
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300">
                             ADMIN
                           </span>
                         </td>
@@ -1316,8 +1320,8 @@ export default function Admin() {
                           <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white flex items-center space-x-2">
                             <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] ${
                               sess.role === "admin"
-                                ? "bg-purple-500/20 text-purple-600 dark:text-purple-400"
-                                : "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
+                                ? "bg-cyan-500/20 text-cyan-600 dark:text-cyan-400"
+                                : "bg-sky-500/10 text-sky-600 dark:text-sky-400"
                             }`}>
                               {sess.username?.[0]?.toUpperCase() || "U"}
                             </div>
@@ -1326,7 +1330,7 @@ export default function Admin() {
                           <td className="py-3.5 px-4">
                             <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
                               sess.role === "admin"
-                                ? "bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300"
+                                ? "bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300"
                                 : "bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300"
                             }`}>
                               {sess.role}
@@ -1359,7 +1363,7 @@ export default function Admin() {
           <div className="space-y-4">
             
             {/* Filter and Control Bar */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-[#161618] border border-slate-200 dark:border-white/10 p-4 rounded-2xl shadow-sm">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-4 rounded-2xl shadow-sm">
               <div className="flex items-center space-x-3 w-full sm:w-auto">
                 <div className="relative w-full sm:w-72">
                   <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />

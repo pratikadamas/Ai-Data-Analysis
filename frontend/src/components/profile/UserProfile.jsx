@@ -90,11 +90,11 @@ export default function UserProfile() {
       {/* Page Title with Apple badge */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-[#0071e3]/10 to-[#818cf8]/15 text-[#0071e3] dark:text-blue-400 font-bold text-xs mb-2 border border-[#0071e3]/20">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-[#0071e3]/10 to-[#06b6d4]/15 text-[#0071e3] dark:text-cyan-400 font-bold text-xs mb-2 border border-[#0071e3]/20">
             <ShieldCheck className="w-3.5 h-3.5" />
             <span>ACCOUNT SETTINGS</span>
           </div>
-          <h1 className="font-outfit text-3xl font-extrabold tracking-tight bg-gradient-to-r from-[#1d1d1f] via-[#0071e3] to-[#6366f1] dark:from-[#f5f5f7] dark:via-[#38bdf8] dark:to-[#818cf8] bg-clip-text text-transparent">
+          <h1 className="font-outfit text-3xl font-extrabold tracking-tight bg-gradient-to-r from-[#262422] via-[#0071e3] to-[#06b6d4] dark:from-[#f5f5f7] dark:via-[#38bdf8] dark:to-[#06b6d4] bg-clip-text text-transparent">
             User Profile & Security
           </h1>
           <p className="text-xs sm:text-sm text-[#6e6e73] dark:text-[#a1a1a6] mt-1 font-normal">
@@ -106,7 +106,7 @@ export default function UserProfile() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* Profile Detail Card - macOS Window Card */}
-        <div className="md:col-span-1 rounded-2xl bg-white/80 dark:bg-[#1d1d1f]/80 backdrop-blur-2xl border border-black/[0.08] dark:border-white/[0.1] shadow-sm p-6 flex flex-col items-center justify-center text-center relative overflow-hidden">
+        <div className="md:col-span-1 rounded-2xl bg-[#fcfaf5]/85 dark:bg-[#1d1d1f]/80 backdrop-blur-2xl border border-stone-200/80 dark:border-white/[0.1] shadow-sm p-6 flex flex-col items-center justify-center text-center relative overflow-hidden">
           {/* Top macOS Traffic Dots */}
           <div className="w-full flex items-center justify-start gap-1.5 mb-6 opacity-70">
             <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
@@ -123,7 +123,7 @@ export default function UserProfile() {
                 className="w-24 h-24 rounded-full object-cover shadow-[0_8px_20px_rgba(0,0,0,0.12)] border-2 border-[#0071e3]/50"
               />
             ) : (
-              <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#0071e3] to-[#af52de] flex items-center justify-center text-white text-3xl font-extrabold shadow-[0_8px_20px_rgba(0,113,227,0.3)]">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#0071e3] to-[#06b6d4] flex items-center justify-center text-white text-3xl font-extrabold shadow-[0_8px_20px_rgba(0,113,227,0.3)]">
                 {initials}
               </div>
             )}
@@ -188,7 +188,7 @@ export default function UserProfile() {
         </div>
 
         {/* Change Password Card - macOS Window Card */}
-        <div className="md:col-span-2 rounded-2xl bg-white/80 dark:bg-[#1d1d1f]/80 backdrop-blur-2xl border border-black/[0.08] dark:border-white/[0.1] shadow-sm p-6 relative overflow-hidden">
+        <div className="md:col-span-2 rounded-2xl bg-[#fcfaf5]/85 dark:bg-[#1d1d1f]/80 backdrop-blur-2xl border border-stone-200/80 dark:border-white/[0.1] shadow-sm p-6 relative overflow-hidden">
           {/* Top macOS Traffic Dots */}
           <div className="w-full flex items-center justify-between gap-1.5 mb-5 opacity-70">
             <div className="flex items-center gap-1.5">
@@ -202,14 +202,14 @@ export default function UserProfile() {
             </div>
           </div>
 
-          <h3 className="text-lg font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">Update Security Credentials</h3>
+          <h3 className="text-lg font-bold text-[#262422] dark:text-[#f5f5f7] mb-1">Update Security Credentials</h3>
           <p className="text-xs text-[#6e6e73] dark:text-[#a1a1a6] mb-5 font-normal">
             Ensure your account is protected with a strong, distinct password.
           </p>
 
           <form onSubmit={handleChangePasswordSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-[#262422] dark:text-[#f5f5f7] mb-1.5 uppercase tracking-wider">
                 Current Password
               </label>
               <div className="relative">
@@ -219,7 +219,7 @@ export default function UserProfile() {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="Enter current password"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.08] dark:border-white/[0.1] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 text-sm text-[#1d1d1f] dark:text-[#f5f5f7] outline-none transition-all duration-200 pr-10 shadow-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#f8f5ee] dark:bg-white/[0.04] border border-stone-300/60 dark:border-white/[0.1] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 text-sm text-[#262422] dark:text-[#f5f5f7] outline-none transition-all duration-200 pr-10 shadow-sm"
                 />
                 <button
                   type="button"
@@ -231,7 +231,7 @@ export default function UserProfile() {
               </div>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-[#262422] dark:text-[#f5f5f7] mb-1.5 uppercase tracking-wider">
                 New Password
               </label>
               <div className="relative">
@@ -241,7 +241,7 @@ export default function UserProfile() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Enter new password (min. 6 chars)"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.08] dark:border-white/[0.1] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 text-sm text-[#1d1d1f] dark:text-[#f5f5f7] outline-none transition-all duration-200 pr-10 shadow-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#f8f5ee] dark:bg-white/[0.04] border border-stone-300/60 dark:border-white/[0.1] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 text-sm text-[#262422] dark:text-[#f5f5f7] outline-none transition-all duration-200 pr-10 shadow-sm"
                 />
                 <button
                   type="button"
@@ -253,7 +253,7 @@ export default function UserProfile() {
               </div>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-[#262422] dark:text-[#f5f5f7] mb-1.5 uppercase tracking-wider">
                 Confirm New Password
               </label>
               <div className="relative">
@@ -263,7 +263,7 @@ export default function UserProfile() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Verify new password"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.04] border border-black/[0.08] dark:border-white/[0.1] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 text-sm text-[#1d1d1f] dark:text-[#f5f5f7] outline-none transition-all duration-200 pr-10 shadow-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#f8f5ee] dark:bg-white/[0.04] border border-stone-300/60 dark:border-white/[0.1] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 text-sm text-[#262422] dark:text-[#f5f5f7] outline-none transition-all duration-200 pr-10 shadow-sm"
                 />
                 <button
                   type="button"

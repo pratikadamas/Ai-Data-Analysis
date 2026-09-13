@@ -1,6 +1,8 @@
 # Virtual Environments
 .venv/
 backend/.venv/
+.ven/
+backend/.ven/
 
 # Environment Files
 .env

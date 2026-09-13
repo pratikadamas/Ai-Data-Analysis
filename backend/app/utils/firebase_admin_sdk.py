@@ -43,33 +43,53 @@ def verify_firebase_token(id_token: str) -> dict:
     """
     Verify a Firebase ID token and return the decoded claims.
 
+    Supports two verification strategies:
+      1. Firebase Admin SDK (if service account credentials are set in .env).
+      2. Direct Google public certificate verification via google-auth (zero private-key setup required).
+
     Returns a dict with at minimum:
         uid      – Firebase user ID
         email    – verified email address
         name     – display name (may be empty string)
         picture  – profile photo URL (may be empty string)
+        email_verified – bool
 
     Raises:
-        ValueError  – if the token is invalid or credentials are not configured.
+        ValueError  – if the token is invalid or expired.
     """
+    # ── Strategy 1: Firebase Admin SDK (if credentials exist) ────────────────
     _init_firebase()
+    if firebase_admin._apps:
+        try:
+            decoded = firebase_auth.verify_id_token(id_token)
+            return {
+                "uid": decoded.get("uid") or decoded.get("sub", ""),
+                "email": decoded.get("email", ""),
+                "name": decoded.get("name", ""),
+                "picture": decoded.get("picture", ""),
+                "email_verified": decoded.get("email_verified", False),
+            }
+        except Exception as exc:
+            logger.warning("Firebase Admin SDK verify failed, falling back to public cert verification: %s", exc)
 
-    if not firebase_admin._apps:
-        raise ValueError(
-            "Firebase Admin SDK is not initialized. "
-            "Please set FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY in backend/.env"
-        )
-
+    # ── Strategy 2: Google Public Key Token Verification (no service account required) ──
+    project_id = settings.firebase_project_id or "ai-data-analysis-ea825"
     try:
-        decoded = firebase_auth.verify_id_token(id_token)
-    except Exception as exc:
-        logger.warning("Firebase token verification failed: %s", exc)
-        raise ValueError(f"Invalid or expired Firebase ID token: {exc}") from exc
+        from google.oauth2 import id_token as google_id_token
+        from google.auth.transport import requests as google_requests
 
-    return {
-        "uid": decoded.get("uid") or decoded.get("sub", ""),
-        "email": decoded.get("email", ""),
-        "name": decoded.get("name", ""),
-        "picture": decoded.get("picture", ""),
-        "email_verified": decoded.get("email_verified", False),
-    }
+        req = google_requests.Request()
+        decoded = google_id_token.verify_firebase_token(id_token, req, audience=project_id)
+        if not decoded:
+            raise ValueError("Token verification returned empty claims.")
+
+        return {
+            "uid": decoded.get("sub") or decoded.get("uid", ""),
+            "email": decoded.get("email", ""),
+            "name": decoded.get("name", ""),
+            "picture": decoded.get("picture", ""),
+            "email_verified": decoded.get("email_verified", False),
+        }
+    except Exception as exc:
+        logger.error("Failed to verify Firebase ID token: %s", exc)
+        raise ValueError(f"Invalid or expired Google/Firebase ID token: {exc}") from exc

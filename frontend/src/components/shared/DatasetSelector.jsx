@@ -26,11 +26,11 @@ export default function DatasetSelector({ allowAll = false }) {
         <select
           value={activeFileIndex}
           onChange={(e) => setActiveFileIndex(Number(e.target.value))}
-          className="w-full appearance-none rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-1.5 pr-7 text-sm font-medium text-gray-800 dark:text-gray-200 outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all cursor-pointer"
+          className="w-full appearance-none rounded-lg border border-stone-300/70 dark:border-gray-700 bg-[#fcfaf5] dark:bg-gray-900 px-3 py-1.5 pr-7 text-sm font-medium text-[#262422] dark:text-gray-200 outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all cursor-pointer"
         >
           {allowAll && (
             <option value={-1}>
-              🌐 All Datasets (Combined — {files.length} tables)
+              All Datasets (Combined — {files.length} tables)
             </option>
           )}
           {files.map((f, idx) => (

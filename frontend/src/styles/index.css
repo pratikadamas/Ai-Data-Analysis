@@ -9,7 +9,7 @@ body,
 #root {
   height: 100%;
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  @apply bg-[#fbfbfd] text-[#1d1d1f] dark:bg-[#161617] dark:text-[#f5f5f7];
+  @apply bg-[#f7f5f0] text-[#262422] dark:bg-[#161617] dark:text-[#f5f5f7];
 }
 
 .font-kaushan {
@@ -22,7 +22,7 @@ h1, h2, h3, h4, h5, h6 {
 
 @layer utilities {
   .glass-panel {
-    @apply bg-white/80 dark:bg-[#1d1d1f]/85 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.1] shadow-sm;
+    @apply bg-[#fcfaf5]/85 dark:bg-[#1d1d1f]/85 backdrop-blur-xl border border-stone-300/50 dark:border-white/[0.1] shadow-sm;
   }
 }
 
@@ -92,10 +92,10 @@ html {
 
 @layer utilities {
   .macos-window {
-    @apply bg-white/80 dark:bg-[#0c1024]/85 backdrop-blur-2xl border border-black/[0.08] dark:border-white/[0.12] shadow-[0_20px_50px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] rounded-2xl;
+    @apply bg-[#fcfaf5]/90 dark:bg-[#0c1024]/85 backdrop-blur-2xl border border-stone-300/50 dark:border-white/[0.12] shadow-[0_20px_50px_rgba(40,30,20,0.06),0_1px_2px_rgba(40,30,20,0.03)] rounded-2xl;
   }
   .macos-card {
-    @apply bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.08] shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl transition-all duration-300;
+    @apply bg-[#fcfaf5]/85 dark:bg-gray-900/60 backdrop-blur-xl border border-stone-200/80 dark:border-white/[0.08] shadow-[0_8px_30px_rgba(40,30,20,0.04)] rounded-2xl transition-all duration-300;
   }
   .macos-card:hover {
     @apply -translate-y-1.5 shadow-[0_20px_45px_rgba(0,113,227,0.12)] border-[#0071e3]/30 dark:border-blue-500/40;
@@ -114,10 +114,13 @@ html {
     box-shadow: 0 0 25px rgba(0, 113, 227, 0.22);
   }
   .dark .shadow-glow {
-    box-shadow: 0 0 30px rgba(99, 102, 241, 0.35);
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.35);
+  }
+  .shadow-glow-cyan {
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.25);
   }
   .shadow-glow-purple {
-    box-shadow: 0 0 30px rgba(147, 51, 234, 0.22);
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.25);
   }
   .shadow-glow-lg {
     box-shadow: 0 0 50px rgba(0, 113, 227, 0.35);
@@ -138,7 +141,7 @@ html {
     transform: scale(1.06);
   }
   .glassmorphism-deep {
-    @apply bg-white/75 dark:bg-gray-900/70 backdrop-blur-2xl border border-white/60 dark:border-white/10 shadow-xl;
+    @apply bg-[#fdfcf9]/80 dark:bg-gray-900/70 backdrop-blur-2xl border border-stone-200/70 dark:border-white/10 shadow-xl;
   }
   .animate-gradient-x {
     background-size: 200% 200%;
@@ -152,6 +155,24 @@ html {
   .animate-marquee:hover {
     animation-play-state: paused;
   }
+}
+
+/* AG Grid Quartz Theme Cream Light Mode Customization */
+.ag-theme-quartz {
+  --ag-background-color: #fdfcf9;
+  --ag-header-background-color: #f5f1ea;
+  --ag-odd-row-background-color: #faf7f0;
+  --ag-border-color: rgba(0, 0, 0, 0.07);
+  --ag-foreground-color: #262422;
+  --ag-secondary-foreground-color: #78716c;
+}
+.ag-theme-quartz-dark {
+  --ag-background-color: #1c1c1e;
+  --ag-header-background-color: #242426;
+  --ag-odd-row-background-color: #18181a;
+  --ag-border-color: rgba(255, 255, 255, 0.08);
+  --ag-foreground-color: #f5f5f7;
+  --ag-secondary-foreground-color: #a1a1a6;
 }
 
 @keyframes marquee {
@@ -218,11 +239,11 @@ html {
     right: 0;
     z-index: 100;
     height: 60px;
-    border-top: 1px solid rgba(229, 231, 235, 1);
+    border-top: 1px solid rgba(220, 214, 202, 0.8);
     justify-content: space-around;
     align-items: center;
     padding: 0 0.5rem;
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(247, 245, 240, 0.95);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
@@ -264,11 +285,12 @@ html {
     left: 0;
     right: 0;
     z-index: 100;
-    height: 58px;
-    border-top: 1px solid rgba(229, 231, 235, 1);
+    height: calc(58px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    border-top: 1px solid rgba(220, 214, 202, 0.8);
     justify-content: space-around;
     align-items: center;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(247, 245, 240, 0.96);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
