@@ -1,9 +1,9 @@
 <div align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=32&pause=1000&color=3B82F6&center=true&vCenter=true&width=800&lines=AI+Data+Analyst;Your+Intelligent+Data+Assistant" alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=32&pause=1000&color=3B82F6&center=true&vCenter=true&width=800&lines=AI+Data+Analysis;Your+Intelligent+Data+Assistant" alt="Typing SVG" />
 </div>
 
 <div align="center">
-  <h1>✨ AI Data Analyst Application✨</h1>
+  <h1>✨ AI Data Analysis Application✨</h1>
   <p><i>Your intelligent, conversational data analysis assistant.</i></p>
 
   <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" alt="FastAPI" />
@@ -43,7 +43,7 @@
 ## 📁 Project Layout
 
 ```text
-ai-data-analyst/
+ai-data-analysis/
   backend/                  ⚙️ FastAPI + DuckDB service
     app/
       api/routes/           🌐 upload, explore, chat, dataset, sql_editor, auth, admin endpoints
@@ -383,5 +383,5 @@ Enable hands-free data analysis by allowing users to speak their questions direc
    - Auto-stops on silence detection and automatically triggers the analytical query.
 
 <div align="center">
-  <i>Built with ❤️ for data analysts everywhere! Happy Querying! 📊✨</i>
+  <i>Built with ❤️ for data analysis everywhere! Happy Querying! 📊✨</i>
 </div>

@@ -32,7 +32,7 @@ httpx.Client.__init__ = _patched_httpx_client_init
 # llama-3.3-70b-versatile is Groq's most capable general-purpose model.
 _GROQ_MODEL = "llama-3.3-70b-versatile"
 
-_SQL_SYSTEM_PROMPT = """You are a SQL generation assistant for a data analyst tool.
+_SQL_SYSTEM_PROMPT = """You are a SQL generation assistant for an AI Data Analysis tool.
 You will be given a table schema and a natural-language question.
 
 Rules:
@@ -45,7 +45,7 @@ Rules:
 - Return ONLY raw SQL, no markdown fences, no commentary.
 """
 
-_EXPLAIN_SYSTEM_PROMPT = """You are a data analyst explaining query results to a
+_EXPLAIN_SYSTEM_PROMPT = """You are an AI Data Analysis assistant explaining query results to a
 non-technical business user. Given the user's question and the resulting rows,
 write a short, plain-English answer (1-3 sentences). Do not mention SQL.
 Do not mention your model name (e.g. Llama) or that you are an AI.
@@ -129,7 +129,7 @@ class LLMService:
             "good evening": "Good evening! Let me know what data questions you have.",
             "how are you": "I'm doing great, thank you! How can I assist you with your data today?",
             "how r u": "I'm doing well! How can I help you with your dataset?",
-            "who are you": "I am your AI Data Analyst. I can query your data, summarize metrics, generate tables, and create charts for you!",
+            "who are you": "I am your AI Data Analysis assistant. I can query your data, summarize metrics, generate tables, and create charts for you!",
             "what can you do": "You can ask me questions about your uploaded dataset in natural language, and I'll generate SQL queries, fetch results, and build charts for you!",
             "thanks": "You're very welcome! Let me know if you have any more questions about your data.",
             "thank you": "You're welcome! Happy to help with your data analysis.",
@@ -161,7 +161,7 @@ class LLMService:
                     {
                         "role": "system",
                         "content": (
-                            "You are an intent classifier for an AI Data Analyst app.\n"
+                            "You are an intent classifier for an AI Data Analysis app.\n"
                             "Categorize the user prompt into ONE of:\n"
                             "- GREETING: greetings, compliments, small talk, or polite conversation.\n"
                             "- DATA_QUERY: questions asking about data, numbers, statistics, columns, rows, trends, aggregations, or filters.\n"

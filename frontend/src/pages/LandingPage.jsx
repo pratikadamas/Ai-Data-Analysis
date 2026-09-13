@@ -199,7 +199,7 @@ const testimonials = [
     avatar: "MC"
   },
   {
-    quote: "DuckDB under the hood makes sub-second queries feel like magic. It feels like an AI copilot built specifically for analysts and founders.",
+    quote: "DuckDB under the hood makes sub-second queries feel like magic. It feels like an AI copilot built specifically for data analysis and founders.",
     author: "Sarah Jenkins",
     role: "Growth Director",
     company: "SaaS Matrix",
@@ -1514,7 +1514,7 @@ export default function LandingPage() {
               </span>
             </h2>
             <p className="text-lg text-[#6e6e73] dark:text-[#a1a1a6]">
-              Real feedback from data analysts, engineers, and product teams.
+              Real feedback from data analysis teams, engineers, and product teams.
             </p>
           </motion.div>
 
@@ -1610,7 +1610,7 @@ export default function LandingPage() {
                 </span>
               </h2>
               <p className="text-lg text-stone-600 dark:text-[#a1a1a6] mb-8 leading-relaxed font-normal">
-                Join data teams and analysts turning static files into interactive SQL intelligence and visualizations.
+                Join data teams turning static files into interactive AI Data Analysis and visualizations.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Link

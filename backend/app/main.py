@@ -18,7 +18,7 @@ if memory_log_handler not in root_logger.handlers:
     root_logger.addHandler(memory_log_handler)
 
 app = FastAPI(
-    title="AI Data Analyst API",
+    title="AI Data Analysis API",
     description="Upload structured data and analyze it with natural language.",
     version="0.1.0",
 )
