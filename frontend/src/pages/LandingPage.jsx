@@ -258,6 +258,22 @@ export default function LandingPage() {
   const [isDemoHovered, setIsDemoHovered] = useState(false);
   const [copiedSql, setCopiedSql] = useState(false);
   const [cardView, setCardView] = useState("visual"); // 'visual' | 'sql'
+  
+  const heroImages = [
+    { src: "/assets/hero1.webp", alt: "AI Data Analysis 3D Dashboard" },
+    { src: "/assets/hero2.webp", alt: "AI Data Analysis Conversational Engine" },
+  ];
+  const [heroSlide, setHeroSlide] = useState(0);
+  const [isHeroHovered, setIsHeroHovered] = useState(false);
+
+  // Auto-playing Hero Carousel motion (3s timer, pauses on hover)
+  useEffect(() => {
+    if (isHeroHovered) return;
+    const timer = setInterval(() => {
+      setHeroSlide((prev) => (prev + 1) % heroImages.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [isHeroHovered]);
 
   const handleCopySql = (sqlText) => {
     if (navigator?.clipboard?.writeText) {
@@ -578,92 +594,147 @@ export default function LandingPage() {
       <section className="relative pt-40 pb-20 lg:pt-48 lg:pb-28 overflow-hidden z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="text-center max-w-4xl mx-auto mb-16">
+          {/* Split 2-Column Hero Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center mb-16 lg:mb-20">
             
-            {/* macOS Pill Badge */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="inline-flex items-center gap-2.5 mb-8 px-4 py-1.5 rounded-full border border-stone-200/80 dark:border-white/[0.12] bg-[#fcfaf5]/85 dark:bg-[#1d1d1f]/85 shadow-[0_2px_12px_rgba(0,0,0,0.04)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.3)] backdrop-blur-xl hover:border-stone-300 dark:hover:border-white/[0.2] transition-all duration-300 cursor-default"
-            >
-              <div className="w-5 h-5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-[#0071e3] dark:text-blue-400 flex items-center justify-center">
-                <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+            {/* Left Column: Headlines, CTAs & Trust Badges */}
+            <div className="lg:col-span-7 text-center lg:text-left">
+              
+              {/* macOS Pill Badge */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                className="inline-flex items-center gap-2.5 mb-6 px-4 py-1.5 rounded-full border border-stone-200/80 dark:border-white/[0.12] bg-[#fcfaf5]/85 dark:bg-[#1d1d1f]/85 shadow-[0_2px_12px_rgba(0,0,0,0.04)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.3)] backdrop-blur-xl hover:border-stone-300 dark:hover:border-white/[0.2] transition-all duration-300 cursor-default"
+              >
+                <div className="w-5 h-5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-[#0071e3] dark:text-blue-400 flex items-center justify-center">
+                  <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+                </div>
+                <span className="text-xs sm:text-sm font-medium text-[#262422] dark:text-[#f5f5f7]">
+                  Next-Gen Conversational Data Intelligence
+                </span>
+              </motion.div>
+
+              {/* Main Headline */}
+              <motion.h1 
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-[3.65rem] xl:text-[4.2rem] tracking-tight mb-6 leading-[1.12] text-[#262422] dark:text-[#f5f5f7]"
+              >
+                <span className="font-kaushan tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] dark:from-blue-400 dark:via-sky-300 dark:to-cyan-300">
+                  Talk to Your Data.
+                </span>
+                <br />
+                <span className="font-kaushan tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-[#06b6d4] via-[#0284c7] to-[#0071e3] dark:from-cyan-300 dark:via-sky-400 dark:to-blue-400">
+                  Get Instant Visuals.
+                </span>
+              </motion.h1>
+
+              {/* Sub-headline */}
+              <motion.p 
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                className="text-base sm:text-lg md:text-xl text-[#6e6e73] dark:text-[#a1a1a6] max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-8 font-normal"
+              >
+                Upload any spreadsheet, SQLite, or SQL file and ask questions naturally. 
+                <strong className="text-[#262422] dark:text-[#f5f5f7] font-semibold"> AI Data Analysis</strong> turns natural language into high-speed DuckDB SQL, interactive Plotly charts, and business intelligence in seconds.
+              </motion.p>
+
+              {/* CTAs */}
+              <motion.div 
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="flex flex-col sm:flex-row justify-center lg:justify-start items-center gap-4 sm:gap-5"
+              >
+                <Link 
+                  to="/register" 
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-full font-medium text-base text-white bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_6px_20px_rgba(0,113,227,0.35)] flex items-center justify-center gap-2 group transition-all duration-300"
+                >
+                  Start Analyzing Free <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <a 
+                  href="#demo" 
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-full font-medium text-base text-[#262422] dark:text-[#f5f5f7] bg-[#fcfaf5]/90 dark:bg-[#1d1d1f]/90 border border-stone-200/80 dark:border-white/[0.1] hover:bg-[#f3ede3] dark:hover:bg-[#252528] flex items-center justify-center gap-2 shadow-[0_2px_8px_rgba(0,0,0,0.04)] backdrop-blur-md transition-all duration-300"
+                >
+                  Explore Live Demo <ChevronRight className="w-4 h-4 text-[#86868b]" />
+                </a>
+              </motion.div>
+
+              {/* Trust badges */}
+              <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-5 text-xs font-medium text-[#6e6e73] dark:text-[#a1a1a6]">
+                <span className="group flex items-center gap-2 cursor-default hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors duration-200">
+                  <div className="p-1 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/60 transition-colors duration-200">
+                    <Check className="w-3.5 h-3.5" />
+                  </div> 
+                  <span>No SQL required</span>
+                </span>
+                <span className="group flex items-center gap-2 cursor-default hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors duration-200">
+                  <div className="p-1 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/60 transition-colors duration-200">
+                    <Check className="w-3.5 h-3.5" />
+                  </div>
+                  <span>100% In-Memory Privacy</span>
+                </span>
+                <span className="group flex items-center gap-2 cursor-default hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors duration-200">
+                  <div className="p-1 rounded-md bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 group-hover:bg-cyan-100 dark:group-hover:bg-cyan-900/60 transition-colors duration-200">
+                    <Check className="w-3.5 h-3.5" />
+                  </div>
+                  <span>Free to explore</span>
+                </span>
               </div>
-              <span className="text-xs sm:text-sm font-medium text-[#262422] dark:text-[#f5f5f7]">
-                Next-Gen Conversational Data Intelligence
-              </span>
-            </motion.div>
-
-            {/* Main Headline */}
-            <motion.h1 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight mb-8 leading-[1.12] text-[#262422] dark:text-[#f5f5f7]"
-            >
-              <span className="font-kaushan tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] dark:from-blue-400 dark:via-sky-300 dark:to-cyan-300">
-                Talk to Your Data.
-              </span>
-              <br />
-              <span className="font-kaushan tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-[#06b6d4] via-[#0284c7] to-[#0071e3] dark:from-cyan-300 dark:via-sky-400 dark:to-blue-400">
-                Get Instant Visuals.
-              </span>
-            </motion.h1>
-
-            {/* Sub-headline */}
-            <motion.p 
-              initial={{ opacity: 0, y: 25 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="text-lg sm:text-xl md:text-2xl text-[#6e6e73] dark:text-[#a1a1a6] max-w-3xl mx-auto leading-relaxed mb-10 font-normal"
-            >
-              Upload any spreadsheet, SQLite, or SQL file and ask questions naturally. 
-              <strong className="text-[#262422] dark:text-[#f5f5f7] font-semibold"> AI Data Analysis</strong> turns natural language into high-speed DuckDB SQL, interactive Plotly charts, and business intelligence in seconds.
-            </motion.p>
-
-            {/* CTAs */}
-            <motion.div 
-              initial={{ opacity: 0, y: 25 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-5"
-            >
-              <Link 
-                to="/register" 
-                className="w-full sm:w-auto px-8 py-3.5 rounded-full font-medium text-base text-white bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_6px_20px_rgba(0,113,227,0.35)] flex items-center justify-center gap-2 group transition-all duration-300"
-              >
-                Start Analyzing Free <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <a 
-                href="#demo" 
-                className="w-full sm:w-auto px-8 py-3.5 rounded-full font-medium text-base text-[#262422] dark:text-[#f5f5f7] bg-[#fcfaf5]/90 dark:bg-[#1d1d1f]/90 border border-stone-200/80 dark:border-white/[0.1] hover:bg-[#f3ede3] dark:hover:bg-[#252528] flex items-center justify-center gap-2 shadow-[0_2px_8px_rgba(0,0,0,0.04)] backdrop-blur-md transition-all duration-300"
-              >
-                Explore Live Demo <ChevronRight className="w-4 h-4 text-[#86868b]" />
-              </a>
-            </motion.div>
-
-            {/* Trust badge with point text hover */}
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-xs font-medium text-[#6e6e73] dark:text-[#a1a1a6]">
-              <span className="group flex items-center gap-2 cursor-default hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors duration-200">
-                <div className="p-1 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/60 transition-colors duration-200">
-                  <Check className="w-3.5 h-3.5" />
-                </div> 
-                <span>No SQL knowledge required</span>
-              </span>
-              <span className="group flex items-center gap-2 cursor-default hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors duration-200">
-                <div className="p-1 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/60 transition-colors duration-200">
-                  <Check className="w-3.5 h-3.5" />
-                </div>
-                <span>100% In-Memory Privacy</span>
-              </span>
-              <span className="hidden sm:flex group items-center gap-2 cursor-default hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors duration-200">
-                <div className="p-1 rounded-md bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 group-hover:bg-cyan-100 dark:group-hover:bg-cyan-900/60 transition-colors duration-200">
-                  <Check className="w-3.5 h-3.5" />
-                </div>
-                <span>Free to explore</span>
-              </span>
             </div>
+
+            {/* Right Column: Pure Images in Carousel Motion (No Texts, No Box Background) */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.85, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="lg:col-span-5 flex flex-col items-center justify-center relative select-none"
+              onMouseEnter={() => setIsHeroHovered(true)}
+              onMouseLeave={() => setIsHeroHovered(false)}
+            >
+              {/* Carousel Container */}
+              <div 
+                className="relative w-full max-w-[460px] lg:max-w-[500px] min-h-[280px] sm:min-h-[340px] flex items-center justify-center cursor-pointer"
+                onClick={() => setHeroSlide((prev) => (prev + 1) % heroImages.length)}
+                title="Click to next slide"
+              >
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={heroSlide}
+                    src={heroImages[heroSlide].src}
+                    alt={heroImages[heroSlide].alt}
+                    initial={{ opacity: 0, x: 24, scale: 0.97 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    exit={{ opacity: 0, x: -24, scale: 0.97 }}
+                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                    className="w-full max-w-[420px] lg:max-w-[480px] h-auto object-contain drop-shadow-[0_16px_36px_rgba(0,0,0,0.08)] dark:drop-shadow-[0_16px_36px_rgba(0,0,0,0.4)] hover:scale-[1.02] transition-transform duration-300"
+                  />
+                </AnimatePresence>
+              </div>
+
+              {/* Minimalist Carousel Dots (pure dots, no text) */}
+              <div className="flex items-center gap-2 mt-4">
+                {heroImages.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setHeroSlide(idx);
+                    }}
+                    aria-label={`Slide ${idx + 1}`}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      heroSlide === idx 
+                        ? "w-7 bg-[#0071e3] dark:bg-blue-400" 
+                        : "w-2 bg-stone-300 dark:bg-stone-700 hover:bg-stone-400"
+                    }`}
+                  />
+                ))}
+              </div>
+            </motion.div>
           </div>
 
           {/* macOS Window App Studio Mockup */}
