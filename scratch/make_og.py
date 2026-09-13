@@ -28,8 +28,8 @@ try:
     draw.text((140, 200), "Talk to Your Data. Get Instant Visuals.", fill='#ffffff')
     draw.text((140, 260), "Upload CSV, Excel, SQLite, or SQL files for conversational analytics.", fill='#a1a1a6')
     
-    out_png = r'e:\ai-data-analyst\frontend\public\og-image.png'
-    out_jpg = r'e:\ai-data-analyst\frontend\public\og-image.jpg'
+    out_png = r'd:\Projects\Ai-Data-Analysis\frontend\public\og-image.png'
+    out_jpg = r'd:\Projects\Ai-Data-Analysis\frontend\public\og-image.jpg'
     
     rgb_img = img.convert('RGB')
     rgb_img.save(out_png)
@@ -38,8 +38,8 @@ try:
 except Exception as e:
     print("PIL Error:", e)
     # Fallback using raw BMP header to PNG convert or simple image
-    out_png = r'e:\ai-data-analyst\frontend\public\og-image.png'
-    out_jpg = r'e:\ai-data-analyst\frontend\public\og-image.jpg'
+    out_png = r'd:\Projects\Ai-Data-Analysis\frontend\public\og-image.png'
+    out_jpg = r'd:\Projects\Ai-Data-Analysis\frontend\public\og-image.jpg'
     # Create simple binary image or fallback
     with open(out_png, 'wb') as f:
         f.write(b'PNG_FALLBACK')

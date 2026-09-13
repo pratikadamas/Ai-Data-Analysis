@@ -38,7 +38,7 @@ Render is ideal for the backend because it provides a persistent Web Service tha
    - **Start Command:** `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 5. Click **Advanced** and add **all** of the Environment Variables from your `.env` file (MongoDB URI, Groq API Key, Mail settings).
 6. Click **Create Web Service**.
-7. Save the provided live URL (e.g., `https://ai-data-analyst-backend.onrender.com`).
+7. Save the provided live URL (e.g., `https://ai-data-analysis-backend.onrender.com`).
 
 ### 2. Frontend (Vercel)
 
@@ -60,7 +60,7 @@ When deploying the frontend to Vercel, Firebase will block Google Sign-In popup 
 3. In the left navigation, click **Build** $\rightarrow$ **Authentication**.
 4. Go to the **Settings** tab $\rightarrow$ **Authorized domains**.
 5. Click **Add domain** and enter your Vercel domain:
-   - `ai-data-analyst-web-version.vercel.app` (and any custom domain you use).
+   - `ai-data-analysis-web-version.vercel.app` (and any custom domain you use).
 6. Click **Save**.
 
 > [!TIP]

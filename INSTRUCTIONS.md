@@ -1,10 +1,10 @@
 <div align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=28&pause=1000&color=3B82F6&center=true&vCenter=true&width=800&lines=AI+Data+Analyst;Codebase+%26+Environment+Guide;Master+Your+Application" alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=28&pause=1000&color=3B82F6&center=true&vCenter=true&width=800&lines=AI+Data+Analysis;Codebase+%26+Environment+Guide;Master+Your+Application" alt="Typing SVG" />
 </div>
 
 # 📘 Project Instructions & Codebase Guide
 
-Welcome to the inner workings of the **AI Data Analyst**! This document explains the working principles of the individual files that power this application, and details the critical role of the environment (`.env`) file.
+Welcome to the inner workings of **AI Data Analysis**! This document explains the working principles of the individual files that power this application, and details the critical role of the environment (`.env`) file.
 
 ---
 
@@ -36,7 +36,7 @@ Here is exactly how to get all the required keys for your `.env` file to get the
 1. Go to the [Groq Console](https://console.groq.com/) and sign in.
 2. On the left sidebar, click on **"API Keys"**.
 3. Click the **"Create API Key"** button.
-4. Give it a name (like `AI_Data_Analyst`) and hit Submit.
+4. Give it a name (like `AI_Data_Analysis`) and hit Submit.
 5. Copy the generated key (it usually starts with `gsk_`). **Note:** You can only view this key once!
 6. Paste it into your `.env` file.
 
@@ -49,7 +49,7 @@ Here is exactly how to get all the required keys for your `.env` file to get the
 1. Go to your [Google Account Security Page](https://myaccount.google.com/security).
 2. Ensure **"2-Step Verification"** is turned **ON**.
 3. In the search bar at the top, search for **"App passwords"** (or click into 2-Step Verification and scroll to the bottom).
-4. For the app name, type a custom name like `AI Data Analyst` and click **"Generate"**.
+4. For the app name, type a custom name like `AI Data Analysis` and click **"Generate"**.
 5. Google will give you a 16-character password in a yellow box (e.g., `abcd efgh ijkl mnop`).
 6. Copy this password, remove the spaces (`abcdefghijklmnop`), and paste it into your `.env` file as `MAIL_PASSWORD`.
 7. Put your actual Gmail address as the `MAIL_USERNAME` and `MAIL_FROM`.

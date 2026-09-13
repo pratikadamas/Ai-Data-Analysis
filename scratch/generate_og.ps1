@@ -36,8 +36,8 @@ $g.FillRectangle($pillBrush, 130, 360, 480, 54)
 $fontPill = New-Object System.Drawing.Font('Segoe UI', 18, [System.Drawing.FontStyle]::Bold)
 $g.DrawString('https://ai-data-analysis-five.vercel.app/', $fontPill, $titleBrush, 150, 372)
 
-$outPng = 'e:\ai-data-analyst\frontend\public\og-image.png'
-$outJpg = 'e:\ai-data-analyst\frontend\public\og-image.jpg'
+$outPng = 'd:\Projects\Ai-Data-Analysis\frontend\public\og-image.png'
+$outJpg = 'd:\Projects\Ai-Data-Analysis\frontend\public\og-image.jpg'
 
 $bmp.Save($outPng, [System.Drawing.Imaging.ImageFormat]::Png)
 $bmp.Save($outJpg, [System.Drawing.Imaging.ImageFormat]::Jpeg)

@@ -4,7 +4,7 @@
 
 # 🏗️ System Architecture
 
-This document describes the high-level architecture of the **AI Data Analyst** application.
+This document describes the high-level architecture of the **AI Data Analysis** application.
 
 ## 🌐 Overview
 

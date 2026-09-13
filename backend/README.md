@@ -2,9 +2,9 @@
   <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=28&pause=1000&color=10B981&center=true&vCenter=true&width=800&lines=Backend+Engine;FastAPI+%2B+DuckDB" alt="Typing SVG" />
 </div>
 
-# ⚙️ AI Data Analyst - Backend
+# ⚙️ AI Data Analysis - Backend
 
-This is the Python (FastAPI) backend for the AI Data Analyst application. It handles file uploads, in-memory DuckDB query execution, and intelligent SQL generation powered by Groq (Llama 3.3).
+This is the Python (FastAPI) backend for the AI Data Analysis application. It handles file uploads, in-memory DuckDB query execution, and intelligent SQL generation powered by Groq (Llama 3.3).
 
 ## 🗂️ Directory Structure
 

@@ -24,13 +24,13 @@ def _get_ipv4_host(host: str, port: int) -> str:
 
 def send_otp_email(to_email: str, username: str, otp: str, purpose: str = "registration") -> bool:
     """Send an OTP email to the user using SMTP. Fallbacks to IPv4 and SSL if primary connection fails."""
-    subject = f"AI Data Analyst - OTP for {purpose.capitalize()}"
+    subject = f"AI Data Analysis - OTP for {purpose.capitalize()}"
     
     html_content = f"""
     <html>
       <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; margin: 0;">
         <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eef2f6;">
-          <h2 style="color: #3366ff; margin-top: 0;">AI Data Analyst Portal</h2>
+          <h2 style="color: #3366ff; margin-top: 0;">AI Data Analysis Portal</h2>
           <p style="color: #4b5563; font-size: 16px;">Hello <strong>{username}</strong>,</p>
           <p style="color: #4b5563; font-size: 16px;">You requested an OTP verification for <strong>{purpose}</strong>.</p>
           <div style="text-align: center; margin: 30px 0;">
@@ -40,7 +40,7 @@ def send_otp_email(to_email: str, username: str, otp: str, purpose: str = "regis
           </div>
           <p style="color: #6b7280; font-size: 14px;">This code will expire in 15 minutes. If you did not request this code, please ignore this email.</p>
           <hr style="border: 0; border-top: 1px solid #eef2f6; margin: 20px 0;" />
-          <p style="color: #9ca3af; font-size: 12px; text-align: center;">AI Data Analyst Team</p>
+          <p style="color: #9ca3af; font-size: 12px; text-align: center;">AI Data Analysis Team</p>
         </div>
       </body>
     </html>
