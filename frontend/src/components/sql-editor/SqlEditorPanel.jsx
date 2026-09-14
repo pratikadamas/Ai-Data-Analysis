@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useDataset } from "../../context/DatasetContext.jsx";
 import { runSqlQuery } from "../../services/api.js";
 import ResultTable from "../charts/ResultTable.jsx";
+import { TableSkeleton } from "../shared/CardSkeleton.jsx";
+import { useNetworkStatus } from "../../hooks/useNetworkStatus.js";
 import { toast } from "react-toastify";
 import {
   Play,
@@ -13,6 +15,7 @@ import {
   FileText,
   ChevronDown,
   ChevronRight,
+  CloudRain,
 } from "lucide-react";
 
 const EXAMPLE_QUERIES = [
@@ -23,6 +26,7 @@ const EXAMPLE_QUERIES = [
 
 export default function SqlEditorPanel() {
   const { dataset } = useDataset();
+  const { isSlowNetwork } = useNetworkStatus();
   const [sql, setSql] = useState("");
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -299,6 +303,23 @@ export default function SqlEditorPanel() {
               <p className="text-xs font-semibold mb-0.5">Query Error</p>
               <p className="text-xs font-mono opacity-90">{error}</p>
             </div>
+          </div>
+        )}
+
+        {/* Loading Skeleton during query execution */}
+        {loading && (
+          <div className="space-y-2">
+            {isSlowNetwork && (
+              <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-800 dark:text-amber-200 text-xs font-semibold animate-fade-in">
+                <CloudRain size={14} className="text-amber-600 dark:text-amber-400 shrink-0 animate-pulse" />
+                <span>Low network connection — query executing in DuckDB background engine…</span>
+              </div>
+            )}
+            <TableSkeleton
+              rowsCount={6}
+              title="Executing SQL Query…"
+              message="Processing query rows in background…"
+            />
           </div>
         )}
 

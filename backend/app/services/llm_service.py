@@ -4,9 +4,12 @@ and plain-English explanation of results.
 from __future__ import annotations
 
 import json
+import logging
 import re
 
 import httpx
+
+logger = logging.getLogger(__name__)
 
 # pyrefly: ignore [missing-import]
 from groq import Groq

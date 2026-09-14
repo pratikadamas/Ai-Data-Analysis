@@ -5,14 +5,17 @@ import ResultChart from "../charts/ResultChart.jsx";
 import ResultTable from "../charts/ResultTable.jsx";
 import SqlViewer from "../charts/SqlViewer.jsx";
 import DownloadButtons from "../charts/DownloadButtons.jsx";
+import { ChartSkeleton } from "../shared/CardSkeleton.jsx";
+import { useNetworkStatus } from "../../hooks/useNetworkStatus.js";
 import { toast } from "react-toastify";
-import { LineChart, Database } from "lucide-react";
+import { LineChart, Database, CloudRain } from "lucide-react";
 
 const CHART_TYPES = ["bar", "line", "pie", "scatter", "histogram", "box", "area"];
 const AGGREGATIONS = ["none", "sum", "avg", "count", "min", "max"];
 
 export default function ExplorePanel() {
   const { dataset } = useDataset();
+  const { isSlowNetwork } = useNetworkStatus();
   const [selectedFileIndex, setSelectedFileIndex] = useState(0);
   const [xColumn, setXColumn] = useState("");
   const [yColumn, setYColumn] = useState("");
@@ -156,6 +159,26 @@ export default function ExplorePanel() {
           </button>
         </div>
       </div>
+
+      {/* Loading Skeleton during query / rendering or low network */}
+      {loading && (
+        <div className="space-y-2">
+          {isSlowNetwork && (
+            <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-800 dark:text-amber-200 text-xs font-semibold animate-fade-in">
+              <CloudRain size={14} className="text-amber-600 dark:text-amber-400 shrink-0 animate-pulse" />
+              <span>Low network connection detected — running aggregations in background…</span>
+            </div>
+          )}
+          <ChartSkeleton 
+            title={`Generating ${chartType.toUpperCase()} Chart…`} 
+            message={
+              yColumn 
+                ? `Calculating ${aggregation.toUpperCase()}(${yColumn}) grouped by ${xColumn} in DuckDB` 
+                : `Computing distribution of ${xColumn} in background`
+            } 
+          />
+        </div>
+      )}
 
       {result && (
         <div className="space-y-3">

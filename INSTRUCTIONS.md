@@ -58,6 +58,22 @@ Here is exactly how to get all the required keys for your `.env` file to get the
 > `MAIL_USERNAME=your.email@gmail.com`  
 > `MAIL_PASSWORD=abcdefghijklmnop`
 
+#### 4. 🔥 Firebase Google OAuth Setup (`VITE_FIREBASE_*`)
+
+*Firebase handles 1-click Google Sign-In with zero client-side private keys.*
+
+1. Go to the [Firebase Console](https://console.firebase.google.com/) and create or select a project.
+2. In the left sidebar under **Build**, open **Authentication** and enable the **Google** provider.
+3. Open **Project Settings $\rightarrow$ General** and find your Web App configuration.
+4. Copy the keys to `frontend/.env`:
+   - `VITE_FIREBASE_API_KEY`
+   - `VITE_FIREBASE_AUTH_DOMAIN`
+   - `VITE_FIREBASE_PROJECT_ID`
+   - `VITE_FIREBASE_STORAGE_BUCKET`
+   - `VITE_FIREBASE_MESSAGING_SENDER_ID`
+   - `VITE_FIREBASE_APP_ID`
+5. Under **Authentication $\rightarrow$ Settings $\rightarrow$ Authorized domains**, ensure `localhost`, `127.0.0.1`, and your deployed Vercel domain are listed.
+
 ---
 
 ## 🗂️ Working Principle of Key Files
@@ -71,32 +87,44 @@ Here is exactly how to get all the required keys for your `.env` file to get the
 - **`backend/app/db/mongodb.py`** 🗄️
   - *The Database Connector.* Establishes the connection to MongoDB using `pymongo` and sets up TTL (Time-To-Live) indexes so OTP codes automatically expire after 10 minutes.
 - **`backend/app/api/routes/auth.py`** 🛡️
-  - *The Gatekeeper.* Handles user registration, OTP verification, login (JWT token generation), and password resets.
+  - *The Gatekeeper.* Handles user registration, OTP verification, login (JWT token generation), password resets, and the `/api/auth/google` verification flow.
+- **`backend/app/api/routes/admin.py`** 📊
+  - *The Control Center.* Serves admin diagnostics, Groq API usage stats with date range filtering, user management tables, and active session telemetry.
 - **`backend/app/api/routes/chat.py`** 💬
   - *The Conversational Engine.* Receives chat messages, delegates SQL generation to the LLM, validates the SQL, executes it against DuckDB, and returns the data and chart configuration to the user.
 - **`backend/app/services/llm_service.py`** 🧠
   - *The AI Whisperer.* Constructs the specialized system prompts, injects the dataset schema, and calls the Groq API to generate accurate SQL queries.
 - **`backend/app/services/file_loader.py`** 📂
   - *The Data Engine.* Loads uploaded CSV or Excel files straight into DuckDB's fast, in-memory analytical engine.
+- **`backend/app/utils/firebase_admin_sdk.py`** 🔥
+  - *The Token Verifier.* Dual-strategy token verifier: validates Google/Firebase OAuth ID tokens via Firebase Admin SDK or direct Google public cert verification.
+- **`backend/app/utils/session_tracker.py`** ⏱️
+  - *The Live Monitor.* Thread-safe tracker recording active user requests, roles, online presence, and idle timeouts.
 - **`backend/app/utils/mail.py`** ✉️
   - *The Mailman.* Uses SMTP to format and send HTML-styled verification emails containing OTPs.
 
 ### 🎨 Frontend (React + Vite + Tailwind)
 
 - **`frontend/src/main.jsx` & `App.jsx`** ⚛️
-  - *The Web Roots.* Mounts the React application to the DOM and sets up the global routing and context providers.
+  - *The Web Roots.* Mounts the React application to the DOM, initializes theme persistence, and sets up global routing and context providers.
 - **`frontend/src/pages/Dashboard.jsx`** 🎛️
   - *The Command Center.* The main user interface where the Sidebar, Upload Area, Chat Panel, and Charts all come together.
+- **`frontend/src/components/AnimatedThemeToggler.tsx` & `ThemeToggle.jsx`** 🌓
+  - *The Motion Theme Switcher.* View Transitions API implementation supporting 7 geometry transition shapes (`circle`, `square`, `triangle`, `diamond`, `hexagon`, `rectangle`, `star`) expanding from the click origin.
+- **`frontend/src/components/shared/CardSkeleton.jsx`** ⏳
+  - *The Skeleton Loading System.* Glassmorphic skeleton cards and shimmers providing smooth visual feedback during data queries and low network connections.
+- **`frontend/src/components/shared/NetworkStatusBadge.jsx` & `useNetworkStatus.js`** 📶
+  - *The Network Diagnostic HUD.* Periodically measures round-trip latency to the backend API, monitors online/offline status, and displays real-time connection badges.
 - **`frontend/src/components/chat/ChatPanel.jsx`** 💬
   - *The User Interface.* Renders the chat bubbles, handles user input, displays typing indicators, and manages the conversation history state.
 - **`frontend/src/components/charts/PlotlyChart.jsx`** 📊
   - *The Visualizer.* Takes the JSON data and layout configurations returned by the backend and renders beautiful, interactive graphs using Plotly.js.
 - **`frontend/src/context/UserContext.jsx`** 🔐
-  - *The State Manager.* Globally manages user authentication, stores JWT tokens, manages profile avatar state, and handles session expiration and logouts across the application.
+  - *The State Manager.* Globally manages user authentication (both email/password and Google OAuth), stores JWT tokens, and handles profile avatar states.
 - **`frontend/src/components/layout/UserNavProfile.jsx`** 👤
   - *The Profile Navigation Component.* Renders the active user pill on the floating navbar, shows user info/actions, and supports smooth outside-click modal dismissal.
-- **`frontend/src/components/shared/MainAppLoader.jsx` & `AppLoadingBar.jsx`** ⏳
-  - *The Experience Engines.* Delivers a branded splash screen on initial startup and responsive full-screen blurred loaders during in-app section transitions.
+- **`frontend/src/lib/utils.ts` & `utils.js`** 🛠️
+  - *Utility Functions.* Provides the type-safe `cn` class combiner helper with iterative array flattening to prevent infinite type recursion, paired with `tsconfig.json` for IDE path mapping.
 
 ---
 

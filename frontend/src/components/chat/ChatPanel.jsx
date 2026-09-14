@@ -6,6 +6,8 @@ import ResultChart from "../charts/ResultChart.jsx";
 import ResultTable from "../charts/ResultTable.jsx";
 import SqlViewer from "../charts/SqlViewer.jsx";
 import { exportChatAsHtml } from "../../utils/exportChat.js";
+import { ChatAiSkeleton } from "../shared/CardSkeleton.jsx";
+import { useNetworkStatus } from "../../hooks/useNetworkStatus.js";
 import { toast } from "react-toastify";
 import { AlertTriangle, Download, Trash2, Send, MessageSquare } from "lucide-react";
 
@@ -19,6 +21,7 @@ const EXAMPLE_QUESTIONS = [
 
 export default function ChatPanel() {
   const { dataset, activeFile, chatMessages, setChatMessages, clearChat } = useDataset();
+  const { isSlowNetwork } = useNetworkStatus();
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [popup, setPopup] = useState(null); // off-topic popup message
@@ -216,16 +219,13 @@ export default function ChatPanel() {
         ))}
 
         {isLoading && (
-          <div className="flex justify-start">
-            <div className="bg-white/80 dark:bg-[#1c1c1e]/80 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.08] rounded-2xl rounded-tl-xs px-4 py-2.5 shadow-xs flex items-center gap-2">
-              <div className="flex gap-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#0071e3] animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-1.5 h-1.5 rounded-full bg-[#0071e3] animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-1.5 h-1.5 rounded-full bg-[#0071e3] animate-bounce" style={{ animationDelay: '300ms' }}></div>
-              </div>
-              <span className="text-xs text-[#86868b] dark:text-[#a1a1a6]">AI Analyzing dataset…</span>
-            </div>
-          </div>
+          <ChatAiSkeleton
+            message={
+              isSlowNetwork
+                ? "Low network detected • Groq Llama 3.3 processing in background…"
+                : "Groq Llama 3.3 analyzing dataset & generating response…"
+            }
+          />
         )}
 
         <div ref={bottomRef} className="h-1" />

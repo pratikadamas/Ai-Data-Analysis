@@ -25,6 +25,7 @@ import {
 import { toast } from "react-toastify";
 import axios from "axios";
 import ThemeToggle from "../components/ThemeToggle.jsx";
+import { StatCardSkeletonGrid, TableSkeleton } from "../components/shared/CardSkeleton.jsx";
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -517,59 +518,63 @@ export default function Admin() {
           <div className="space-y-6">
             
             {/* Stats Overview Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    Total API Calls
-                  </span>
-                  <Sparkles className="w-4 h-4 text-blue-500" />
+            {loadingGroq ? (
+              <StatCardSkeletonGrid count={4} />
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                      Total API Calls
+                    </span>
+                    <Sparkles className="w-4 h-4 text-blue-500" />
+                  </div>
+                  <div className="text-2xl font-black tracking-tight">
+                    {groqData?.summary?.total_calls_all_time || 0}
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">All-time Groq LLM requests</p>
                 </div>
-                <div className="text-2xl font-black tracking-tight">
-                  {groqData?.summary?.total_calls_all_time || 0}
-                </div>
-                <p className="text-[11px] text-slate-400 mt-1">All-time Groq LLM requests</p>
-              </div>
 
-              <div className="bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-900/40 p-5 rounded-2xl shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
-                    Today's Calls
-                  </span>
-                  <Clock className="w-4 h-4 text-emerald-500" />
+                <div className="bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-900/40 p-5 rounded-2xl shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
+                      Today's Calls
+                    </span>
+                    <Clock className="w-4 h-4 text-emerald-500" />
+                  </div>
+                  <div className="text-3xl font-black tracking-tight text-emerald-600 dark:text-emerald-400">
+                    {groqData?.summary?.today_calls ?? 0}
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">Groq LLM calls executed today</p>
                 </div>
-                <div className="text-3xl font-black tracking-tight text-emerald-600 dark:text-emerald-400">
-                  {groqData?.summary?.today_calls ?? 0}
-                </div>
-                <p className="text-[11px] text-slate-400 mt-1">Groq LLM calls executed today</p>
-              </div>
 
-              <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    Estimated Tokens
-                  </span>
-                  <Cpu className="w-4 h-4 text-sky-500" />
+                <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                      Estimated Tokens
+                    </span>
+                    <Cpu className="w-4 h-4 text-sky-500" />
+                  </div>
+                  <div className="text-2xl font-black tracking-tight">
+                    {(groqData?.summary?.total_tokens_all_time || 0).toLocaleString()}
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">Tokens processed across requests</p>
                 </div>
-                <div className="text-2xl font-black tracking-tight">
-                  {(groqData?.summary?.total_tokens_all_time || 0).toLocaleString()}
-                </div>
-                <p className="text-[11px] text-slate-400 mt-1">Tokens processed across requests</p>
-              </div>
 
-              <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    Tracked Days
-                  </span>
-                  <Database className="w-4 h-4 text-cyan-500" />
+                <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                      Tracked Days
+                    </span>
+                    <Database className="w-4 h-4 text-cyan-500" />
+                  </div>
+                  <div className="text-2xl font-black tracking-tight">
+                    {groqData?.summary?.recorded_days || 0}
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">Days logged in MongoDB collection</p>
                 </div>
-                <div className="text-2xl font-black tracking-tight">
-                  {groqData?.summary?.recorded_days || 0}
-                </div>
-                <p className="text-[11px] text-slate-400 mt-1">Days logged in MongoDB collection</p>
               </div>
-            </div>
+            )}
 
             {/* Groq API Usage Date Filter Control Bar */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-4 rounded-2xl shadow-sm">
@@ -876,9 +881,26 @@ export default function Admin() {
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-white/5">
                     {loadingUsers ? (
-                      <tr>
-                        <td colSpan={5} className="py-8 text-center text-slate-400">Loading admin accounts...</td>
-                      </tr>
+                      Array.from({ length: 5 }).map((_, idx) => (
+                        <tr key={idx} className="animate-pulse">
+                          <td className="py-3.5 px-4 flex items-center space-x-2">
+                            <div className="w-7 h-7 rounded-full bg-cyan-500/20" />
+                            <div className="h-3 w-24 rounded bg-stone-300/60 dark:bg-white/10" />
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <div className="h-3 w-36 rounded bg-stone-200/70 dark:bg-white/[0.07]" />
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <div className="h-4 w-24 rounded-full bg-cyan-200/50 dark:bg-cyan-950/40" />
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <div className="h-4 w-20 rounded-full bg-emerald-200/50 dark:bg-emerald-950/40" />
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <div className="h-3 w-16 rounded bg-stone-200/60 dark:bg-white/[0.05]" />
+                          </td>
+                        </tr>
+                      ))
                     ) : users.length === 0 ? (
                       <tr>
                         <td colSpan={5} className="py-8 text-center text-slate-400">No administrator accounts found.</td>
@@ -946,56 +968,60 @@ export default function Admin() {
         {activeTab === "users" && (
           <div className="space-y-6">
             {/* Header Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-              <div className="bg-sky-50/50 dark:bg-sky-950/20 border border-sky-200 dark:border-sky-900/40 p-5 rounded-2xl shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wider">
-                    Total Standard Users
-                  </span>
-                  <Users className="w-5 h-5 text-sky-500" />
-                </div>
-                <div className="text-3xl font-black text-sky-600 dark:text-sky-400">
-                  {pagination.standard_user_count || pagination.total_users || 0}
-                </div>
-                <p className="text-[11px] text-slate-400 mt-1">Application end-user accounts</p>
-              </div>
-
-              <div className="bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 p-5 rounded-2xl shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
-                    Active User Sessions
-                  </span>
-                  <div className="relative flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            {loadingUsers ? (
+              <StatCardSkeletonGrid count={4} />
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                <div className="bg-sky-50/50 dark:bg-sky-950/20 border border-sky-200 dark:border-sky-900/40 p-5 rounded-2xl shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wider">
+                      Total Standard Users
+                    </span>
+                    <Users className="w-5 h-5 text-sky-500" />
                   </div>
+                  <div className="text-3xl font-black text-sky-600 dark:text-sky-400">
+                    {pagination.standard_user_count || pagination.total_users || 0}
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">Application end-user accounts</p>
                 </div>
-                <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
-                  {activeSessions?.active_user_sessions ?? activeSessions?.total_active_sessions ?? 1} Active
-                </div>
-                <p className="text-[11px] text-slate-400 mt-1">Live active user sessions</p>
-              </div>
 
-              <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Verified Accounts</span>
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                <div className="bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 p-5 rounded-2xl shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+                      Active User Sessions
+                    </span>
+                    <div className="relative flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    </div>
+                  </div>
+                  <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
+                    {activeSessions?.active_user_sessions ?? activeSessions?.total_active_sessions ?? 1} Active
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">Live active user sessions</p>
                 </div>
-                <div className="text-3xl font-black text-slate-800 dark:text-slate-200">
-                  {users.filter(u => u.is_verified).length} Verified
-                </div>
-                <p className="text-[11px] text-slate-400 mt-1">OTP verified user emails</p>
-              </div>
 
-              <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Database Isolation</span>
-                  <Database className="w-5 h-5 text-blue-500" />
+                <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Verified Accounts</span>
+                    <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                  </div>
+                  <div className="text-3xl font-black text-slate-800 dark:text-slate-200">
+                    {users.filter(u => u.is_verified).length} Verified
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">OTP verified user emails</p>
                 </div>
-                <div className="text-3xl font-black text-slate-800 dark:text-slate-200">MongoDB</div>
-                <p className="text-[11px] text-slate-400 mt-1">Per-session isolated data</p>
+
+                <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Database Isolation</span>
+                    <Database className="w-5 h-5 text-blue-500" />
+                  </div>
+                  <div className="text-3xl font-black text-slate-800 dark:text-slate-200">MongoDB</div>
+                  <p className="text-[11px] text-slate-400 mt-1">Per-session isolated data</p>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* User Controls & Search Bar */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-4 rounded-2xl shadow-sm">
@@ -1072,9 +1098,26 @@ export default function Admin() {
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-white/5">
                     {loadingUsers ? (
-                      <tr>
-                        <td colSpan={5} className="py-8 text-center text-slate-400">Loading user accounts...</td>
-                      </tr>
+                      Array.from({ length: 5 }).map((_, idx) => (
+                        <tr key={idx} className="animate-pulse">
+                          <td className="py-3.5 px-4 flex items-center space-x-2">
+                            <div className="w-7 h-7 rounded-full bg-sky-500/20" />
+                            <div className="h-3 w-24 rounded bg-stone-300/60 dark:bg-white/10" />
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <div className="h-3 w-36 rounded bg-stone-200/70 dark:bg-white/[0.07]" />
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <div className="h-4 w-20 rounded-full bg-slate-200/60 dark:bg-white/10" />
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <div className="h-4 w-16 rounded-full bg-emerald-200/50 dark:bg-emerald-950/40" />
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <div className="h-3 w-16 rounded bg-stone-200/60 dark:bg-white/[0.05]" />
+                          </td>
+                        </tr>
+                      ))
                     ) : users.length === 0 ? (
                       <tr>
                         <td colSpan={5} className="py-8 text-center text-slate-400">No standard user accounts found.</td>
@@ -1165,7 +1208,10 @@ export default function Admin() {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+            {loadingHealth ? (
+              <StatCardSkeletonGrid count={4} />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
               {/* MongoDB Diagnostics */}
               <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 p-5 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between mb-4">
@@ -1266,6 +1312,7 @@ export default function Admin() {
                 </div>
               </div>
             </div>
+            )}
 
             {/* Live Active Sessions Table */}
             <div className="bg-[#fcfaf5] dark:bg-[#161618] border border-stone-200/80 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">

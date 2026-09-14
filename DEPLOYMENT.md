@@ -33,7 +33,7 @@ Render is ideal for the backend because it provides a persistent Web Service tha
 3. Select your repository.
 4. Configure the settings:
    - **Root Directory:** `backend`
-   - **Environment:** `Python 3`
+   - **Environment:** `Python 3` (Python 3.11 or 3.12 recommended)
    - **Build Command:** `pip install -r requirements.txt`
    - **Start Command:** `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 5. Click **Advanced** and add **all** of the Environment Variables from your `.env` file (MongoDB URI, Groq API Key, Mail settings).

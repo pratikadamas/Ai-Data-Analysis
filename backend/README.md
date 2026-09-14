@@ -8,19 +8,19 @@ This is the Python (FastAPI) backend for the AI Data Analysis application. It ha
 
 ## 🗂️ Directory Structure
 
-- `app/api/`: 🌐 Route handlers (Upload, Explore, Chat, Auth, Dataset, SQL Editor, Download)
+- `app/api/`: 🌐 Route handlers (Upload, Explore, Chat, Auth, Admin, Dataset, SQL Editor, Download)
 - `app/services/`: 🧠 Core business logic (LLM integrations, schema extraction, chart specs, file loader)
-- `app/validation/`: 🛡️ Security components (SQL Whitelisting & Parser)
-- `app/db/`: 🗄️ DuckDB manager and MongoDB connection pool
+- `app/validation/`: 🛡️ Security components (SQL Whitelisting & AST Parser)
+- `app/db/`: 🗄️ DuckDB manager (in-memory sessions) and MongoDB connection pool
 - `app/models/`: 📦 Pydantic schemas for structured inputs/outputs
-- `app/utils/`: 🛠️ JWT Auth, SMTP Mail, Rate limiting, and Bloom Filter
+- `app/utils/`: 🛠️ JWT Auth, Google OAuth / Firebase Admin SDK, SMTP Mail, Rate limiting, Session tracker, Log streamer, and Bloom Filter
 - `app/main.py`: 🚀 The main FastAPI application entrypoint
 - `tests/`: 🧪 Automated unit and integration tests
 
 ## 🛠️ Setup & Running
 
 ```bash
-# 1. Create a virtual environment
+# 1. Create a virtual environment (Python 3.10 - 3.12 recommended)
 python -m venv .venv
 
 # 2. Activate virtual environment
