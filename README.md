@@ -48,36 +48,48 @@
 
 ```text
 ai-data-analysis/
-  backend/                  ⚙️ FastAPI + DuckDB service
-    app/
-      api/routes/           🌐 upload, explore, chat, dataset, sql_editor, auth, admin endpoints
-      services/             🧠 file_loader, schema_service, llm_service, chart_service
-      validation/           🛡️ sql_validator (whitelist-based SQL safety checks)
-      models/               📦 Pydantic request/response schemas
-      db/                   🗄️ DuckDBManager (per-dataset in-memory connections) & MongoDB
-      utils/                🛠️ filename sanitizing, auth, logger_streamer, firebase_admin_sdk
-      main.py               🚀 FastAPI app + router wiring
-    requirements.txt        📝 Python dependencies
-    .env.example            🔐 Example environment variables
-  frontend/                 🎨 React (Vite) + Tailwind + Plotly + AG Grid
-    src/
-      components/
-        charts/             📈 ResultChart, ResultTable, SqlViewer, DownloadButtons
-        chat/               💬 ChatPanel (AI chat with export + clear)
-        explore/            🔍 ExplorePanel (manual column/aggregation builder)
-        sql-editor/         💻 SqlEditorPanel (DuckDB SQL runner & schema tree)
-        layout/             🏗️ Header (macOS window bar), Sidebar (collapsible dock), UserNavProfile
-        preview/            👀 PreviewTable (AG Grid compact data preview)
-        upload/             ☁️ UploadArea (drag-and-drop seamless dropzone)
-        shared/             ⏳ CardSkeleton, NetworkStatusBadge, MainAppLoader, AppLoadingBar
-        AnimatedThemeToggler.tsx 🌓 View Transition animated theme switcher
-        ThemeToggle.jsx     🌓 Styled dark/light mode toggle wrapper
-      pages/                🏠 Dashboard.jsx, LandingPage.jsx, Admin.jsx, AdminAuth.jsx, Docs.jsx, FaqPage.jsx
-      context/              🧠 DatasetContext & UserContext
-      hooks/                🪝 useDarkMode.js, useNetworkStatus.js, useOtpCountdown.js
-      lib/                  🛠️ utils.ts / utils.js (Type-safe iterative class combiner)
-      services/             🔌 api.js (Axios client)
-      utils/                📄 exportChat.js (HTML report generator)
+├── backend/                        # FastAPI + DuckDB Analytical Engine
+│   ├── app/
+│   │   ├── api/routes/             # Endpoints (upload, chat, explore, auth, admin)
+│   │   ├── db/                     # DuckDB session manager & MongoDB Atlas
+│   │   ├── models/                 # Pydantic schemas & validation models
+│   │   ├── services/               # LLM Groq prompt engine, DuckDB file loader
+│   │   ├── utils/                  # Firebase OAuth SDK, JWT auth, logger streamer
+│   │   ├── validation/             # Whitelist SQL safety & ast parse checker
+│   │   └── main.py                 # FastAPI app entry point & CORS configuration
+│   ├── tests/                      # Integration & multi-file upload test suite
+│   ├── requirements.txt            # Python dependencies
+│   └── .env.example                # Environment variable configuration template
+│
+├── frontend/                       # React (Vite) + Tailwind CSS + Plotly + AG Grid
+│   ├── src/
+│   │   ├── components/             # Modular UI components
+│   │   │   ├── charts/             # Plotly canvas, ResultTable, SqlViewer, exports
+│   │   │   ├── chat/               # Conversational AI panel & report exporter
+│   │   │   ├── explore/            # Interactive aggregation & pivot builder
+│   │   │   ├── layout/             # macOS studio window bar, collapsible sidebar
+│   │   │   ├── preview/            # AG Grid compact dataset preview
+│   │   │   ├── shared/             # Shimmer skeletons, network HUD, app loaders
+│   │   │   ├── sql-editor/         # DuckDB SQL workspace & schema inspector
+│   │   │   ├── upload/             # Drag-and-drop dataset dropzone
+│   │   │   ├── AnimatedThemeToggler.tsx # View Transition animated theme switcher
+│   │   │   └── ThemeToggle.jsx     # Dark/light mode toggle wrapper
+│   │   ├── context/                # React state contexts (Dataset, User)
+│   │   ├── hooks/                  # Custom hooks (dark mode, network latency)
+│   │   ├── lib/                    # Shared utilities (type-safe clsx/twMerge)
+│   │   ├── pages/                  # Route views (Dashboard, Admin, Landing, etc.)
+│   │   ├── services/               # Axios API client & backend endpoints
+│   │   ├── utils/                  # HTML report exporter
+│   │   ├── App.jsx                 # Main application router
+│   │   └── index.css               # Global theme tokens, typography, glassmorphism
+│   ├── package.json                # Frontend scripts & NPM dependencies
+│   ├── tailwind.config.js          # Tailwind CSS theme extensions & animations
+│   └── vite.config.js              # Vite bundler settings & API reverse proxy
+│
+├── ARCHITECTURE.md                 # System architecture & data flow specification
+├── INSTRUCTIONS.md                 # Setup guide, credentials & file breakdown
+├── LICENSE                         # MIT License
+└── README.md                       # Main project documentation & quickstart
 ```
 
 ---
