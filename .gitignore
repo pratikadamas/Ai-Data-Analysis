@@ -3,24 +3,61 @@
 backend/.venv/
 .ven/
 backend/.ven/
+venv/
+ENV/
 
-# Environment Files
+# Environment Files (contains secrets)
 .env
+.env.*
 backend/.env
+backend/.env.*
 frontend/.env
 frontend/.env.local
+frontend/.env.*.local
+!backend/.env.example
+!frontend/.env.example
 
-# Python Cache
-backend/__pycache__/
-backend/**/__pycache__/
+# Python Bytecode & Caches
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# Uploads (Keep directory tracked with .gitkeep)
 backend/uploads/*
 !backend/uploads/.gitkeep
 
 # Node / Frontend Build
+node_modules/
 frontend/node_modules/
 frontend/dist/
+frontend/.vite/
 frontend/.eslintcache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# OS
+# Database & Temporary Files
+*.duckdb
+*.duckdb.wal
+*.sqlite3
+*.tmp
+
+# Operating System & IDE Files
 .DS_Store
 Thumbs.db
+ehthumbs.db
+.idea/
+*.swp
+*.swo
+.vscode/*
+!.vscode/settings.json
+

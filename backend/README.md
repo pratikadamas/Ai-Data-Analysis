@@ -20,15 +20,18 @@ This is the Python (FastAPI) backend for the AI Data Analysis application. It ha
 ## 🛠️ Setup & Running
 
 ```bash
-# 1. Create a virtual environment (Python 3.10 - 3.12 recommended)
+# 1. Create a virtual environment (Python 3.10 - 3.12 recommended; Python 3.11 is ideal)
+# Note: Avoid Python 3.14 as PyPI does not yet have pre-compiled wheels for pandas/duckdb on Windows
 python -m venv .venv
+# or using uv:
+# uv venv .venv --python 3.11 --seed
 
 # 2. Activate virtual environment
-# 🔹 Git Bash (MINGW64 / Windows):
-source .venv/Scripts/activate
-
 # 🔹 PowerShell (Windows):
 .\.venv\Scripts\Activate.ps1
+
+# 🔹 Git Bash (MINGW64 / Windows):
+source .venv/Scripts/activate
 
 # 🔹 Command Prompt (CMD / Windows):
 .venv\Scripts\activate.bat
@@ -43,11 +46,19 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env and configure GROQ_API_KEY, MONGODB_URI, and MAIL credentials
 
-# 5. Start the server
+# 5. (Optional) Run automated tests
+python tests/test_fastapi_upload.py
+python tests/test_multi_upload.py
+
+# 6. Start the server
 uvicorn app.main:app --reload --port 8000
 ```
 
 > 💡 Check out the interactive API documentation at [http://localhost:8000/docs](http://localhost:8000/docs) after starting the server!
+> 
+> 🔐 **Admin Access**: Default demo admin credentials are `admin@demo.com` / `admin123`.
+> 
+> 💻 **VS Code / IDE Integration**: The workspace includes `.vscode/settings.json` configured to automatically point Python language servers and linters to `backend/.venv/Scripts/python.exe`.
 
 <br/>
 

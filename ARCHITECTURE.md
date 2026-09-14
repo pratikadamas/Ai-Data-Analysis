@@ -22,6 +22,8 @@ The application follows a standard client-server architecture:
 graph TD
     subgraph Frontend [🎨 React / Vite macOS Studio Frontend]
         UI[User Interface & Window Header]
+        SplashLoader[MainAppLoader / Quantum Reactor Splash]
+        ScrollNav[Dynamic Scroll-Squeezing Navbars]
         ThemeToggle[AnimatedThemeToggler / View Transitions API]
         NetBadge[NetworkStatusBadge & Latency Ping]
         Skeletons[CardSkeleton & Shimmer States]
@@ -33,6 +35,8 @@ graph TD
         SQLEditor[DuckDB SQL Editor]
         Charts[Plotly Visualizations]
         
+        SplashLoader --> UI
+        UI --> ScrollNav
         UI --> ThemeToggle
         UI --> NetBadge
         UI --> Sidebar
@@ -53,14 +57,14 @@ graph TD
         FileLoader[Multi-Format File Loader]
         LLM[LLM NL-to-SQL Service / Groq]
         SQLValid[SQL Read-Only Whitelist Validator]
-        DuckDB[(DuckDB In-Memory Engine)]
+        DuckDB[(DuckDB In-Memory & Multi-Table Joins)]
         MongoDB[(MongoDB Atlas - User Auth & Usage)]
         
         Upload -.->|CSV / Excel / SQLite / SQL| FileLoader
         FileLoader --> DuckDB
         Chat -.->|Natural Language Query| LLM
         Explore -.->|Aggregation & Grouping| DuckDB
-        SQLEditor -.->|Raw SQL Query| SQLValid
+        SQLEditor -.->|Multi-Table Raw SQL| SQLValid
         
         API --> MongoDB
         LLM -->|Generates SQL| SQLValid

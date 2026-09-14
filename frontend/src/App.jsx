@@ -81,10 +81,10 @@ export default function App() {
       document.documentElement.classList.remove("dark");
     }
 
-    // Show splash main loader on initial app load for a smooth brand intro
+    // Show splash main loader on initial app load for a smooth brand intro (at least 3 seconds)
     const timer = setTimeout(() => {
       setInitialAppReady(true);
-    }, 1200);
+    }, 3000);
     return () => clearTimeout(timer);
   }, []);
 

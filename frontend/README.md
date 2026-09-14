@@ -15,14 +15,21 @@ This is the React (Vite) frontend for the AI Data Analysis application. It provi
 - `src/components/sql-editor/`: 💻 Multi-table SQL code editor with syntax execution
 - `src/components/profile/`: 👤 User account and avatar management
 - `src/components/upload/`: ☁️ Multi-format drag-and-drop file upload zone
-- `src/components/layout/`: 🏗️ Sidebar, Header, and UserNavProfile dropdown
-- `src/components/shared/`: ⏳ Responsive CardSkeleton & shimmers, NetworkStatusBadge, and branded loaders
+- `src/components/layout/`: 🏗️ Sidebar, Header, UserNavProfile dropdown, and Dynamic Scroll-Squeezing Navbars
+- `src/components/shared/`: ⏳ MainAppLoader (Tri-orbital quantum reactor, frequency equalizer bars, and laser progress beam), Responsive CardSkeleton & shimmers, NetworkStatusBadge, and AppLoadingBar
 - `src/components/AnimatedThemeToggler.tsx`: 🌓 Native View Transitions API theme toggle (7 geometric shapes)
 - `src/components/ThemeToggle.jsx`: 🌓 Styled dark/light mode toggle wrapper
 - `src/context/`: 🧠 React Context (`DatasetContext`, `UserContext`)
 - `src/hooks/`: 🪝 `useDarkMode.js`, `useNetworkStatus.js` (live ping & latency), `useOtpCountdown.js`
 - `src/lib/`: 🛠️ `utils.ts` / `utils.js` (Type-safe iterative class combiner function)
 - `src/services/`: 🔌 Axios API communication layer
+
+## 🌟 Key UI Architecture
+
+- 🌀 **Futuristic Splash Loader (`MainAppLoader.jsx`)**: Tri-orbital quantum reactor with alternating rotational arcs, satellite node, neural data frequency bars, unboxed floating favicon with ambient drop-shadow, and a minimum 3-second brand intro.
+- 🧭 **Dynamic Scroll-Squeezing Navigation**: Starts full-screen width at the top (`scrollY === 0`) and smoothly squeezes into a floating frosted glass pill on scroll across the Home page and all legal/documentation pages (`/terms`, `/privacy`, `/docs`, `/faq`).
+- 🎯 **Centered Hero Headers**: Clean, unified centered hero banners on all footer redirect pages with unclipped cursive typography (`font-kaushan`).
+- 🔐 **Admin Access**: Dedicated Admin Portal at [http://localhost:5173/admin](http://localhost:5173/admin) with quick login credentials `admin@demo.com` / `admin123`.
 
 ## 🛠️ Setup & Running
 

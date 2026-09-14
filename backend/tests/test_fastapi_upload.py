@@ -25,12 +25,13 @@ def test_upload():
     print("Sending POST /api/upload request...")
     response = client.post(
         "/api/upload",
-        files={"file": ("test_data.csv", csv_content, "text/csv")}
+        files=[("files", ("test_data.csv", csv_content, "text/csv"))]
     )
     
     print(f"Status Code: {response.status_code}")
     print("Response Content:")
     print(response.content.decode("utf-8"))
+    assert response.status_code == 200, f"Upload failed: {response.text}"
 
 if __name__ == "__main__":
     test_upload()
