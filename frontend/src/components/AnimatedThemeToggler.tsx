@@ -51,7 +51,7 @@ function getThemeTransitionClipPaths(
   const point = (x: number, y: number) => `${toX(x)} ${toY(y)}`
   // circle() percentage radii resolve against hypot(w, h) / sqrt(2) of the reference box.
   const toRadius = (r: number) =>
-    `${(r / (Math.hypot(viewportWidth, viewportHeight) / Math.SQRT2)) * 100}%`
+    `${((r * 1.05) / (Math.hypot(viewportWidth, viewportHeight) / Math.SQRT2)) * 100}%`
 
   switch (variant) {
     case "circle":
@@ -152,7 +152,7 @@ function getThemeTransitionClipPaths(
 
 export const AnimatedThemeToggler = ({
   className,
-  duration = 400,
+  duration = 650,
   variant,
   fromCenter = false,
   theme,
@@ -295,8 +295,8 @@ export const AnimatedThemeToggler = ({
             },
             {
               duration,
-              // Star: linear avoids easing overshoot that fights polygon interpolation at t→1; VT group duration is synced above.
-              easing: shape === "star" ? "linear" : "ease-in-out",
+              // Fluid quintic ease-out decelerates smoothly to the edges
+              easing: shape === "star" ? "linear" : "cubic-bezier(0.22, 1, 0.36, 1)",
               fill: "forwards",
               pseudoElement: "::view-transition-new(root)",
             }
@@ -330,17 +330,17 @@ export const AnimatedThemeToggler = ({
       <div className="relative flex items-center justify-center w-5 h-5 pointer-events-none">
         <Sun
           className={cn(
-            "absolute inset-0 m-auto w-full h-full transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] transform-gpu",
+            "absolute inset-0 m-auto w-full h-full transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] transform-gpu",
             isDark
               ? "rotate-0 scale-100 opacity-100"
-              : "-rotate-180 scale-0 opacity-0 pointer-events-none"
+              : "-rotate-90 scale-0 opacity-0 pointer-events-none"
           )}
         />
         <Moon
           className={cn(
-            "absolute inset-0 m-auto w-full h-full transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] transform-gpu",
+            "absolute inset-0 m-auto w-full h-full transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] transform-gpu",
             isDark
-              ? "rotate-180 scale-0 opacity-0 pointer-events-none"
+              ? "rotate-90 scale-0 opacity-0 pointer-events-none"
               : "rotate-0 scale-100 opacity-100"
           )}
         />
