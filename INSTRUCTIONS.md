@@ -123,8 +123,8 @@ Here is exactly how to get all the required keys for your `.env` file to get the
   - *The State Manager.* Globally manages user authentication (both email/password and Google OAuth), stores JWT tokens, and handles profile avatar states.
 - **`frontend/src/components/layout/UserNavProfile.jsx`** 👤
   - *The Profile Navigation Component.* Renders the active user pill on the floating navbar, shows user info/actions, and supports smooth outside-click modal dismissal.
-- **`frontend/src/lib/utils.js`** 🛠️
-  - *Utility Function.* Provides the `cn` class combiner helper for clean Tailwind class compositions.
+- **`frontend/src/lib/utils.ts` & `utils.js`** 🛠️
+  - *Utility Functions.* Provides the type-safe `cn` class combiner helper with iterative array flattening to prevent infinite type recursion, paired with `tsconfig.json` for IDE path mapping.
 
 ---
 

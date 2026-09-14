@@ -21,7 +21,7 @@ This is the React (Vite) frontend for the AI Data Analysis application. It provi
 - `src/components/ThemeToggle.jsx`: 🌓 Styled dark/light mode toggle wrapper
 - `src/context/`: 🧠 React Context (`DatasetContext`, `UserContext`)
 - `src/hooks/`: 🪝 `useDarkMode.js`, `useNetworkStatus.js` (live ping & latency), `useOtpCountdown.js`
-- `src/lib/`: 🛠️ `utils.js` (`cn` helper function)
+- `src/lib/`: 🛠️ `utils.ts` / `utils.js` (Type-safe iterative class combiner function)
 - `src/services/`: 🔌 Axios API communication layer
 
 ## 🛠️ Setup & Running

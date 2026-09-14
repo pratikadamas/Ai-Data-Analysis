@@ -75,7 +75,7 @@ ai-data-analysis/
       pages/                🏠 Dashboard.jsx, LandingPage.jsx, Admin.jsx, AdminAuth.jsx, Docs.jsx, FaqPage.jsx
       context/              🧠 DatasetContext & UserContext
       hooks/                🪝 useDarkMode.js, useNetworkStatus.js, useOtpCountdown.js
-      lib/                  🛠️ utils.js (Tailwind class merger)
+      lib/                  🛠️ utils.ts / utils.js (Type-safe iterative class combiner)
       services/             🔌 api.js (Axios client)
       utils/                📄 exportChat.js (HTML report generator)
 ```
@@ -208,10 +208,12 @@ npm run dev
 
 ## 🔮 Future Roadmap
 
-- [x] 🔐 Auth and user sessions with OTP email verification
+- [x] 🔐 Auth and user sessions with OTP email verification & Google OAuth
 - [x] 🛡️ Admin Portal with user management, Groq LLM analytics, health checks, & live log streamer
 - [x] 🎨 Apple macOS / MacBook Pro design system with dark & light theme persistence
 - [x] ⚡ 120Hz Lenis smooth inertial scrolling
+- [x] 🌓 Silky smooth View Transitions theme switcher with 7 geometric shapes & quintic easing
+- [x] 📶 Real-time network latency HUD & responsive shimmer skeleton loading states
 - [ ] 📌 Saved/named dashboards
 - [ ] 🔄 Multi-turn conversation context (history passed to the LLM)
 - [ ] 🔗 Multi-file joins
