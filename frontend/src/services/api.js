@@ -7,18 +7,57 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
+    config._metadata = { startTime: Date.now() };
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("app_network_request_start", {
+          detail: { url: config.url },
+        })
+      );
+    }
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("app_network_request_end", {
+          detail: { error: true },
+        })
+      );
+    }
+    return Promise.reject(error);
+  }
 );
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (typeof window !== "undefined") {
+      const duration = response.config?._metadata?.startTime
+        ? Date.now() - response.config._metadata.startTime
+        : 0;
+      window.dispatchEvent(
+        new CustomEvent("app_network_request_end", {
+          detail: { duration, url: response.config?.url },
+        })
+      );
+    }
+    return response;
+  },
   (error) => {
+    if (typeof window !== "undefined") {
+      const duration = error.config?._metadata?.startTime
+        ? Date.now() - error.config._metadata.startTime
+        : 0;
+      window.dispatchEvent(
+        new CustomEvent("app_network_request_end", {
+          detail: { duration, error: true, status: error.response?.status },
+        })
+      );
+    }
     if (error.response && error.response.status === 401) {
       const isLogin = error.config?.url?.includes("/auth/login");
       if (!isLogin) {

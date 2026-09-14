@@ -1,12 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useDarkMode } from "../../hooks/useDarkMode.js";
 import { useDataset } from "../../context/DatasetContext.jsx";
 import UserNavProfile from "./UserNavProfile.jsx";
-import { Sun, Moon } from "lucide-react";
+import NetworkStatusBadge from "../shared/NetworkStatusBadge.jsx";
+import ThemeToggle from "../ThemeToggle.jsx";
 
 export default function Header() {
-  const [isDark, setIsDark] = useDarkMode();
   const { dataset } = useDataset();
 
   return (
@@ -60,14 +59,9 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-        {/* Dark Mode Switcher */}
-        <button
-          onClick={() => setIsDark((d) => !d)}
-          className="text-[#515154] dark:text-[#a1a1a6] p-1.5 sm:p-2 rounded-full border border-black/[0.06] dark:border-white/[0.08] hover:bg-black/[0.04] dark:hover:bg-white/[0.06] hover:text-[#0071e3] transition-all"
-          title="Toggle light/dark mode"
-        >
-          {isDark ? <Sun size={15} /> : <Moon size={15} />}
-        </button>
+        {/* Network and Background Sync Indicator */}
+        <NetworkStatusBadge />
+        <ThemeToggle />
 
         {/* User Nav Profile with outside click handling */}
         <UserNavProfile />

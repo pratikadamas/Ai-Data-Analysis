@@ -22,6 +22,9 @@ The application follows a standard client-server architecture:
 graph TD
     subgraph Frontend [🎨 React / Vite macOS Studio Frontend]
         UI[User Interface & Window Header]
+        ThemeToggle[AnimatedThemeToggler / View Transitions API]
+        NetBadge[NetworkStatusBadge & Latency Ping]
+        Skeletons[CardSkeleton & Shimmer States]
         Sidebar[Collapsible Dock Sidebar]
         Upload[Seamless Upload Area]
         Preview[AG Grid Preview Table]
@@ -30,6 +33,8 @@ graph TD
         SQLEditor[DuckDB SQL Editor]
         Charts[Plotly Visualizations]
         
+        UI --> ThemeToggle
+        UI --> NetBadge
         UI --> Sidebar
         Sidebar --> Upload
         Sidebar --> Preview
@@ -38,6 +43,9 @@ graph TD
         Sidebar --> SQLEditor
         Chat --> Charts
         Explore --> Charts
+        Chat -.-> Skeletons
+        Explore -.-> Skeletons
+        SQLEditor -.-> Skeletons
     end
 
     subgraph Backend [⚙️ FastAPI Analytical Engine]
@@ -46,7 +54,7 @@ graph TD
         LLM[LLM NL-to-SQL Service / Groq]
         SQLValid[SQL Read-Only Whitelist Validator]
         DuckDB[(DuckDB In-Memory Engine)]
-        MongoDB[(MongoDB Atlas - User Auth)]
+        MongoDB[(MongoDB Atlas - User Auth & Usage)]
         
         Upload -.->|CSV / Excel / SQLite / SQL| FileLoader
         FileLoader --> DuckDB
@@ -64,16 +72,21 @@ graph TD
         GroqCloud((Groq Llama 3.3 70B))
         MongoCloud((MongoDB Atlas))
         SMTPServer((Gmail SMTP Server))
+        FirebaseAuth((Firebase / Google OAuth))
     end
 
     LLM <-->|Prompts & Fast Inference| GroqCloud
     API <-->|User Auth & Profiles| MongoCloud
     API <-->|OTP & Security Emails| SMTPServer
+    API <-->|Token Verification| FirebaseAuth
+    UI -.->|Popup Sign-In| FirebaseAuth
 ```
 
 ---
 
-## 🚀 Data Flow: Chatting with Data
+## 🚀 Data Flows
+
+### 1. Chatting with Data
 
 1. **User asks a question** in the frontend chat panel.
 2. **Backend receives the request** and passes the question + table schema to the `llm_service`.
@@ -83,6 +96,13 @@ graph TD
 6. **Execution**: The query runs against the temporary in-memory `DuckDB` instance assigned to that dataset.
 7. **Explanation & Charting**: The backend sends the query results back to the LLM for a plain-English explanation, and selects an appropriate chart type.
 8. **Frontend Rendering**: The user sees the AI's explanation, a data table, the raw SQL, and a Plotly chart!
+
+### 2. Google OAuth Authentication
+
+1. **Frontend Popup**: User clicks *"Continue with Google"*, opening a Firebase OAuth popup to `accounts.google.com`.
+2. **ID Token Generation**: On successful login, Firebase returns a signed ID token to the frontend.
+3. **Backend Verification (`/api/auth/google`)**: Token is sent to the FastAPI backend and verified against Google public certificate authorities / Firebase Admin SDK.
+4. **Account Upsert & JWT**: The backend links or creates the MongoDB user record, issues an application JWT access token, and starts the active session tracker.
 
 <br/>
 

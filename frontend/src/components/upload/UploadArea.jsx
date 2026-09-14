@@ -1,10 +1,11 @@
 import React, { useCallback, useState, useRef } from "react";
 import { uploadDataset } from "../../services/api.js";
 import { useDataset } from "../../context/DatasetContext.jsx";
+import { useNetworkStatus } from "../../hooks/useNetworkStatus.js";
 import { toast } from "react-toastify";
 import {
   UploadCloud, X, FileText, FileSpreadsheet,
-  Database, File as FileIcon, CheckCircle2, AlertCircle, Loader2,
+  Database, File as FileIcon, CheckCircle2, AlertCircle, Loader2, CloudRain,
 } from "lucide-react";
 
 const ACCEPTED = ".csv,.xlsx,.xls,.db,.sqlite,.sql";
@@ -45,6 +46,7 @@ export default function UploadArea() {
     isUploading: uploadingAll, 
     setIsUploading: setUploadingAll 
   } = useDataset();
+  const { isSlowNetwork } = useNetworkStatus();
   const inputRef = useRef(null);
 
   // ── helpers ──────────────────────────────────────────────────────────
@@ -251,72 +253,86 @@ export default function UploadArea() {
                 return (
                   <div
                     key={`${entry.file.name}-${idx}`}
-                    className={`flex items-center gap-3 p-3 rounded-2xl border transition-all duration-200 ${
+                    className={`relative overflow-hidden flex flex-col p-3 rounded-2xl border transition-all duration-200 ${
                       isDone
                         ? "bg-emerald-500/[0.06] border-emerald-500/30 text-emerald-700 dark:text-emerald-300"
                         : isError
                         ? "bg-red-500/[0.06] border-red-500/30 text-red-700 dark:text-red-300"
                         : isUploading
-                        ? "bg-[#0071e3]/[0.06] border-[#0071e3]/30"
+                        ? "bg-[#0071e3]/[0.07] border-[#0071e3]/35 shadow-xs"
                         : "bg-black/[0.02] dark:bg-white/[0.03] border-black/[0.06] dark:border-white/[0.08]"
                     }`}
                   >
-                    {/* Icon */}
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                      isDone
-                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                        : isError
-                        ? "bg-red-500/10 text-red-600 dark:text-red-400"
-                        : "bg-[#0071e3]/10 text-[#0071e3] dark:text-blue-400"
-                    }`}>
-                      <Icon size={18} />
-                    </div>
+                    <div className="flex items-center gap-3">
+                      {/* Icon */}
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                        isDone
+                          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                          : isError
+                          ? "bg-red-500/10 text-red-600 dark:text-red-400"
+                          : "bg-[#0071e3]/10 text-[#0071e3] dark:text-blue-400"
+                      }`}>
+                        <Icon size={18} />
+                      </div>
 
-                    {/* Name + Size */}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] truncate">
-                        {entry.file.name}
-                      </p>
-                      <p className="text-xs text-[#86868b] dark:text-[#a1a1a6]">
-                        {formatFileSize(entry.file.size)}
-                        {isError && (
-                          <span className="ml-1 text-red-500 font-medium">— {entry.error}</span>
+                      {/* Name + Size */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] truncate">
+                          {entry.file.name}
+                        </p>
+                        <p className="text-xs text-[#86868b] dark:text-[#a1a1a6] flex items-center gap-1.5">
+                          <span>{formatFileSize(entry.file.size)}</span>
+                          {isUploading && (
+                            <span className="text-[#0071e3] dark:text-blue-400 font-medium">
+                              • {isSlowNetwork ? "Slow network • Uploading in background…" : "Uploading & indexing table…"}
+                            </span>
+                          )}
+                          {isError && (
+                            <span className="ml-1 text-red-500 font-medium">— {entry.error}</span>
+                          )}
+                        </p>
+                      </div>
+
+                      {/* Action & Status */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        {isUploading && (
+                          <Loader2 size={16} className="text-[#0071e3] animate-spin" />
                         )}
-                      </p>
+                        {isDone && (
+                          <CheckCircle2 size={16} className="text-emerald-500" />
+                        )}
+                        {isError && (
+                          <AlertCircle size={16} className="text-red-500" />
+                        )}
+
+                        {(isPending || isError) && !uploadingAll && (
+                          <button
+                            onClick={() => uploadOne(idx)}
+                            disabled={anyUploading}
+                            className="px-3 py-1.5 rounded-xl bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-semibold shadow-sm transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
+                          >
+                            {isError ? "Retry" : "Upload"}
+                          </button>
+                        )}
+
+                        {isPending && !anyUploading && (
+                          <button
+                            onClick={() => removeEntry(idx)}
+                            className="p-1.5 rounded-lg text-[#86868b] hover:text-red-500 hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors cursor-pointer"
+                            title="Remove file"
+                          >
+                            <X size={14} />
+                          </button>
+                        )}
+                      </div>
                     </div>
 
-                    {/* Action & Status */}
-                    <div className="flex items-center gap-2 shrink-0">
-                      {isUploading && (
-                        <Loader2 size={16} className="text-[#0071e3] animate-spin" />
-                      )}
-                      {isDone && (
-                        <CheckCircle2 size={16} className="text-emerald-500" />
-                      )}
-                      {isError && (
-                        <AlertCircle size={16} className="text-red-500" />
-                      )}
-
-                      {(isPending || isError) && !uploadingAll && (
-                        <button
-                          onClick={() => uploadOne(idx)}
-                          disabled={anyUploading}
-                          className="px-3 py-1.5 rounded-xl bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-semibold shadow-sm transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
-                        >
-                          {isError ? "Retry" : "Upload"}
-                        </button>
-                      )}
-
-                      {isPending && !anyUploading && (
-                        <button
-                          onClick={() => removeEntry(idx)}
-                          className="p-1.5 rounded-lg text-[#86868b] hover:text-red-500 hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors cursor-pointer"
-                          title="Remove file"
-                        >
-                          <X size={14} />
-                        </button>
-                      )}
-                    </div>
+                    {/* Bottom animated shimmer line while uploading */}
+                    {isUploading && (
+                      <div className="mt-2.5 h-1 w-full bg-[#0071e3]/15 rounded-full overflow-hidden relative">
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#0071e3] via-[#06b6d4] to-[#0071e3] animate-shimmer rounded-full" />
+                      </div>
+                    )}
                   </div>
                 );
               })}

@@ -61,6 +61,20 @@ h1, h2, h3, h4, h5, h6 {
   .delay-200 { animation-delay: 200ms; }
   .delay-300 { animation-delay: 300ms; }
   .delay-400 { animation-delay: 400ms; }
+  
+  .animate-shimmer {
+    animation: shimmerSweep 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    background-size: 200% 100%;
+  }
+}
+
+@keyframes shimmerSweep {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 @keyframes fadeInUp {
@@ -384,3 +398,14 @@ html {
   opacity: 1 !important;
 }
 
+/* ── View Transitions (AnimatedThemeToggler) ────────────────────────────────── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Scoped to AnimatedThemeToggler — the toggler sets the data-attribute and the variable only during a theme toggle. */
+html[data-magicui-theme-vt="active"]::view-transition-group(root) {
+  animation-duration: var(--magicui-theme-toggle-vt-duration);
+}

@@ -8,7 +8,7 @@ This is the React (Vite) frontend for the AI Data Analysis application. It provi
 
 ## 🗂️ Directory Structure
 
-- `src/pages/`: 🏠 Main pages (`LandingPage.jsx`, `Dashboard.jsx`, `Auth.jsx`, `Docs.jsx`, `FaqPage.jsx`, `Terms.jsx`, `PrivacyPolicy.jsx`)
+- `src/pages/`: 🏠 Main pages (`LandingPage.jsx`, `Dashboard.jsx`, `Auth.jsx`, `Admin.jsx`, `AdminAuth.jsx`, `Docs.jsx`, `FaqPage.jsx`, `Terms.jsx`, `PrivacyPolicy.jsx`)
 - `src/components/chat/`: 💬 AI Chat Interface, message bubbles, and typing indicators
 - `src/components/charts/`: 📈 Plotly charting components and SQL viewers
 - `src/components/explore/`: 🔍 Manual data exploration panels
@@ -16,8 +16,12 @@ This is the React (Vite) frontend for the AI Data Analysis application. It provi
 - `src/components/profile/`: 👤 User account and avatar management
 - `src/components/upload/`: ☁️ Multi-format drag-and-drop file upload zone
 - `src/components/layout/`: 🏗️ Sidebar, Header, and UserNavProfile dropdown
-- `src/components/shared/`: ⏳ Branded loaders and modal components
+- `src/components/shared/`: ⏳ Responsive CardSkeleton & shimmers, NetworkStatusBadge, and branded loaders
+- `src/components/AnimatedThemeToggler.tsx`: 🌓 Native View Transitions API theme toggle (7 geometric shapes)
+- `src/components/ThemeToggle.jsx`: 🌓 Styled dark/light mode toggle wrapper
 - `src/context/`: 🧠 React Context (`DatasetContext`, `UserContext`)
+- `src/hooks/`: 🪝 `useDarkMode.js`, `useNetworkStatus.js` (live ping & latency), `useOtpCountdown.js`
+- `src/lib/`: 🛠️ `utils.js` (`cn` helper function)
 - `src/services/`: 🔌 Axios API communication layer
 
 ## 🛠️ Setup & Running
@@ -33,7 +37,7 @@ npm run dev
 npm run build
 ```
 
-> 💡 The Vite server automatically proxies `/api` requests to the backend on `localhost:8000`. Make sure the backend is running simultaneously!
+> 💡 The Vite server automatically proxies `/api` requests to the FastAPI backend on `http://127.0.0.1:8000`. Make sure the backend server is running simultaneously!
 
 <br/>
 

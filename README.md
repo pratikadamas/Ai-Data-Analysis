@@ -11,6 +11,7 @@
   <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
   <img src="https://img.shields.io/badge/DuckDB-FFF000?style=for-the-badge&logo=duckdb&logoColor=black" alt="DuckDB" />
   <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
+  <img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase" />
   
   <br/><br/>
 </div>
@@ -26,6 +27,9 @@
 - 🤖 **Conversational AI Analysis**: Ask questions in plain English. The AI generates verified SQL queries, markdown explanations, interactive Plotly visualizations, and downloadable HTML reports.
 - 📊 **Auto-Explore & Visualizer**: Interactive chart builder with dynamic aggregation (`SUM`, `AVG`, `COUNT`, `MIN`, `MAX`) across 7 chart types.
 - 💻 **SQL Editor & Schema Explorer**: Live table schema explorer, syntax validation, and instant table preview with export options.
+- 🌓 **Animated View Transitions Theme Switcher**: Dynamic viewport-expanding clip-path dark/light mode toggle with native View Transitions API supporting 7 geometric shapes (`circle`, `square`, `triangle`, `diamond`, `hexagon`, `rectangle`, `star`).
+- 📶 **Network & Loading State Animations**: Real-time connection latency monitor, offline detection, and glassmorphic skeleton cards (`CardSkeleton`, `StatCardSkeleton`, `ChartSkeleton`) with GPU-accelerated shimmer animations during network delays or background processing.
+- 🔐 **Dual Authentication (Email OTP + Google OAuth)**: Secure registration with 6-digit email OTPs, password resets, and 1-click Google sign-in via Firebase with backend token validation.
 - 🛡️ **Admin Portal & Control Center**: Dedicated management dashboard for Groq LLM API analytics, paginated user management, system health diagnostics, and live backend log streaming.
 - 📱 **Adaptive Responsive Design**: Natural 120Hz physics on desktop, floating iOS top-pill toast notifications, and compact mobile bottom dock.
 
@@ -62,12 +66,16 @@ ai-data-analysis/
         chat/               💬 ChatPanel (AI chat with export + clear)
         explore/            🔍 ExplorePanel (manual column/aggregation builder)
         sql-editor/         💻 SqlEditorPanel (DuckDB SQL runner & schema tree)
-        layout/             🏗️ Header (macOS window bar), Sidebar (collapsible icon dock)
+        layout/             🏗️ Header (macOS window bar), Sidebar (collapsible dock), UserNavProfile
         preview/            👀 PreviewTable (AG Grid compact data preview)
         upload/             ☁️ UploadArea (drag-and-drop seamless dropzone)
-        auth/               🔐 Auth modal, OTP verification, password reset
+        shared/             ⏳ CardSkeleton, NetworkStatusBadge, MainAppLoader, AppLoadingBar
+        AnimatedThemeToggler.tsx 🌓 View Transition animated theme switcher
+        ThemeToggle.jsx     🌓 Styled dark/light mode toggle wrapper
       pages/                🏠 Dashboard.jsx, LandingPage.jsx, Admin.jsx, AdminAuth.jsx, Docs.jsx, FaqPage.jsx
       context/              🧠 DatasetContext & UserContext
+      hooks/                🪝 useDarkMode.js, useNetworkStatus.js, useOtpCountdown.js
+      lib/                  🛠️ utils.js (Tailwind class merger)
       services/             🔌 api.js (Axios client)
       utils/                📄 exportChat.js (HTML report generator)
 ```
@@ -124,11 +132,19 @@ npm run dev
 | Variable | Required | Description |
 | --- | :---: | --- |
 | `GROQ_API_KEY` | 🟢 **Yes** | Groq API key for LLM features. Get one free at [console.groq.com/keys](https://console.groq.com/keys) |
+| `MONGODB_URI` | 🟢 **Yes** | MongoDB connection URI for user authentication, OTPs, and Groq usage analytics |
+| `SECRET_KEY` | 🟢 **Yes** | JWT secret key for signing authentication tokens |
+| `MAIL_USERNAME` / `MAIL_PASSWORD` | ⚪ Optional | Gmail SMTP credentials for sending 6-digit email OTPs |
+| `FIREBASE_PROJECT_ID` | ⚪ Optional | Firebase Project ID for server-side Google OAuth token verification |
+| `FIREBASE_CLIENT_EMAIL` / `FIREBASE_PRIVATE_KEY` | ⚪ Optional | Service account credentials for Firebase Admin SDK (optional fallback to Google public certs) |
 | `APP_ENV` | ⚪ No | `development` (default) or `production` |
 | `MAX_UPLOAD_MB` | ⚪ No | Max file size in MB (default: `200`) |
 | `UPLOAD_DIR` | ⚪ No | Temp upload path (default: `./uploads`) |
-| `CORS_ORIGINS` | ⚪ No | Comma-separated allowed origins (default: `http://localhost:5173`) |
+| `CORS_ORIGINS` | ⚪ No | Comma-separated allowed origins (default: `http://localhost:5173,http://127.0.0.1:5173`) |
 
+> 💡 **Frontend Firebase Variables (`frontend/.env`):**  
+> For Google sign-in on the frontend, add `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID`, and `VITE_FIREBASE_APP_ID`.
+>
 > 💡 **Tip:** The app works without an API key for upload, preview, and manual explore! Only the AI chat tab requires `GROQ_API_KEY`.
 
 ---
@@ -168,6 +184,7 @@ npm run dev
 ### 🔐 User Authentication & Profile (`/api/auth`)
 
 - **Secure JWT Session Management**: Email verification with 6-digit OTPs, bcrypt hashed passwords, and password resets.
+- **Google OAuth via Firebase**: 1-click Google Sign-In with popup OAuth flow, server-side token claim validation (supporting both Firebase Admin SDK and direct Google public cert verification), and automatic user account upserting.
 - **Persistent Header Profile**: Real-time user avatar, username display, modal window with outside-click dismissal, and account settings.
 
 ### 🛡️ Admin Portal & Control Center (Frontend: `http://localhost:5173/admin` | Backend API: `http://localhost:8000/api/admin`)
@@ -177,13 +194,14 @@ npm run dev
 - **Standalone Admin & User Directories**: Independent top-level tabs for **Admin Management** and **User Management** with server-side MongoDB `.skip()` / `.limit()` pagination, regex search, role badges, and verification status.
 - **Active WebApp User Session Tracker**: Thread-safe live session monitoring (`/api/admin/active-sessions`) tracking real-time active user sessions, admin vs standard user breakdown, idle time, and online state.
 - **System Health Diagnostics**: Real-time monitoring of MongoDB connectivity & ping response time (ms), active DuckDB in-memory connections, active webapp sessions, Groq API key readiness, and API latency.
-- **Dark / Light Mode Toggle**: Instant top navbar theme switcher toggling between Apple macOS dark mode (`bg-[#000000]`) and clean light mode (`bg-[#f5f5f7]`) with persistent `localStorage` memory.
 - **Live System Log Streamer**: In-memory ring buffer log capture streaming real-time FastAPI logs with log level filtering (`ALL`, `INFO`, `WARNING`, `ERROR`), search filtering, and 3-second live auto-refresh.
 
-### 🎨 Modern Apple macOS Studio UI
+### 🎨 Modern Apple macOS Studio UI & Motion Engine
 
+- **Animated View Transitions Theme Switcher**: Full View Transitions API integration (`AnimatedThemeToggler.tsx`) with GPU clip-path animations expanding from the click origin across 7 geometry variants (`circle`, `square`, `triangle`, `diamond`, `hexagon`, `rectangle`, `star`).
+- **Low-Network & Background Loading Skeletons**: Integrated network status hook (`useNetworkStatus.js`) and header badge displaying live latency (ms) and connection state. Shimmering skeleton placeholders (`CardSkeleton.jsx`) seamlessly take over cards, metrics, and chart canvas during data fetching or background DuckDB execution.
 - **120Hz Smooth Inertia Scrolling**: Powered by Lenis with dynamic interactive spring animations.
-- **Frosted Glass Navigation**: Translucent floating navbar with instant light/dark mode switcher and Kaushan Script typography.
+- **Frosted Glass Navigation**: Translucent floating navbar with instant theme switcher and Kaushan Script typography.
 - **MacBook Pro Window Aesthetics**: Realistic traffic light controls, bento grid layout, and backgroundless floating graphics.
 
 ---
