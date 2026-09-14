@@ -320,6 +320,7 @@ export const AnimatedThemeToggler = ({
       type="button"
       ref={buttonRef}
       onClick={toggleTheme}
+      aria-label="Toggle theme"
       className={cn(
         "group relative flex items-center justify-center transition-all duration-300 active:scale-90 hover:scale-105",
         className
@@ -344,7 +345,6 @@ export const AnimatedThemeToggler = ({
           )}
         />
       </div>
-      <span className="sr-only">Toggle theme</span>
     </button>
   )
 }
