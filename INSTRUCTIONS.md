@@ -72,7 +72,14 @@ Here is exactly how to get all the required keys for your `.env` file to get the
    - `VITE_FIREBASE_STORAGE_BUCKET`
    - `VITE_FIREBASE_MESSAGING_SENDER_ID`
    - `VITE_FIREBASE_APP_ID`
-5. Under **Authentication $\rightarrow$ Settings $\rightarrow$ Authorized domains**, ensure `localhost`, `127.0.0.1`, and your deployed Vercel domain are listed.
+#### 5. 🛡️ Admin Portal Credentials (`/admin/login`)
+
+*The application includes a built-in admin dashboard for system diagnostics, Groq API usage tracking, and user account management.*
+
+- **Admin Login URL:** `http://localhost:5173/admin/login` (or directly via `/admin`)
+- **Demo Admin Email:** `admin@demo.com`
+- **Demo Admin Password:** `admin123`
+- *Signing in with these credentials automatically provisions or validates the `admin_demo` account in MongoDB with full admin privileges.*
 
 ---
 
@@ -93,7 +100,7 @@ Here is exactly how to get all the required keys for your `.env` file to get the
 - **`backend/app/api/routes/chat.py`** 💬
   - *The Conversational Engine.* Receives chat messages, delegates SQL generation to the LLM, validates the SQL, executes it against DuckDB, and returns the data and chart configuration to the user.
 - **`backend/app/services/llm_service.py`** 🧠
-  - *The AI Whisperer.* Constructs the specialized system prompts, injects the dataset schema, and calls the Groq API to generate accurate SQL queries.
+  - *The AI Whisperer.* Constructs the specialized system prompts, injects the dataset schema, and calls the Groq API to generate accurate SQL queries with backward-compatible httpx client patching.
 - **`backend/app/services/file_loader.py`** 📂
   - *The Data Engine.* Loads uploaded CSV or Excel files straight into DuckDB's fast, in-memory analytical engine.
 - **`backend/app/utils/firebase_admin_sdk.py`** 🔥
@@ -102,13 +109,19 @@ Here is exactly how to get all the required keys for your `.env` file to get the
   - *The Live Monitor.* Thread-safe tracker recording active user requests, roles, online presence, and idle timeouts.
 - **`backend/app/utils/mail.py`** ✉️
   - *The Mailman.* Uses SMTP to format and send HTML-styled verification emails containing OTPs.
+- **`backend/tests/test_fastapi_upload.py` & `test_multi_upload.py`** 🧪
+  - *Automated Test Suites.* Validates single-file and multi-file multipart uploads, dataset appending, joined DuckDB SQL queries across tables, and schema session restoration.
 
 ### 🎨 Frontend (React + Vite + Tailwind)
 
 - **`frontend/src/main.jsx` & `App.jsx`** ⚛️
-  - *The Web Roots.* Mounts the React application to the DOM, initializes theme persistence, and sets up global routing and context providers.
+  - *The Web Roots.* Mounts the React application to the DOM, initializes theme persistence, sets up global routing and context providers, and controls the 3-second initial brand splash loader.
+- **`frontend/src/components/shared/MainAppLoader.jsx`** 🌀
+  - *The Quantum Splash Loader.* Features a tri-orbital quantum reactor with alternating rotational arcs, satellite node, neural data frequency bars, unboxed floating favicon, and a dynamic laser progress beam.
 - **`frontend/src/pages/Dashboard.jsx`** 🎛️
   - *The Command Center.* The main user interface where the Sidebar, Upload Area, Chat Panel, and Charts all come together.
+- **`frontend/src/pages/Terms.jsx`, `PrivacyPolicy.jsx`, `Docs.jsx`, `FaqPage.jsx`** 📜
+  - *Legal & Knowledge Base Pages.* Features dynamic scroll-squeezing navigation (full-width initially, smoothly squeezing into a floating pill on scroll), centered hero headers, and unclipped cursive typography (`font-kaushan`).
 - **`frontend/src/components/AnimatedThemeToggler.tsx` & `ThemeToggle.jsx`** 🌓
   - *The Motion Theme Switcher.* View Transitions API implementation supporting 7 geometry transition shapes (`circle`, `square`, `triangle`, `diamond`, `hexagon`, `rectangle`, `star`) expanding from the click origin.
 - **`frontend/src/components/shared/CardSkeleton.jsx`** ⏳

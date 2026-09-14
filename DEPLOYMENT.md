@@ -33,10 +33,17 @@ Render is ideal for the backend because it provides a persistent Web Service tha
 3. Select your repository.
 4. Configure the settings:
    - **Root Directory:** `backend`
-   - **Environment:** `Python 3` (Python 3.11 or 3.12 recommended)
+   - **Environment:** `Python 3`
    - **Build Command:** `pip install -r requirements.txt`
    - **Start Command:** `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-5. Click **Advanced** and add **all** of the Environment Variables from your `.env` file (MongoDB URI, Groq API Key, Mail settings).
+5. Click **Advanced** and add your Environment Variables from `.env`:
+   - `PYTHON_VERSION`: `3.11.9` *(Recommended: Ensures pre-compiled binary wheels for pandas and duckdb without compiling from source)*
+   - `GROQ_API_KEY`: Your Groq Cloud API key
+   - `MONGODB_URI`: MongoDB Atlas connection string (Ensure `0.0.0.0/0` or Render IPs are whitelisted)
+   - `JWT_SECRET`: Random 32+ character secret
+   - `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM`: SMTP credentials for OTP delivery
+   - `ADMIN_EMAIL`: Admin email (defaults to `admin@demo.com`)
+   - `ADMIN_PASSWORD_HASH`: Pre-hashed admin password or let the app initialize demo admin (`admin@demo.com` / `admin123`)
 6. Click **Create Web Service**.
 7. Save the provided live URL (e.g., `https://ai-data-analysis-backend.onrender.com`).
 
@@ -46,7 +53,7 @@ Render is ideal for the backend because it provides a persistent Web Service tha
 2. Click **Add New -> Project** and import your repository.
 3. In the configuration settings, set the **Root Directory** to `frontend`.
 4. Vercel will automatically detect Vite and set the build commands (`npm run build`).
-5. *Crucial Step:* Set the Environment Variable `VITE_API_URL` to your backend URL (e.g. your Render backend URL or `/api`).
+5. *Crucial Step:* Set the Environment Variable `VITE_API_URL` to your backend URL (e.g. `https://ai-data-analysis-backend.onrender.com`).
 6. Click **Deploy**.
 
 ---
@@ -68,10 +75,19 @@ When deploying the frontend to Vercel, Firebase will block Google Sign-In popup 
 
 ---
 
-*Note: Once both are deployed, ensure your Render Web Service `CORS_ORIGINS` environment variable is updated to accept traffic from your new Vercel domain!*
+### 4. Production Pre-Flight Checklist
+
+Before launching to production, verify:
+- [x] **Backend Integration Tests:** Run `python tests/test_fastapi_upload.py` and `python tests/test_multi_upload.py` (both return HTTP 200).
+- [x] **Frontend Production Bundle:** Run `npm run build` inside `frontend/` (verifies zero Rollup/Vite compilation or JSX syntax errors).
+- [x] **CORS Whitelist:** Update `CORS_ORIGINS` in your backend environment to explicitly include your production Vercel domain.
+- [x] **Admin Authentication:** Access `/admin/login` on your deployed frontend using your production or demo credentials (`admin@demo.com` / `admin123`).
+
+---
 
 <br/>
 
 <div align="center">
   <i>Deploy your app to the world with confidence! 🚀🌐</i>
 </div>
+

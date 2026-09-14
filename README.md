@@ -22,15 +22,18 @@
 ## 🌟 Key Features
 
 - 🖥️ **macOS Studio Aesthetic**: Sleek frosted glass (`backdrop-blur-2xl`), interactive collapsible dock sidebar with hover tooltips, and ultra-compact responsive layout.
-- ⚡ **Zero-Lag In-Memory Analytics**: Instant queries on multi-million row datasets via embedded DuckDB with read-only whitelist validation.
-- 📂 **Multi-File Upload & Background Queues**: Upload up to 10 CSV, Excel (`.xlsx`/`.xls`), SQLite (`.db`), or `.sql` files with persistent background upload queues.
+- 🌀 **Quantum Splash Loader (`MainAppLoader.jsx`)**: High-tech tri-orbital quantum reactor with alternating rotational arcs, satellite node, neural data frequency bars, unboxed floating favicon with ambient drop-shadow, and a minimum 3-second brand intro.
+- 🧭 **Dynamic Scroll-Squeezing Navigation**: Starts full-screen width at the top (`scrollY === 0`) and smoothly squeezes into a floating frosted glass pill on scroll across the Home page and all legal/documentation pages (`/terms`, `/privacy`, `/docs`, `/faq`).
+- 🎯 **Centered Hero Headers**: Clean, unified centered hero banners on all footer redirect pages with unclipped cursive typography (`font-kaushan`).
+- ⚡ **Zero-Lag In-Memory Analytics**: Instant queries on multi-million row datasets via embedded DuckDB with read-only whitelist validation and multi-table joins.
+- 📂 **Multi-File Upload & Background Queues**: Upload up to 10 CSV, Excel (`.xlsx`/`.xls`), SQLite (`.db`), or `.sql` files with persistent background upload queues and automatic session schema recovery.
 - 🤖 **Conversational AI Analysis**: Ask questions in plain English. The AI generates verified SQL queries, markdown explanations, interactive Plotly visualizations, and downloadable HTML reports.
 - 📊 **Auto-Explore & Visualizer**: Interactive chart builder with dynamic aggregation (`SUM`, `AVG`, `COUNT`, `MIN`, `MAX`) across 7 chart types.
 - 💻 **SQL Editor & Schema Explorer**: Live table schema explorer, syntax validation, and instant table preview with export options.
 - 🌓 **Animated View Transitions Theme Switcher**: Dynamic viewport-expanding clip-path dark/light mode toggle with native View Transitions API supporting 7 geometric shapes (`circle`, `square`, `triangle`, `diamond`, `hexagon`, `rectangle`, `star`).
 - 📶 **Network & Loading State Animations**: Real-time connection latency monitor, offline detection, and glassmorphic skeleton cards (`CardSkeleton`, `StatCardSkeleton`, `ChartSkeleton`) with GPU-accelerated shimmer animations during network delays or background processing.
 - 🔐 **Dual Authentication (Email OTP + Google OAuth)**: Secure registration with 6-digit email OTPs, password resets, and 1-click Google sign-in via Firebase with backend token validation.
-- 🛡️ **Admin Portal & Control Center**: Dedicated management dashboard for Groq LLM API analytics, paginated user management, system health diagnostics, and live backend log streaming.
+- 🛡️ **Admin Portal & Control Center**: Dedicated management dashboard for Groq LLM API analytics, paginated user management, system health diagnostics, and live backend log streaming (Demo Admin: `admin@demo.com` / `admin123`).
 - 📱 **Adaptive Responsive Design**: Natural 120Hz physics on desktop, floating iOS top-pill toast notifications, and compact mobile bottom dock.
 
 ## 📚 Documentation
@@ -50,12 +53,12 @@
 ai-data-analysis/
 ├── backend/                        # FastAPI + DuckDB Analytical Engine
 │   ├── app/
-│   │   ├── api/routes/             # Endpoints (upload, chat, explore, auth, admin)
+│   │   ├── api/routes/             # Endpoints (upload, chat, explore, auth, admin, dataset, download)
 │   │   ├── db/                     # DuckDB session manager & MongoDB Atlas
 │   │   ├── models/                 # Pydantic schemas & validation models
-│   │   ├── services/               # LLM Groq prompt engine, DuckDB file loader
-│   │   ├── utils/                  # Firebase OAuth SDK, JWT auth, logger streamer
-│   │   ├── validation/             # Whitelist SQL safety & ast parse checker
+│   │   ├── services/               # LLM Groq prompt engine, DuckDB file loader, chart service
+│   │   ├── utils/                  # Firebase OAuth SDK, JWT auth, logger streamer, bloom filter
+│   │   ├── validation/             # Whitelist SQL safety & AST parse checker
 │   │   └── main.py                 # FastAPI app entry point & CORS configuration
 │   ├── tests/                      # Integration & multi-file upload test suite
 │   ├── requirements.txt            # Python dependencies
@@ -67,9 +70,9 @@ ai-data-analysis/
 │   │   │   ├── charts/             # Plotly canvas, ResultTable, SqlViewer, exports
 │   │   │   ├── chat/               # Conversational AI panel & report exporter
 │   │   │   ├── explore/            # Interactive aggregation & pivot builder
-│   │   │   ├── layout/             # macOS studio window bar, collapsible sidebar
+│   │   │   ├── layout/             # macOS studio window bar, collapsible sidebar, UserNavProfile
 │   │   │   ├── preview/            # AG Grid compact dataset preview
-│   │   │   ├── shared/             # Shimmer skeletons, network HUD, app loaders
+│   │   │   ├── shared/             # MainAppLoader, shimmer skeletons, network HUD
 │   │   │   ├── sql-editor/         # DuckDB SQL workspace & schema inspector
 │   │   │   ├── upload/             # Drag-and-drop dataset dropzone
 │   │   │   ├── AnimatedThemeToggler.tsx # View Transition animated theme switcher
@@ -77,16 +80,18 @@ ai-data-analysis/
 │   │   ├── context/                # React state contexts (Dataset, User)
 │   │   ├── hooks/                  # Custom hooks (dark mode, network latency)
 │   │   ├── lib/                    # Shared utilities (type-safe clsx/twMerge)
-│   │   ├── pages/                  # Route views (Dashboard, Admin, Landing, etc.)
+│   │   ├── pages/                  # Route views (Dashboard, Admin, Landing, Terms, Privacy, etc.)
 │   │   ├── services/               # Axios API client & backend endpoints
 │   │   ├── utils/                  # HTML report exporter
 │   │   ├── App.jsx                 # Main application router
-│   │   └── index.css               # Global theme tokens, typography, glassmorphism
+│   │   └── styles/index.css        # Global theme tokens, typography, glassmorphism
 │   ├── package.json                # Frontend scripts & NPM dependencies
 │   ├── tailwind.config.js          # Tailwind CSS theme extensions & animations
 │   └── vite.config.js              # Vite bundler settings & API reverse proxy
 │
+├── .vscode/                        # IDE workspace configuration (Python interpreter path)
 ├── ARCHITECTURE.md                 # System architecture & data flow specification
+├── DEPLOYMENT.md                   # Multi-platform deployment instructions
 ├── INSTRUCTIONS.md                 # Setup guide, credentials & file breakdown
 ├── LICENSE                         # MIT License
 └── README.md                       # Main project documentation & quickstart
@@ -100,15 +105,16 @@ ai-data-analysis/
 
 ```bash
 cd backend
-# 1. Create Python virtual environment
+# 1. Create Python virtual environment (Python 3.10 - 3.12 recommended; Python 3.11 is ideal)
+# Note: Avoid Python 3.14 as PyPI does not yet have pre-compiled wheels for pandas/duckdb on Windows
 python -m venv .venv
 
 # 2. Activate virtual environment:
-# 🔹 Git Bash (MINGW64 / Windows):
-source .venv/Scripts/activate
-
 # 🔹 PowerShell (Windows):
 .\.venv\Scripts\Activate.ps1
+
+# 🔹 Git Bash (MINGW64 / Windows):
+source .venv/Scripts/activate
 
 # 🔹 Command Prompt (CMD / Windows):
 .venv\Scripts\activate.bat
@@ -120,11 +126,16 @@ source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env   # 🔑 Add your GROQ_API_KEY, MONGODB_URI, and MAIL credentials
 
-# 4. Start the backend server:
+# 4. (Optional) Run automated tests:
+python tests/test_fastapi_upload.py
+python tests/test_multi_upload.py
+
+# 5. Start the backend server:
 uvicorn app.main:app --reload --port 8000
 ```
 
-*API docs available at [http://localhost:8000/docs](http://localhost:8000/docs) and Admin API endpoints at [http://localhost:8000/api/admin](http://localhost:8000/api/admin) once running.*
+*API docs available at [http://localhost:8000/docs](http://localhost:8000/docs) and Admin API endpoints at [http://localhost:8000/api/admin](http://localhost:8000/api/admin) once running.*  
+*Default Demo Admin Credentials: `admin@demo.com` / `admin123`.*
 
 ### 🎨 Frontend Setup
 
