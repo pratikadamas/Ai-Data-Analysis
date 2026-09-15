@@ -3,7 +3,7 @@
 </div>
 
 <div align="center">
-  <h1>✨ AI Data Analysis Application✨</h1>
+  <h1>✨ AI Data Analysis Application ✨</h1>
   <p><i>Your intelligent, conversational data analysis assistant.</i></p>
 
   <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" alt="FastAPI" />

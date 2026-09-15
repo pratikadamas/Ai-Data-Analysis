@@ -40,6 +40,7 @@ import {
 import ThemeToggle from "../components/ThemeToggle.jsx";
 import { useUser } from "../context/UserContext.jsx";
 import UserNavProfile from "../components/layout/UserNavProfile.jsx";
+import CtaIllustrationsDecor from "../components/shared/CtaDataIllustrations.jsx";
 
 const stats = [
   { value: "10x", label: "Faster Insights", sub: "compared to manual SQL writing", icon: Zap },
@@ -261,6 +262,7 @@ export default function LandingPage() {
   
   const heroImages = [
     { src: "/assets/hero1.webp", alt: "AI Data Analysis 3D Dashboard" },
+    { src: "/assets/ai_pipeline.webp", alt: "AI Data Pipeline & Ingestion Architecture" },
     { src: "/assets/hero2.webp", alt: "AI Data Analysis Conversational Engine" },
   ];
   const [heroSlide, setHeroSlide] = useState(0);
@@ -1596,14 +1598,17 @@ export default function LandingPage() {
 
       {/* CTA Section */}
       <section className="py-24 relative z-10">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative rounded-3xl p-10 sm:p-16 bg-gradient-to-b from-[#fcfaf5] to-[#f6f1e8] dark:from-[#1a1a1d] dark:to-[#161618] border border-stone-300/80 dark:border-white/[0.1] shadow-[0_24px_60px_rgba(40,30,20,0.07)] dark:shadow-[0_24px_60px_rgba(0,0,0,0.5)] overflow-hidden text-center">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative rounded-3xl p-10 sm:p-16 lg:p-20 bg-gradient-to-b from-[#fcfaf5] to-[#f6f1e8] dark:from-[#1a1a1d] dark:to-[#161618] border border-stone-300/80 dark:border-white/[0.1] shadow-[0_24px_60px_rgba(40,30,20,0.07)] dark:shadow-[0_24px_60px_rgba(0,0,0,0.5)] overflow-hidden text-center">
             
             {/* Background Ambient Glow */}
             <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-[#0071e3]/10 dark:bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-[#06b6d4]/10 dark:bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
             
-            <div className="relative z-10 max-w-2xl mx-auto">
+            {/* Modern 3D Glassmorphic WebP Illustrations */}
+            <CtaIllustrationsDecor />
+
+            <div className="relative z-10 max-w-xl mx-auto px-2">
               <h2 className="text-4xl sm:text-5xl tracking-tight mb-4">
                 <span className="font-kaushan tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] dark:from-blue-400 dark:via-sky-300 dark:to-cyan-300">
                   Start Exploring Your Data Today
