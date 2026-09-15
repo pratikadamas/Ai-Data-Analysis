@@ -52,15 +52,8 @@ export default function MainAppLoader({ text = "Loading AI Data Analysis..." }) 
           {/* Ambient Core Glow */}
           <div className="absolute inset-2 rounded-full bg-gradient-to-tr from-[#0071e3]/30 to-[#06b6d4]/30 dark:from-blue-500/35 dark:to-cyan-400/35 blur-xl animate-pulse" />
 
-          {/* Outer Orbital Ring (Clockwise) */}
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-0 rounded-full border border-dashed border-blue-500/30 dark:border-cyan-400/30"
-          >
-            {/* Satellite Node */}
-            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-gradient-to-r from-[#0071e3] to-[#06b6d4] shadow-[0_0_10px_#06b6d4]" />
-          </motion.div>
+          {/* Outer Orbital Ring (Clean Static Ring without Dot Spin) */}
+          <div className="absolute inset-0 rounded-full border border-dashed border-blue-500/25 dark:border-cyan-400/25" />
 
           {/* Middle Counter-Rotating Shimmer Arc (Counter-Clockwise) */}
           <motion.div

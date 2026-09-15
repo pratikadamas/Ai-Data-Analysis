@@ -152,7 +152,7 @@ function getThemeTransitionClipPaths(
 
 export const AnimatedThemeToggler = ({
   className,
-  duration = 650,
+  duration = 1000,
   variant,
   fromCenter = false,
   theme,
