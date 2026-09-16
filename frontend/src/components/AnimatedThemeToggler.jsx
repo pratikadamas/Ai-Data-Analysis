@@ -127,7 +127,7 @@ function getThemeTransitionClipPaths(
 
 export const AnimatedThemeToggler = ({
   className,
-  duration = 1000,
+  duration = 1200,
   variant,
   fromCenter = false,
   theme,
@@ -233,15 +233,14 @@ export const AnimatedThemeToggler = ({
       viewportHeight
     );
 
+    const toX = `${(x / viewportWidth) * 100}%`;
+    const toY = `${(y / viewportHeight) * 100}%`;
+
     const root = document.documentElement;
     root.dataset.magicuiThemeVt = "active";
-    root.style.setProperty(
-      "--magicui-theme-toggle-vt-duration",
-      `${duration}ms`
-    );
-    // Pin the collapsed clip-path via CSS so Firefox does not paint the new
-    // theme unclipped between snapshot and the ready.then() JS animation.
+    root.style.setProperty("--magicui-theme-toggle-vt-duration", `${duration}ms`);
     root.style.setProperty("--magicui-theme-vt-clip-from", clipPath[0]);
+
     const cleanup = () => {
       isTransitioningRef.current = false;
       delete root.dataset.magicuiThemeVt;
@@ -264,38 +263,19 @@ export const AnimatedThemeToggler = ({
     if (ready && typeof ready.then === "function") {
       ready
         .then(() => {
-          // Soft Bloom: Expanding shape + smooth opacity fade-in on the incoming theme
-          const animNew = document.documentElement.animate(
+          // Hardware-accelerated 120fps compositor animation
+          const anim = document.documentElement.animate(
             {
               clipPath,
-              opacity: [0.15, 1],
             },
             {
               duration,
-              // Fluid quintic ease-out decelerates smoothly to the edges
-              easing: shape === "star" ? "linear" : "cubic-bezier(0.22, 1, 0.36, 1)",
+              easing: shape === "star" ? "linear" : "cubic-bezier(0.35, 0.05, 0.2, 1)",
               fill: "forwards",
               pseudoElement: "::view-transition-new(root)",
             }
           );
-          activeAnimRef.current = animNew;
-
-          // Gentle fade-out on the outgoing theme background for a soft, dreamy crossfade
-          try {
-            document.documentElement.animate(
-              {
-                opacity: [1, 0.25],
-              },
-              {
-                duration,
-                easing: "cubic-bezier(0.22, 1, 0.36, 1)",
-                fill: "forwards",
-                pseudoElement: "::view-transition-old(root)",
-              }
-            );
-          } catch (e) {
-            // Ignore if old root is already unmounted
-          }
+          activeAnimRef.current = anim;
         })
         .catch(() => {});
     }
