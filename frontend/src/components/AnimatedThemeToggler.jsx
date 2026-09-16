@@ -264,9 +264,11 @@ export const AnimatedThemeToggler = ({
     if (ready && typeof ready.then === "function") {
       ready
         .then(() => {
-          const anim = document.documentElement.animate(
+          // Soft Bloom: Expanding shape + smooth opacity fade-in on the incoming theme
+          const animNew = document.documentElement.animate(
             {
               clipPath,
+              opacity: [0.15, 1],
             },
             {
               duration,
@@ -276,7 +278,24 @@ export const AnimatedThemeToggler = ({
               pseudoElement: "::view-transition-new(root)",
             }
           );
-          activeAnimRef.current = anim;
+          activeAnimRef.current = animNew;
+
+          // Gentle fade-out on the outgoing theme background for a soft, dreamy crossfade
+          try {
+            document.documentElement.animate(
+              {
+                opacity: [1, 0.25],
+              },
+              {
+                duration,
+                easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+                fill: "forwards",
+                pseudoElement: "::view-transition-old(root)",
+              }
+            );
+          } catch (e) {
+            // Ignore if old root is already unmounted
+          }
         })
         .catch(() => {});
     }
