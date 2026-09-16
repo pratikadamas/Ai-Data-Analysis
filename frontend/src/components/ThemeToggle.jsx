@@ -1,7 +1,7 @@
 import React from "react";
 import { AnimatedThemeToggler } from "./AnimatedThemeToggler";
 
-export default function ThemeToggle({ className = "", variant = "circle", duration = 1000, ...props }) {
+export default function ThemeToggle({ className = "", variant = "circle", duration = 1200, ...props }) {
   return (
     <AnimatedThemeToggler
       variant={variant}

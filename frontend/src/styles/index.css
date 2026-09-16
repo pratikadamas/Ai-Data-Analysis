@@ -410,6 +410,9 @@ html {
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
+  will-change: clip-path, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 html[data-magicui-theme-vt="active"]::view-transition-old(root) {
