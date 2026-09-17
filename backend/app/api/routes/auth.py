@@ -141,14 +141,11 @@ async def register(payload: RegisterRequest, background_tasks: BackgroundTasks):
     # Send registration OTP in background task (instant response to user)
     background_tasks.add_task(send_otp_email, user_doc["email"], user_doc["username"], otp, "registration")
     
-    response_payload = {
+    return {
         "status": "success",
         "message": "User registered successfully. Please verify your email with the OTP sent.",
         "email": user_doc["email"]
     }
-    if settings.app_env == "development":
-        response_payload["dev_otp"] = otp
-    return response_payload
 
 @router.post("/verify-otp")
 async def verify_otp(payload: VerifyOTPRequest):
@@ -269,14 +266,11 @@ async def resend_otp(payload: ResendOTPRequest, background_tasks: BackgroundTask
     background_tasks.add_task(send_otp_email, user["email"], user["username"], otp, email_purpose)
 
     next_allowed_at = now + timedelta(seconds=OTP_RESEND_COOLDOWN_SECONDS)
-    resend_response = {
+    return {
         "status": "success",
         "message": "A new OTP has been sent to your email.",
         "next_allowed_at": next_allowed_at.isoformat()
     }
-    if settings.app_env == "development":
-        resend_response["dev_otp"] = otp
-    return resend_response
 
 
 @router.post("/login")
@@ -346,13 +340,10 @@ async def forgot_password(payload: ForgotPasswordRequest, background_tasks: Back
     
     background_tasks.add_task(send_otp_email, user["email"], user["username"], otp, "forgot password")
     
-    fp_response = {
+    return {
         "status": "success",
         "message": "If the email is registered, a password reset code has been sent."
     }
-    if settings.app_env == "development":
-        fp_response["dev_otp"] = otp
-    return fp_response
 
 @router.post("/reset-password")
 async def reset_password(payload: ResetPasswordRequest):

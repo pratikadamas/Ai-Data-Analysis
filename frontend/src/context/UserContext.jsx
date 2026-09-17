@@ -90,7 +90,7 @@ export function UserProvider({ children }) {
     setError(null);
     try {
       const response = await api.post("/auth/register", { username, email, password });
-      return { success: true, email: response.data.email, dev_otp: response.data.dev_otp };
+      return { success: true, email: response.data.email };
     } catch (err) {
       const detail = parseError(err, "Registration failed.");
       setError(detail);
@@ -113,8 +113,8 @@ export function UserProvider({ children }) {
   const forgotPassword = useCallback(async (email) => {
     setError(null);
     try {
-      const response = await api.post("/auth/forgot-password", { email });
-      return { success: true, dev_otp: response.data?.dev_otp };
+      await api.post("/auth/forgot-password", { email });
+      return { success: true };
     } catch (err) {
       const detail = parseError(err, "Failed to process forgot password request.");
       setError(detail);
@@ -155,7 +155,7 @@ export function UserProvider({ children }) {
     try {
       const response = await api.post("/auth/resend-otp", { email, purpose });
       // next_allowed_at is an ISO string from the server
-      return { success: true, nextAllowedAt: response.data.next_allowed_at, dev_otp: response.data.dev_otp };
+      return { success: true, nextAllowedAt: response.data.next_allowed_at };
     } catch (err) {
       const detail = parseError(err, "Failed to resend OTP.");
       // Server may return X-Next-Allowed-At header on 429

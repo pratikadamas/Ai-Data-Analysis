@@ -4,7 +4,6 @@ from __future__ import annotations
 import json
 import logging
 import smtplib
-import socket
 import urllib.error
 import urllib.request
 from email.mime.multipart import MIMEMultipart
@@ -115,7 +114,7 @@ def _send_via_smtp(
     html_content: str,
     text_content: str,
 ) -> bool:
-    """Attempt email sending via SMTP with short timeout (5s) so the thread does not hang."""
+    """Attempt email sending via SMTP with short timeout (5s) and automatic SSL fallback."""
     if not settings.mail_username or not settings.mail_password:
         return False
 
@@ -143,9 +142,9 @@ def _send_via_smtp(
         logger.info(f"Successfully delivered OTP email to {to_email} via SMTP ({mail_host}:{settings.mail_port}).")
         return True
     except Exception as primary_exc:
-        logger.warning(f"Primary SMTP connection ({mail_host}:{settings.mail_port}) failed: {primary_exc}. Trying port 465 SSL...")
+        logger.warning(f"Primary SMTP connection ({mail_host}:{settings.mail_port}) failed: {primary_exc}. Trying port 465 SSL fallback...")
 
-    # Port 465 fallback attempt
+    # Port 465 SSL fallback attempt
     try:
         server = smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=5)
         server.login(settings.mail_username, settings.mail_password)
@@ -159,45 +158,201 @@ def _send_via_smtp(
     return False
 
 
+def _build_email_content(username: str, otp: str, purpose: str) -> tuple[str, str, str]:
+    """Build high-fidelity, device-responsive HTML and plain text email content."""
+    purpose_lower = purpose.lower()
+    
+    if "forgot" in purpose_lower or "reset" in purpose_lower:
+        subject = "AI Data Analysis - Password Reset Code"
+        badge_text = "🔒 Password Reset"
+        badge_bg = "#fef2f2"
+        badge_color = "#b91c1c"
+        purpose_intro = (
+            "We received a request to reset your password for your <strong>AI Data Analysis</strong> account. "
+            "Use the verification code below to set up a new password:"
+        )
+        purpose_action = "password reset"
+    elif "reg" in purpose_lower or "sign" in purpose_lower:
+        subject = "AI Data Analysis - Verify Your Email Address"
+        badge_text = "✨ Email Verification"
+        badge_bg = "#eff6ff"
+        badge_color = "#0071e3"
+        purpose_intro = (
+            "Welcome to <strong>AI Data Analysis</strong>! To complete your registration and activate your account, "
+            "please enter the one-time verification code below:"
+        )
+        purpose_action = "account registration"
+    else:
+        subject = f"AI Data Analysis - OTP for {purpose.capitalize()}"
+        badge_text = f"🔐 {purpose.capitalize()}"
+        badge_bg = "#f1f5f9"
+        badge_color = "#334155"
+        purpose_intro = (
+            f"Please use the one-time verification code below to complete your <strong>{purpose}</strong> request:"
+        )
+        purpose_action = purpose
+
+    text_content = (
+        f"AI Data Analysis Portal\n\n"
+        f"Hello {username},\n\n"
+        f"Your one-time verification code for {purpose_action} is:\n\n"
+        f"  -->  {otp}  <--\n\n"
+        f"This code will expire in 15 minutes.\n"
+        f"If you did not request this, you can safely ignore this email.\n\n"
+        f"AI Data Analysis Platform • Automated Security System\n"
+    )
+
+    html_content = f"""<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="color-scheme" content="light"/>
+  <meta name="supported-color-schemes" content="light"/>
+  <title>{subject}</title>
+  <style type="text/css">
+    body, table, td, a {{ -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }}
+    table, td {{ mso-table-lspace: 0pt; mso-table-rspace: 0pt; }}
+    img {{ -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }}
+    body {{ margin: 0; padding: 0; width: 100% !important; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }}
+    @media only screen and (max-width: 600px) {{
+      .email-wrapper {{ padding: 16px 8px !important; }}
+      .email-card {{ border-radius: 12px !important; }}
+      .content-padding {{ padding: 24px 18px !important; }}
+      .otp-display {{ font-size: 30px !important; letter-spacing: 6px !important; padding: 14px 20px !important; }}
+    }}
+  </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f1f5f9" style="table-layout: fixed;">
+    <tr>
+      <td align="center" class="email-wrapper" style="padding: 36px 12px 48px 12px;">
+        
+        <!-- Main Card Container -->
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="email-card" style="max-width: 520px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);">
+          
+          <!-- Top Vibrant Accent Line -->
+          <tr>
+            <td height="4" style="background: linear-gradient(90deg, #0071e3 0%, #38bdf8 50%, #6366f1 100%); line-height: 4px; font-size: 4px;">&nbsp;</td>
+          </tr>
+
+          <!-- Inner Card Body -->
+          <tr>
+            <td class="content-padding" style="padding: 36px 36px 32px 36px;">
+              
+              <!-- Brand Header -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center" style="padding-bottom: 24px;">
+                    <!-- App Logo Icon -->
+                    <table border="0" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td align="center" style="background: linear-gradient(135deg, #0071e3 0%, #0284c7 100%); width: 44px; height: 44px; border-radius: 12px; color: #ffffff; font-weight: 800; font-size: 20px; text-align: center; vertical-align: middle; box-shadow: 0 4px 12px rgba(0, 113, 227, 0.28);">
+                          AI
+                        </td>
+                      </tr>
+                    </table>
+                    <div style="font-size: 19px; font-weight: 700; color: #0f172a; margin-top: 12px; letter-spacing: -0.2px;">
+                      AI Data Analysis
+                    </div>
+                    <div style="display: inline-block; margin-top: 8px; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; background-color: {badge_bg}; color: {badge_color}; letter-spacing: 0.2px;">
+                      {badge_text}
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Greeting & Explanation -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td style="font-size: 15px; line-height: 1.6; color: #334155;">
+                    Hello <strong style="color: #0f172a;">{username}</strong>,
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding-top: 10px; font-size: 15px; line-height: 1.6; color: #475569;">
+                    {purpose_intro}
+                  </td>
+                </tr>
+              </table>
+
+              <!-- OTP Code Display Card -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 28px 0 20px 0;">
+                <tr>
+                  <td align="center">
+                    <table border="0" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border: 2px dashed #0071e3; border-radius: 14px;">
+                      <tr>
+                        <td align="center" class="otp-display" style="padding: 16px 36px;">
+                          <div style="font-family: 'SF Mono', Monaco, Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 36px; font-weight: 800; letter-spacing: 8px; color: #0071e3; line-height: 1.1;">
+                            {otp}
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                    <div style="font-size: 12px; color: #94a3b8; margin-top: 8px; letter-spacing: 0.2px;">
+                      Tap or select code to copy
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Expiry Alert Box -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 12px; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px;">
+                <tr>
+                  <td style="padding: 12px 16px; font-size: 13px; color: #166534; line-height: 1.5;">
+                    <strong style="color: #14532d;">⏱️ Valid for 15 minutes:</strong> Please enter this code promptly before it expires.
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Security Warning -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 20px;">
+                <tr>
+                  <td style="font-size: 13px; color: #64748b; line-height: 1.5;">
+                    If you did not request this code, no action is needed. Your account remains completely secure. Never share this code with anyone.
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Divider -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 26px;">
+                <tr>
+                  <td style="border-top: 1px solid #f1f5f9;"></td>
+                </tr>
+              </table>
+
+              <!-- Footer -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 20px;">
+                <tr>
+                  <td align="center" style="font-size: 12px; color: #94a3b8; line-height: 1.6;">
+                    AI Data Analysis Platform &bull; Automated Security Service<br/>
+                    This is an automated security email. Please do not reply.
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+"""
+    return subject, html_content, text_content
+
+
 def send_otp_email(to_email: str, username: str, otp: str, purpose: str = "registration") -> bool:
     """Send an OTP email to the user.
 
     Priority order:
     1. Resend REST API (HTTPS port 443, immune to cloud firewall port blocks)
     2. Brevo REST API (HTTPS port 443)
-    3. SMTP (ports 587/465, works on local networks where SMTP is not blocked)
+    3. SMTP (ports 587/465, with automatic SSL port 465 fallback)
     4. Console fallback with prominent OTP banner for dev/testing.
     """
-    subject = f"AI Data Analysis - OTP for {purpose.capitalize()}"
-    text_content = (
-        f"Hello {username},\n\n"
-        f"Your verification code for {purpose} is: {otp}\n\n"
-        f"This code will expire in 15 minutes. If you did not request this, please ignore this email."
-    )
-
-    html_content = f"""
-    <html>
-      <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0f172a; padding: 24px; margin: 0; color: #f8fafc;">
-        <div style="max-width: 540px; margin: 0 auto; background: #1e293b; padding: 36px 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.35);">
-          <div style="text-align: center; margin-bottom: 24px;">
-            <div style="display: inline-block; width: 44px; height: 44px; line-height: 44px; border-radius: 12px; background: linear-gradient(135deg, #0071e3, #38bdf8); color: #ffffff; font-weight: bold; font-size: 20px;">AI</div>
-            <h2 style="color: #ffffff; font-size: 20px; font-weight: 700; margin: 12px 0 4px 0;">AI Data Analysis Portal</h2>
-            <p style="color: #94a3b8; font-size: 13px; margin: 0;">Automated Verification Service</p>
-          </div>
-          <p style="color: #e2e8f0; font-size: 15px; line-height: 1.6;">Hello <strong style="color: #ffffff;">{username}</strong>,</p>
-          <p style="color: #94a3b8; font-size: 14px; line-height: 1.5;">Please use the one-time verification code below to complete your <strong>{purpose}</strong> request:</p>
-          <div style="text-align: center; margin: 28px 0;">
-            <span style="font-family: monospace; font-size: 36px; font-weight: 800; letter-spacing: 8px; color: #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 14px 28px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.25); display: inline-block;">
-              {otp}
-            </span>
-          </div>
-          <p style="color: #64748b; font-size: 13px; text-align: center; margin: 20px 0 0 0;">This code expires in <strong>15 minutes</strong>. Never share this code with anyone.</p>
-          <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.08); margin: 28px 0 20px 0;" />
-          <p style="color: #475569; font-size: 11px; text-align: center; margin: 0;">AI Data Analysis Platform &bull; Secure Authentication</p>
-        </div>
-      </body>
-    </html>
-    """
+    subject, html_content, text_content = _build_email_content(username, otp, purpose)
 
     # 1. Try Resend HTTP REST API
     if settings.resend_api_key:
@@ -224,14 +379,8 @@ def send_otp_email(to_email: str, username: str, otp: str, purpose: str = "regis
         f" Purpose   : {purpose.upper()}\n"
         f" OTP CODE  : {otp}\n"
         f"----------------------------------------------------------------------------------------\n"
-        f" WHY IT FAILED: Outbound SMTP (ports 587 and 465) timed out.\n"
-        f"   - Render, AWS, and DigitalOcean block outbound SMTP ports 25, 465, and 587 by default.\n"
-        f"   - Many local ISPs / firewalls also block outbound port 587/465.\n"
-        f" HOW TO FIX (Choose ONE):\n"
-        f"   1. Recommended: Sign up at https://resend.com (free 3,000 emails/mo) and set\n"
-        f"      RESEND_API_KEY=re_xxxx in your backend .env or Render Environment Variables.\n"
-        f"      (Resend uses HTTPS port 443 which is NEVER blocked on Render or ISPs)\n"
-        f"   2. Or set BREVO_API_KEY=xkeysib-xxxx from https://brevo.com (300 free emails/day).\n"
+        f" Outbound SMTP (ports 587 and 465) timed out or API key failed.\n"
+        f" If running on Render/Cloud, add RESEND_API_KEY or BREVO_API_KEY.\n"
         f"========================================================================================\n"
     )
     return False
