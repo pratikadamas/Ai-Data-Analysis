@@ -219,13 +219,32 @@ export function UserProvider({ children }) {
     updateProfilePic(null);
   }, [updateProfilePic]);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem("token");
-    setToken(null);
-    setUser(null);
-    setProfilePicState(null);
-    setError(null);
-  }, []);
+  const logout = useCallback(async () => {
+    const currentToken = localStorage.getItem("token") || token;
+    const currentUser = user;
+    // Notify backend to remove active session immediately
+    try {
+      await api.post(
+        "/auth/logout",
+        {
+          email: currentUser?.email || undefined,
+          username: currentUser?.username || undefined,
+        },
+        {
+          headers: currentToken ? { Authorization: `Bearer ${currentToken}` } : {},
+          timeout: 4000,
+        }
+      );
+    } catch (e) {
+      // Ignore network errors on logout, proceed with local cleanup
+    } finally {
+      localStorage.removeItem("token");
+      setToken(null);
+      setUser(null);
+      setProfilePicState(null);
+      setError(null);
+    }
+  }, [token, user]);
 
   return (
     <UserContext.Provider

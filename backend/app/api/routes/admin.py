@@ -108,6 +108,13 @@ async def admin_login(payload: AdminLoginRequest) -> dict[str, Any]:
             detail="Access denied. User does not have admin privileges.",
         )
 
+    from app.utils.session_tracker import active_session_tracker
+    active_session_tracker.record_activity(
+        user_id_or_email=user["email"],
+        username=user.get("username", user["email"]),
+        role="admin",
+    )
+
     access_token = create_access_token(data={"sub": user["username"], "role": "admin"})
     return {
         "access_token": access_token,

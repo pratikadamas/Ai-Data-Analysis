@@ -49,9 +49,23 @@ class ActiveSessionTracker:
                 }
 
     def remove_session(self, user_id_or_email: str) -> None:
-        """Remove a session explicitly (e.g. on logout)."""
+        """Remove a session explicitly (e.g. on logout). Matches user_key, email, or username."""
+        if not user_id_or_email:
+            return
+        target = str(user_id_or_email).strip().lower()
         with self._lock:
+            # Direct key removal
             self._sessions.pop(user_id_or_email, None)
+            self._sessions.pop(target, None)
+            # Match any session where user_key, email, or username matches target
+            keys_to_remove = [
+                k for k, s in self._sessions.items()
+                if str(k).strip().lower() == target
+                or str(s.get("user_key", "")).strip().lower() == target
+                or str(s.get("username", "")).strip().lower() == target
+            ]
+            for k in keys_to_remove:
+                self._sessions.pop(k, None)
 
     def get_active_sessions(self) -> list[dict[str, Any]]:
         """Return list of active sessions that haven't timed out."""

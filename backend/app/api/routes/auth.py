@@ -425,6 +425,48 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         "created_at": current_user.get("created_at")
     }
 
+class LogoutRequest(BaseModel):
+    email: str | None = None
+    username: str | None = None
+
+@router.post("/logout")
+async def logout(
+    request: Request,
+    payload: LogoutRequest | None = None,
+):
+    """End an active user or admin session immediately."""
+    from app.utils.session_tracker import active_session_tracker
+    removed = []
+
+    # 1. Check if Authorization header is provided
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.split(" ", 1)[1]
+        try:
+            from jose import jwt
+            payload_data = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
+            sub = payload_data.get("sub")
+            if sub:
+                active_session_tracker.remove_session(sub)
+                removed.append(sub)
+        except Exception:
+            pass
+
+    # 2. Check if email/username is sent in payload
+    if payload:
+        if payload.email:
+            active_session_tracker.remove_session(payload.email)
+            removed.append(payload.email)
+        if payload.username:
+            active_session_tracker.remove_session(payload.username)
+            removed.append(payload.username)
+
+    return {
+        "status": "success",
+        "message": "Session terminated successfully.",
+        "removed": removed,
+    }
+
 @router.post("/change-password")
 async def change_password(payload: ChangePasswordRequest, current_user: dict = Depends(get_current_user)):
     users_col = db["users"]

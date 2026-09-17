@@ -285,12 +285,42 @@ export default function Admin() {
     return () => clearInterval(interval);
   }, [activeTab, autoRefreshLogs, fetchLogs]);
 
+  // Periodic auto-refresh for active sessions (every 8 seconds) so the admin panel live count stays current
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchActiveSessions();
+    }, 8000);
+    return () => clearInterval(interval);
+  }, [fetchActiveSessions]);
+
   // Handle Logout
-  const handleLogout = () => {
-    localStorage.removeItem("admin_token");
-    localStorage.removeItem("admin_user");
-    toast.info("Logged out from Admin Panel.");
-    navigate("/admin/login");
+  const handleLogout = async () => {
+    const token = localStorage.getItem("admin_token");
+    const userStr = localStorage.getItem("admin_user");
+    let adminEmail = "";
+    try {
+      if (userStr) {
+        const u = JSON.parse(userStr);
+        adminEmail = u.email || u.username;
+      }
+    } catch {}
+
+    try {
+      const axiosInst = getAdminAxios();
+      await axiosInst.post("/api/auth/logout", {
+        email: adminEmail || undefined,
+      }, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        timeout: 3000,
+      });
+    } catch (e) {
+      // Ignore network errors on logout
+    } finally {
+      localStorage.removeItem("admin_token");
+      localStorage.removeItem("admin_user");
+      toast.info("Logged out from Admin Panel.");
+      navigate("/admin/login");
+    }
   };
 
   // ── Render Groq SVG Chart Component ─────────────────────────────────────────
@@ -1323,9 +1353,18 @@ export default function Admin() {
                     Live Active User Sessions
                   </h3>
                 </div>
-                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
-                  {activeSessions?.sessions?.length ?? 1} Active Session(s)
-                </span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+                    {activeSessions?.sessions?.length ?? 1} Active Session(s)
+                  </span>
+                  <button
+                    onClick={fetchActiveSessions}
+                    className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 text-slate-500 dark:text-slate-400 transition"
+                    title="Refresh Active Sessions"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
 
               <div className="overflow-x-auto">
