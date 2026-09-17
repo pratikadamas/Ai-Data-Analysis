@@ -1,6 +1,8 @@
 """Email utility to send OTPs using modern HTTP APIs (Resend, Brevo) or SMTP fallback."""
 from __future__ import annotations
-
+# 1. First, it tries the Resend API (fast, reliable).
+# 2. If that fails, it automatically tries the Brevo API.
+# 3. If both fail, it finally falls back to standard SMTP (if configured).
 import json
 import logging
 import smtplib
