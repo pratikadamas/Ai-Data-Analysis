@@ -29,25 +29,29 @@ def init_db():
         # Unique indexes
         users.create_index("username", unique=True)
         users.create_index("email", unique=True)
+        users.create_index("firebase_uid", unique=True, sparse=True)
+
+        # Performance indexes for Admin listing, search, and sorting
+        users.create_index([("created_at", -1)])
+        users.create_index([("role", 1), ("created_at", -1)])
         
-        # Email verifications (TTL 600s = 10m)
+        # Email verifications: lookup by user_id + used + created_at
         email_verifications = db["email_verifications"]
         email_verifications.create_index("user_id")
+        email_verifications.create_index([("user_id", 1), ("used", 1), ("created_at", -1)])
         email_verifications.create_index("expires_at", expireAfterSeconds=600)
         
-        # Password resets (TTL 300s = 5m)
+        # Password resets: lookup by user_id + used + created_at
         password_resets = db["password_resets"]
         password_resets.create_index("user_id")
+        password_resets.create_index([("user_id", 1), ("used", 1), ("created_at", -1)])
         password_resets.create_index("expires_at", expireAfterSeconds=300)
-
-        # Google OAuth users: sparse unique index on firebase_uid
-        users.create_index("firebase_uid", unique=True, sparse=True)
 
         # Groq API Usage collection
         groq_usage = db["groq_usage"]
         groq_usage.create_index("date", unique=True)
 
-        logger.info("MongoDB unique and TTL indexes initialized successfully.")
+        logger.info("MongoDB unique, performance, and TTL indexes initialized successfully.")
 
         # ── Seed the Bloom Filter ──────────────────────────────────────────────
         # One-time bulk read of all existing usernames. After this point, every
