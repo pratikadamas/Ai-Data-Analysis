@@ -195,8 +195,13 @@ export default function Auth() {
     if (result.success) {
       setEmail(result.email);
       switchView("verify");
-      const statusMsg = "Account registered! A 6-digit OTP code has been sent to your email.";
-      toast.success(statusMsg);
+      if (result.dev_otp) {
+        setOtp(result.dev_otp);
+        toast.info(`[Dev Mode] OTP auto-filled: ${result.dev_otp}`, { duration: 8000 });
+      } else {
+        const statusMsg = "Account registered! A 6-digit OTP code has been sent to your email.";
+        toast.success(statusMsg);
+      }
     } else {
       toast.error(result.error);
     }
@@ -230,8 +235,13 @@ export default function Auth() {
     setLoading(false);
     if (result.success) {
       switchView("reset");
-      const statusMsg = "If the email matches, a reset OTP code was sent. Fill details below to reset.";
-      toast.success(statusMsg);
+      if (result.dev_otp) {
+        setOtp(result.dev_otp);
+        toast.info(`[Dev Mode] Reset OTP auto-filled: ${result.dev_otp}`, { duration: 8000 });
+      } else {
+        const statusMsg = "If the email matches, a reset OTP code was sent. Fill details below to reset.";
+        toast.success(statusMsg);
+      }
     } else {
       toast.error(result.error);
     }
@@ -259,9 +269,14 @@ export default function Auth() {
     const result = await resendOtp(email, purpose);
     setResendLoading(false);
     if (result.success) {
-      setOtp("");
+      if (result.dev_otp) {
+        setOtp(result.dev_otp);
+        toast.info(`[Dev Mode] New OTP auto-filled: ${result.dev_otp}`, { duration: 8000 });
+      } else {
+        setOtp("");
+        toast.success("A new OTP has been sent to your email!");
+      }
       startCountdown(result.nextAllowedAt || OTP_COOLDOWN);
-      toast.success("A new OTP has been sent to your email!");
     } else {
       // Even on error, if server gave a cooldown timestamp, respect it
       if (result.nextAllowedAt) {

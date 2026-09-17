@@ -5,7 +5,7 @@ import logging
 import secrets
 from datetime import datetime, timedelta
 # pyrefly: ignore [missing-import]
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
 # pyrefly: ignore [missing-import]
@@ -75,7 +75,7 @@ def generate_otp() -> str:
 # --- Endpoints ---
 
 @router.post("/register")
-async def register(payload: RegisterRequest):
+async def register(payload: RegisterRequest, background_tasks: BackgroundTasks):
     users_col = db["users"]
     username_clean = payload.username.strip()
 
@@ -138,14 +138,17 @@ async def register(payload: RegisterRequest):
         "created_at": datetime.utcnow()
     })
     
-    # Send registration OTP
-    send_otp_email(user_doc["email"], user_doc["username"], otp, purpose="registration")
+    # Send registration OTP in background task (instant response to user)
+    background_tasks.add_task(send_otp_email, user_doc["email"], user_doc["username"], otp, "registration")
     
-    return {
+    response_payload = {
         "status": "success",
         "message": "User registered successfully. Please verify your email with the OTP sent.",
         "email": user_doc["email"]
     }
+    if settings.app_env == "development":
+        response_payload["dev_otp"] = otp
+    return response_payload
 
 @router.post("/verify-otp")
 async def verify_otp(payload: VerifyOTPRequest):
@@ -197,7 +200,7 @@ async def verify_otp(payload: VerifyOTPRequest):
 OTP_RESEND_COOLDOWN_SECONDS = 60  # Users must wait 60 s between resend requests
 
 @router.post("/resend-otp")
-async def resend_otp(payload: ResendOTPRequest):
+async def resend_otp(payload: ResendOTPRequest, background_tasks: BackgroundTasks):
     """Resend OTP for registration verification or password reset."""
     users_col = db["users"]
     user = users_col.find_one({"email": payload.email.strip().lower()})
@@ -263,14 +266,17 @@ async def resend_otp(payload: ResendOTPRequest):
         "created_at": now
     })
 
-    send_otp_email(user["email"], user["username"], otp, purpose=email_purpose)
+    background_tasks.add_task(send_otp_email, user["email"], user["username"], otp, email_purpose)
 
     next_allowed_at = now + timedelta(seconds=OTP_RESEND_COOLDOWN_SECONDS)
-    return {
+    resend_response = {
         "status": "success",
         "message": "A new OTP has been sent to your email.",
         "next_allowed_at": next_allowed_at.isoformat()
     }
+    if settings.app_env == "development":
+        resend_response["dev_otp"] = otp
+    return resend_response
 
 
 @router.post("/login")
@@ -316,7 +322,7 @@ async def login(payload: LoginRequest, request: Request):
     }
 
 @router.post("/forgot-password")
-async def forgot_password(payload: ForgotPasswordRequest):
+async def forgot_password(payload: ForgotPasswordRequest, background_tasks: BackgroundTasks):
     users_col = db["users"]
     user = users_col.find_one({"email": payload.email.strip().lower()})
     
@@ -338,12 +344,15 @@ async def forgot_password(payload: ForgotPasswordRequest):
         "created_at": datetime.utcnow()
     })
     
-    send_otp_email(user["email"], user["username"], otp, purpose="forgot password")
+    background_tasks.add_task(send_otp_email, user["email"], user["username"], otp, "forgot password")
     
-    return {
+    fp_response = {
         "status": "success",
         "message": "If the email is registered, a password reset code has been sent."
     }
+    if settings.app_env == "development":
+        fp_response["dev_otp"] = otp
+    return fp_response
 
 @router.post("/reset-password")
 async def reset_password(payload: ResetPasswordRequest):

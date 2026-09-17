@@ -53,6 +53,10 @@ class Settings:
     mail_starttls: bool = os.getenv("MAIL_STARTTLS", "True").lower() == "true"
     mail_ssl_tls: bool = os.getenv("MAIL_SSL_TLS", "False").lower() == "true"
 
+    # Cloud Email API Keys (HTTP REST over port 443 - bypasses Render/AWS/ISP SMTP port blocking)
+    resend_api_key: str = os.getenv("RESEND_API_KEY", "")
+    brevo_api_key: str = os.getenv("BREVO_API_KEY", "")
+
     # Firebase Admin SDK (for verifying Google OAuth ID tokens)
     firebase_project_id: str = os.getenv("FIREBASE_PROJECT_ID", "")
     firebase_client_email: str = os.getenv("FIREBASE_CLIENT_EMAIL", "")

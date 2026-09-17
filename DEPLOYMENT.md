@@ -41,7 +41,8 @@ Render is ideal for the backend because it provides a persistent Web Service tha
    - `GROQ_API_KEY`: Your Groq Cloud API key
    - `MONGODB_URI`: MongoDB Atlas connection string (Ensure `0.0.0.0/0` or Render IPs are whitelisted)
    - `JWT_SECRET`: Random 32+ character secret
-   - `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM`: SMTP credentials for OTP delivery
+   - `RESEND_API_KEY`: *(Highly Recommended on Render)* Cloud HTTP email API key from [Resend.com](https://resend.com) (free 3,000 emails/month). Render blocks outbound SMTP ports 587 and 465, so HTTP APIs over port 443 are required for reliable OTP email delivery.
+   - `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM`: SMTP credentials (optional fallback for local/VPS environments where ports 587/465 are unblocked)
    - `ADMIN_EMAIL`: Admin email (defaults to `admin@demo.com`)
    - `ADMIN_PASSWORD_HASH`: Pre-hashed admin password or let the app initialize demo admin (`admin@demo.com` / `admin123`)
 6. Click **Create Web Service**.
