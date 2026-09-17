@@ -78,57 +78,58 @@ def generate_otp() -> str:
 async def register(payload: RegisterRequest, background_tasks: BackgroundTasks):
     users_col = db["users"]
     username_clean = payload.username.strip()
+    email_clean = payload.email.strip().lower()
 
-    # ── STEP 1: Bloom Filter pre-check (zero DB I/O) ──────────────────────────
-    #
-    # The Bloom Filter answers in O(k) in-memory bit-reads.
-    #
-    #   might_exist() == False  →  username DEFINITELY does not exist.
-    #                              Skip the MongoDB query entirely. ✅
-    #
-    #   might_exist() == True   →  username POSSIBLY exists (real duplicate
-    #                              OR a ~0.1% false positive).
-    #                              Proceed to Step 2 to confirm.
-    #
-    if username_bloom_filter.might_exist(username_clean):
-        # ── STEP 2: DB confirmation (only reached ~0.1% of the time) ──────────
-        if users_col.find_one({"username": username_clean}):
+    # Check if email is already registered
+    existing_user = users_col.find_one({"email": email_clean})
+    if existing_user:
+        if existing_user.get("is_verified", False):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Username already exists. Please choose another username."
+                detail="An account with this email address already exists. Please sign in."
             )
-    # If might_exist() returned False, we skip Step 2 entirely — no DB read.
-
-    # Email uniqueness always requires a direct DB check (no email filter)
-    if users_col.find_one({"email": payload.email.strip().lower()}):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email is already registered"
+        # Account was created previously but never verified: update credentials & reissue single fresh OTP
+        user_id = existing_user["_id"]
+        users_col.update_one(
+            {"_id": user_id},
+            {"$set": {
+                "username": username_clean,
+                "hashed_password": hash_password(payload.password),
+                "created_at": datetime.utcnow()
+            }}
         )
-        
-    # Create the user document (unverified by default)
-    user_doc = {
-        "username": username_clean,
-        "email": payload.email.strip().lower(),
-        "hashed_password": hash_password(payload.password),
-        "role": "user",
-        "is_active": True,
-        "is_verified": False,
-        "created_at": datetime.utcnow()
-    }
-    
-    result = users_col.insert_one(user_doc)
-    user_id = result.inserted_id
+    else:
+        # Username bloom filter check for new user
+        if username_bloom_filter.might_exist(username_clean):
+            if users_col.find_one({"username": username_clean}):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Username already exists. Please choose another username."
+                )
 
-    # ── STEP 3: Keep the Bloom Filter in sync ─────────────────────────────────
-    # Add the new username immediately so the next registration attempt for
-    # this same username is caught at the filter level without a DB query.
-    username_bloom_filter.add(username_clean)
-    
-    # Generate and store OTP
+        user_doc = {
+            "username": username_clean,
+            "email": email_clean,
+            "hashed_password": hash_password(payload.password),
+            "role": "user",
+            "is_active": True,
+            "is_verified": False,
+            "created_at": datetime.utcnow()
+        }
+        result = users_col.insert_one(user_doc)
+        user_id = result.inserted_id
+        username_bloom_filter.add(username_clean)
+
+    # Invalidate all previous unused OTPs for this user
+    db["email_verifications"].update_many(
+        {"user_id": {"$in": [user_id, str(user_id)]}, "used": False},
+        {"$set": {"used": True}}
+    )
+
+    # Generate single fresh OTP (15 min expiry)
     otp = generate_otp()
     otp_hash = hash_password(otp)
-    otp_expiry = datetime.utcnow() + timedelta(minutes=10)
+    otp_expiry = datetime.utcnow() + timedelta(minutes=15)
     
     db["email_verifications"].insert_one({
         "user_id": user_id,
@@ -138,20 +139,22 @@ async def register(payload: RegisterRequest, background_tasks: BackgroundTasks):
         "created_at": datetime.utcnow()
     })
     
-    # Send registration OTP in background task (instant response to user)
-    background_tasks.add_task(send_otp_email, user_doc["email"], user_doc["username"], otp, "registration")
+    # Send EXACTLY ONE registration OTP in background task
+    background_tasks.add_task(send_otp_email, email_clean, username_clean, otp, "registration")
     
     return {
         "status": "success",
         "message": "User registered successfully. Please verify your email with the OTP sent.",
-        "email": user_doc["email"]
+        "email": email_clean
     }
 
 @router.post("/verify-otp")
 async def verify_otp(payload: VerifyOTPRequest):
     users_col = db["users"]
-    user = users_col.find_one({"email": payload.email.strip().lower()})
-    
+    email_clean = payload.email.strip().lower()
+    otp_clean = payload.otp.strip().replace(" ", "").replace("-", "")
+
+    user = users_col.find_one({"email": email_clean})
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -163,20 +166,26 @@ async def verify_otp(payload: VerifyOTPRequest):
 
     verifications_col = db["email_verifications"]
     verification = verifications_col.find_one(
-        {"user_id": user["_id"], "used": False},
+        {"user_id": {"$in": [user["_id"], str(user["_id"])]}, "used": False},
         sort=[("created_at", -1)]
     )
     
     if not verification:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No valid verification request found or OTP has expired."
+            detail="No pending verification request found. Please request a new OTP."
         )
-        
-    if not verify_password(payload.otp.strip(), verification["otp_hash"]):
+
+    if verification.get("expires_at") and datetime.utcnow() > verification["expires_at"]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid OTP code"
+            detail="OTP code has expired. Please click 'Resend OTP' to receive a new code."
+        )
+        
+    if not verify_password(otp_clean, verification["otp_hash"]):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid OTP code. Please check your email for the 6-digit verification code."
         )
         
     # Mark user as verified
@@ -185,9 +194,9 @@ async def verify_otp(payload: VerifyOTPRequest):
         {"$set": {"is_verified": True}}
     )
     
-    # Mark OTP as used
-    verifications_col.update_one(
-        {"_id": verification["_id"]},
+    # Invalidate all verification records for this user
+    verifications_col.update_many(
+        {"user_id": {"$in": [user["_id"], str(user["_id"])]}},
         {"$set": {"used": True}}
     )
     
@@ -246,14 +255,14 @@ async def resend_otp(payload: ResendOTPRequest, background_tasks: BackgroundTask
 
     # Invalidate all old unused OTPs for this user
     col.update_many(
-        {"user_id": user["_id"], "used": False},
+        {"user_id": {"$in": [user["_id"], str(user["_id"])]}, "used": False},
         {"$set": {"used": True}}
     )
 
-    # Generate fresh OTP
+    # Generate fresh OTP (15 min expiry)
     otp = generate_otp()
     otp_hash = hash_password(otp)
-    otp_expiry = now + timedelta(minutes=10)
+    otp_expiry = now + timedelta(minutes=15)
 
     col.insert_one({
         "user_id": user["_id"],
@@ -318,17 +327,25 @@ async def login(payload: LoginRequest, request: Request):
 @router.post("/forgot-password")
 async def forgot_password(payload: ForgotPasswordRequest, background_tasks: BackgroundTasks):
     users_col = db["users"]
-    user = users_col.find_one({"email": payload.email.strip().lower()})
+    email_clean = payload.email.strip().lower()
+    user = users_col.find_one({"email": email_clean})
     
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Unauthorized access"
-        )
+        # Standard security: return success without leaking user existence
+        return {
+            "status": "success",
+            "message": "If the email is registered, a password reset code has been sent."
+        }
         
+    # Invalidate previous unused resets
+    db["password_resets"].update_many(
+        {"user_id": {"$in": [user["_id"], str(user["_id"])]}, "used": False},
+        {"$set": {"used": True}}
+    )
+
     otp = generate_otp()
     otp_hash = hash_password(otp)
-    otp_expiry = datetime.utcnow() + timedelta(minutes=5)
+    otp_expiry = datetime.utcnow() + timedelta(minutes=15)
     
     db["password_resets"].insert_one({
         "user_id": user["_id"],
@@ -348,8 +365,10 @@ async def forgot_password(payload: ForgotPasswordRequest, background_tasks: Back
 @router.post("/reset-password")
 async def reset_password(payload: ResetPasswordRequest):
     users_col = db["users"]
-    user = users_col.find_one({"email": payload.email.strip().lower()})
-    
+    email_clean = payload.email.strip().lower()
+    otp_clean = payload.otp.strip().replace(" ", "").replace("-", "")
+
+    user = users_col.find_one({"email": email_clean})
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -358,20 +377,26 @@ async def reset_password(payload: ResetPasswordRequest):
         
     resets_col = db["password_resets"]
     reset_doc = resets_col.find_one(
-        {"user_id": user["_id"], "used": False},
+        {"user_id": {"$in": [user["_id"], str(user["_id"])]}, "used": False},
         sort=[("created_at", -1)]
     )
     
     if not reset_doc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No valid password reset request found or OTP has expired."
+            detail="No pending password reset request found. Please request a new code."
         )
-        
-    if not verify_password(payload.otp.strip(), reset_doc["otp_hash"]):
+
+    if reset_doc.get("expires_at") and datetime.utcnow() > reset_doc["expires_at"]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid OTP code"
+            detail="Password reset code has expired. Please request a new code."
+        )
+        
+    if not verify_password(otp_clean, reset_doc["otp_hash"]):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid OTP code. Please enter the 6-digit code from your email."
         )
         
     # Reset password
@@ -381,9 +406,9 @@ async def reset_password(payload: ResetPasswordRequest):
         {"$set": {"hashed_password": hashed}}
     )
     
-    # Mark OTP as used
-    resets_col.update_one(
-        {"_id": reset_doc["_id"]},
+    # Mark all resets for this user as used
+    resets_col.update_many(
+        {"user_id": {"$in": [user["_id"], str(user["_id"])]}},
         {"$set": {"used": True}}
     )
     

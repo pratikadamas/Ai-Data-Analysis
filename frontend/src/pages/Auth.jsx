@@ -183,6 +183,7 @@ export default function Auth() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    if (loading) return;
     if (!username || !email || !password) return;
     if (!validateEmail(email)) {
       setEmailError("Enter a valid Email");
@@ -204,6 +205,7 @@ export default function Auth() {
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
+    if (loading) return;
     if (!email || !otp) return;
     setLoading(true);
     const result = await verifyOtp(email, otp);
@@ -219,6 +221,7 @@ export default function Auth() {
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
+    if (loading) return;
     if (!email) return;
     if (!validateEmail(email)) {
       setEmailError("Enter a valid Email");
@@ -239,6 +242,7 @@ export default function Auth() {
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
+    if (loading) return;
     if (!email || !password || !otp) return;
     setLoading(true);
     const result = await resetPassword(email, password, otp);
