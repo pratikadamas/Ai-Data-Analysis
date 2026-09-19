@@ -27,7 +27,7 @@
 - 🧭 **Dynamic Scroll-Squeezing Navigation**: Starts full-screen width at the top (`scrollY === 0`) and smoothly squeezes into a floating frosted glass pill on scroll across the Home page and all legal/documentation pages (`/terms`, `/privacy`, `/docs`, `/faq`).
 - 🎯 **Centered Hero Headers**: Clean, unified centered hero banners on all footer redirect pages with unclipped cursive typography (`font-kaushan`).
 - ⚡ **Zero-Lag In-Memory Analytics**: Instant queries on multi-million row datasets via embedded DuckDB with read-only whitelist validation and multi-table joins.
-- 📂 **Multi-File Upload & Background Queues**: Upload up to 10 CSV, Excel (`.xlsx`/`.xls`), SQLite (`.db`), or `.sql` files with persistent background upload queues and automatic session schema recovery.
+- 📂 **Multi-File Upload & Background Queues**: Upload up to 10 CSV, Excel (`.xlsx`/`.xls`), SQLite (`.db`), `.sql`, or **PDF** files with persistent background upload queues and automatic session schema recovery.
 - 🤖 **Conversational AI Analysis**: Ask questions in plain English. The AI generates verified SQL queries, markdown explanations, interactive Plotly visualizations, and downloadable HTML reports.
 - 📊 **Auto-Explore & Visualizer**: Interactive chart builder with dynamic aggregation (`SUM`, `AVG`, `COUNT`, `MIN`, `MAX`) across 7 chart types.
 - 💻 **SQL Editor & Schema Explorer**: Live table schema explorer, syntax validation, and instant table preview with export options.
@@ -184,7 +184,7 @@ npm run dev
 
 ### 📥 Data Ingestion
 
-- **Drag-and-drop** or click-to-upload for CSV, Excel (`.xlsx`/`.xls`), SQLite (`.db`/`.sqlite`), and SQL dump (`.sql`).
+- **Drag-and-drop** or click-to-upload for CSV, Excel (`.xlsx`/`.xls`), SQLite (`.db`/`.sqlite`), SQL dump (`.sql`), and **PDF** (`.pdf`).
 - Format auto-detection → loaded into a per-session in-memory DuckDB database.
 - **Smart Naming**: The uploaded filename becomes the SQL table name (e.g. `sales_2024.csv` → table `sales_2024`), ensuring natural AI queries.
 
@@ -251,9 +251,7 @@ npm run dev
 - [ ] 📌 Saved/named dashboards
 - [ ] 🔄 Multi-turn conversation context (history passed to the LLM)
 - [ ] 🔗 Multi-file joins
-- [ ] 🐘 External DB connections (MySQL / Postgres / Snowflake)
-- [ ] 📄 PDF/PPTX export
-- [ ] 🎙️ Voice queries
+- [ ] 📊 PPTX export (PowerPoint slide deck from chat insights)
 
 ---
 
@@ -366,75 +364,32 @@ Allow users to upload multiple interrelated files (e.g. `orders.csv` and `custom
 
 ---
 
-### 4. 🐘 External Database Connections (MySQL, PostgreSQL, Snowflake)
+### 4. 📊 PPTX Executive Export
 
-#### 🎯 Objective & Workflow for External Databases
+#### 🎯 Objective & Workflow for PowerPoint Export
 
-Connect directly to live relational and cloud data warehouses without manual CSV/Excel exports.
+Generate formatted PowerPoint slide decks from chat insights, KPI cards, and Plotly charts.
 
-#### ⚙️ Technical Architecture for External Databases
+> **Note:** PDF export is already supported via the existing HTML → PDF pipeline (`jspdf` + `html2canvas-pro`). PPTX export is the remaining planned output format.
 
-1. **Native DuckDB Engine Connectors**:
-   - Utilize DuckDB's native zero-copy extensions:
-     - `INSTALL postgres; LOAD postgres;` → `ATTACH 'dbname=... host=...' AS pg_db (TYPE POSTGRES);`
-     - `INSTALL mysql; LOAD mysql;` → `ATTACH 'host=... user=...' AS my_db (TYPE MYSQL);`
-     - Snowflake / BigQuery connector via SQLAlchemy and Apache Arrow record batch streaming.
+#### ⚙️ Technical Architecture for PowerPoint Export
 
-2. **Secure Credential Vault (`backend/app/db/connections.py`)**:
-   - Credentials stored in MongoDB with AES-256 field-level encryption.
-   - Enforce strictly read-only connections (`read_only=True`) to guarantee database safety.
-
-3. **Connection Endpoints (`/api/connectors`)**:
-   - `POST /api/connectors/test`: Performs connection handshake, latency ping, and schema inspection.
-   - `POST /api/connectors/attach`: Mounts remote tables into the session DuckDB instance.
-
-4. **Frontend Modal (`DatabaseConnectorModal.jsx`)**:
-   - Tabbed setup form for PostgreSQL, MySQL, SQLite, and Snowflake with test connection validation.
-
----
-
-### 5. 📄 PDF & PPTX Executive Export
-
-#### 🎯 Objective & Workflow for PDF and PowerPoint Export
-
-Generate executive-ready PDF analytics reports and formatted PowerPoint slide decks from chat insights, KPI cards, and Plotly charts.
-
-#### ⚙️ Technical Architecture for PDF and PowerPoint Export
-
-1. **Client-Side Instant Export**:
-   - **PDF Generation**: Powered by `jspdf` and `html2canvas-pro` to capture vector Plotly charts, executive markdown summaries, and data tables with custom branding and pagination.
-   - **PowerPoint (.pptx) Generation**: Powered by `pptxgenjs`:
+1. **Client-Side PPTX Generation**:
+   - Powered by `pptxgenjs`:
      - **Slide 1**: Title slide with dataset name, author, and timestamp.
      - **Slide 2**: Executive Summary & high-level KPI cards.
      - **Slides 3+**: One slide per query with the question, high-res chart image, and AI insight bullets.
 
 2. **Backend Server-Side Export (`/api/export/report`)**:
-   - Python `reportlab` / `python-pptx` pipeline for automated scheduled reports.
+   - Python `python-pptx` pipeline for automated scheduled PPTX generation.
 
 3. **Frontend UI**:
    - Dedicated export dropdown in `Header.jsx` and `ChatPanel.jsx`:
-     - 🌐 *Export as Interactive HTML* (Live)
-     - 📄 *Export as PDF Document* (Formatted executive document)
-     - 📊 *Export as PowerPoint (.pptx)* (Slide deck presentation)
+     - 🌐 *Export as Interactive HTML* (Live — already available)
+     - 📄 *Export as PDF Document* (already available)
+     - 📊 *Export as PowerPoint (.pptx)* (planned)
 
 ---
-
-### 6. 🎙️ Voice Queries (Speech-to-Text)
-
-#### 🎯 Objective & Workflow for Voice Queries
-
-Enable hands-free data analysis by allowing users to speak their questions directly into the chat input.
-
-#### ⚙️ Technical Architecture for Voice Queries
-
-1. **Dual-Layer Speech Recognition**:
-   - **Layer 1 (Browser Web Speech API)**: Native `webkitSpeechRecognition` for zero-latency, client-side streaming transcription with real-time waveform animation.
-   - **Layer 2 (Groq Whisper Fallback)**: For browsers without native speech recognition (Firefox/custom browsers), records audio via `MediaRecorder` and sends audio chunks to `/api/chat/transcribe` powered by Groq's high-speed `whisper-large-v3-turbo` model (<300ms turnaround).
-
-2. **Frontend UI/UX (`VoiceInputButton.jsx`)**:
-   - Microphone button integrated inside the chat input bar.
-   - Pulsating audio wave animation while listening.
-   - Auto-stops on silence detection and automatically triggers the analytical query.
 
 <div align="center">
   <i>Built with ❤️ for data analysis everywhere! Happy Querying! 📊✨</i>
