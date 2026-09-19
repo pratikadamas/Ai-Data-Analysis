@@ -40,7 +40,6 @@ import {
 import ThemeToggle from "../components/ThemeToggle.jsx";
 import { useUser } from "../context/UserContext.jsx";
 import UserNavProfile from "../components/layout/UserNavProfile.jsx";
-import CtaIllustrationsDecor from "../components/shared/CtaDataIllustrations.jsx";
 
 const stats = [
   { value: "10x", label: "Faster Insights", sub: "compared to manual SQL writing", icon: Zap },
@@ -259,23 +258,6 @@ export default function LandingPage() {
   const [isDemoHovered, setIsDemoHovered] = useState(false);
   const [copiedSql, setCopiedSql] = useState(false);
   const [cardView, setCardView] = useState("visual"); // 'visual' | 'sql'
-  
-  const heroImages = [
-    { src: "/assets/hero1.webp", alt: "AI Data Analysis 3D Dashboard" },
-    { src: "/assets/ai_pipeline.webp", alt: "AI Data Pipeline & Ingestion Architecture" },
-    { src: "/assets/hero2.webp", alt: "AI Data Analysis Conversational Engine" },
-  ];
-  const [heroSlide, setHeroSlide] = useState(0);
-  const [isHeroHovered, setIsHeroHovered] = useState(false);
-
-  // Auto-playing Hero Carousel motion (3s timer, pauses on hover)
-  useEffect(() => {
-    if (isHeroHovered) return;
-    const timer = setInterval(() => {
-      setHeroSlide((prev) => (prev + 1) % heroImages.length);
-    }, 3000);
-    return () => clearInterval(timer);
-  }, [isHeroHovered]);
 
   const handleCopySql = (sqlText) => {
     if (navigator?.clipboard?.writeText) {
@@ -684,58 +666,28 @@ export default function LandingPage() {
                   <div className="p-1 rounded-md bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 group-hover:bg-cyan-100 dark:group-hover:bg-cyan-900/60 transition-colors duration-200">
                     <Check className="w-3.5 h-3.5" />
                   </div>
-                  <span>Free to explore</span>
+                      <span>Free to explore</span>
                 </span>
               </div>
             </div>
 
-            {/* Right Column: Pure Images in Carousel Motion (No Texts, No Box Background) */}
+            {/* Right Column: Animated Vector Assistant Bot (Pure SVG, 100% Transparent, Infinite 4K, Zero Blur, Zero Texts) */}
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.85, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:col-span-5 flex flex-col items-center justify-center relative select-none"
-              onMouseEnter={() => setIsHeroHovered(true)}
-              onMouseLeave={() => setIsHeroHovered(false)}
+              initial={{ opacity: 0, scale: 0.94, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="lg:col-span-5 flex items-center justify-center relative select-none"
             >
-              {/* Carousel Container */}
-              <div 
-                className="relative w-full max-w-[460px] lg:max-w-[500px] min-h-[280px] sm:min-h-[340px] flex items-center justify-center cursor-pointer"
-                onClick={() => setHeroSlide((prev) => (prev + 1) % heroImages.length)}
-                title="Click to next slide"
-              >
-                <AnimatePresence mode="wait">
-                  <motion.img
-                    key={heroSlide}
-                    src={heroImages[heroSlide].src}
-                    alt={heroImages[heroSlide].alt}
-                    initial={{ opacity: 0, x: 24, scale: 0.97 }}
-                    animate={{ opacity: 1, x: 0, scale: 1 }}
-                    exit={{ opacity: 0, x: -24, scale: 0.97 }}
-                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                    className="w-full max-w-[420px] lg:max-w-[480px] h-auto object-contain drop-shadow-[0_16px_36px_rgba(0,0,0,0.08)] dark:drop-shadow-[0_16px_36px_rgba(0,0,0,0.4)] hover:scale-[1.02] transition-transform duration-300"
-                  />
-                </AnimatePresence>
-              </div>
+              {/* Soft ambient backglow matching platform brand palette */}
+              <div className="absolute w-[360px] h-[360px] bg-gradient-to-tr from-[#0071e3]/20 via-[#06b6d4]/20 to-[#3b82f6]/20 dark:from-[#0071e3]/25 dark:via-[#06b6d4]/20 dark:to-[#3b82f6]/20 rounded-full blur-3xl pointer-events-none" />
 
-              {/* Minimalist Carousel Dots (pure dots, no text) */}
-              <div className="flex items-center gap-2 mt-4">
-                {heroImages.map((_, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setHeroSlide(idx);
-                    }}
-                    aria-label={`Slide ${idx + 1}`}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                      heroSlide === idx 
-                        ? "w-7 bg-[#0071e3] dark:bg-blue-400" 
-                        : "w-2 bg-stone-300 dark:bg-stone-700 hover:bg-stone-400"
-                    }`}
-                  />
-                ))}
+              {/* Seamless Floating Vector Illustration (Still & Suspended on Screen) */}
+              <div className="relative w-full max-w-[480px] lg:max-w-[540px] flex items-center justify-center">
+                <img
+                  src="/assets/Assistant-Bot.svg"
+                  alt="AI Assistant Bot"
+                  className="w-full h-auto object-contain pointer-events-none drop-shadow-[0_25px_50px_rgba(0,113,227,0.15)] dark:drop-shadow-[0_25px_50px_rgba(6,182,212,0.2)]"
+                />
               </div>
             </motion.div>
           </div>
@@ -1599,34 +1551,50 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="py-24 relative z-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative rounded-3xl p-10 sm:p-16 lg:p-20 bg-gradient-to-b from-[#fcfaf5] to-[#f6f1e8] dark:from-[#1a1a1d] dark:to-[#161618] border border-stone-300/80 dark:border-white/[0.1] shadow-[0_24px_60px_rgba(40,30,20,0.07)] dark:shadow-[0_24px_60px_rgba(0,0,0,0.5)] overflow-hidden text-center">
+          <div className="relative rounded-3xl p-10 sm:p-16 lg:p-20 bg-gradient-to-b from-[#fcfaf5] to-[#f5efe4] dark:bg-[#030712] border border-stone-300/80 dark:border-0 shadow-[0_24px_60px_rgba(40,30,20,0.06)] dark:shadow-[0_24px_60px_rgba(0,113,227,0.3)] overflow-hidden text-center group">
             
-            {/* Background Ambient Glow */}
-            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-[#0071e3]/10 dark:bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-[#06b6d4]/10 dark:bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
-            
-            {/* Modern 3D Glassmorphic WebP Illustrations */}
-            <CtaIllustrationsDecor />
+            {/* Cybernetic Data Topography Background Images */}
+            <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
+              {/* Light Mode: Crisp White & Sapphire Blue Digital Topography */}
+              <img
+                src="/assets/cta_data_topography_light.webp"
+                alt="Cybernetic Data Topography Light"
+                className="w-full h-full object-cover object-center block dark:hidden opacity-85 contrast-105 brightness-100 transition-transform duration-1000 ease-out group-hover:scale-105"
+              />
+              {/* Dark Mode: Deep Cybernetic Neon Blue Topography */}
+              <img
+                src="/assets/cta_data_topography.webp"
+                alt="Cybernetic Data Topography Dark"
+                className="w-full h-full object-cover object-center hidden dark:block opacity-90 contrast-115 brightness-105 transition-transform duration-1000 ease-out group-hover:scale-105"
+              />
+              {/* Readability vignettes */}
+              <div className="absolute inset-0 bg-gradient-to-b from-[#fcfaf5]/30 via-transparent to-[#f5efe4]/40 dark:from-[#030712]/80 dark:via-[#030712]/45 dark:to-[#030712]/85" />
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(252,250,245,0.65)_0%,transparent_75%)] dark:bg-[radial-gradient(ellipse_at_center,transparent_25%,rgba(3,7,18,0.85)_100%)]" />
+            </div>
+
+            {/* Background Ambient Glows */}
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-[#0071e3]/15 dark:bg-cyan-500/25 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-[#06b6d4]/15 dark:bg-blue-600/30 rounded-full blur-3xl pointer-events-none" />
 
             <div className="relative z-10 max-w-xl mx-auto px-2">
               <h2 className="text-4xl sm:text-5xl tracking-tight mb-4">
-                <span className="font-kaushan tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-[#0071e3] via-[#0284c7] to-[#06b6d4] dark:from-blue-400 dark:via-sky-300 dark:to-cyan-300">
+                <span className="font-kaushan tracking-normal text-transparent bg-clip-text bg-gradient-to-r from-[#005bb5] via-[#0284c7] to-[#0092b8] dark:from-cyan-300 dark:via-sky-200 dark:to-blue-400 drop-shadow-sm">
                   Start Exploring Your Data Today
                 </span>
               </h2>
-              <p className="text-lg text-stone-600 dark:text-[#a1a1a6] mb-8 leading-relaxed font-normal">
+              <p className="text-lg text-stone-800 dark:text-stone-300 mb-8 leading-relaxed font-medium dark:font-normal">
                 Join data teams turning static files into interactive AI Data Analysis and visualizations.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Link
                   to="/register"
-                  className="px-8 py-3.5 rounded-full font-medium text-base text-white bg-[#0071e3] hover:bg-[#0077ed] shadow-[0_6px_20px_rgba(0,113,227,0.35)] hover:shadow-[0_8px_25px_rgba(0,113,227,0.45)] transition-all duration-300 cursor-pointer"
+                  className="px-8 py-3.5 rounded-full font-medium text-base text-white bg-gradient-to-r from-[#0071e3] to-[#0284c7] hover:from-[#0077ed] hover:to-[#0396db] shadow-[0_6px_20px_rgba(0,113,227,0.35)] hover:shadow-[0_8px_25px_rgba(0,113,227,0.5)] transition-all duration-300 cursor-pointer"
                 >
                   Create Free Account
                 </Link>
                 <Link
                   to="/login"
-                  className="px-8 py-3.5 rounded-full font-medium text-base text-[#262422] dark:text-[#f5f5f7] bg-[#fcfaf5] dark:bg-white/10 border border-stone-300/80 dark:border-white/20 hover:bg-[#f4efe6] dark:hover:bg-white/15 transition-all duration-300 cursor-pointer"
+                  className="px-8 py-3.5 rounded-full font-medium text-base text-[#262422] dark:text-white bg-white/80 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 border border-stone-300/80 dark:border-white/25 backdrop-blur-md shadow-sm transition-all duration-300 cursor-pointer"
                 >
                   Sign In
                 </Link>

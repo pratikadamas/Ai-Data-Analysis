@@ -98,46 +98,52 @@ export default function AdminAuth() {
           </h2>
 
           <div className="space-y-6">
-            {/* Admin Feature 1 */}
-            <div className="flex gap-4 group">
-              <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center group-hover:bg-brand-500/10 group-hover:border-brand-500/30 transition-all duration-300 shadow-sm">
-                <BarChart3 className="w-5 h-5 text-brand-500 dark:text-brand-400" />
+            {/* Admin Feature 1: Groq LLM Usage Analytics */}
+            <div className="flex gap-4 items-start group cursor-default select-none">
+              <div 
+                className="flex-shrink-0 w-11 h-11 rounded-xl bg-[#fcfaf5] dark:bg-slate-900 border border-stone-200/80 dark:border-slate-800 flex items-center justify-center shadow-sm transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1.5 group-hover:scale-110 group-hover:shadow-md group-hover:border-stone-300 dark:group-hover:border-slate-700 cursor-default"
+              >
+                <BarChart3 className="w-5 h-5 text-brand-500 dark:text-brand-400 transition-transform duration-300 group-hover:scale-105 pointer-events-none" />
               </div>
-              <div>
-                <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+              <div className="cursor-default select-none">
+                <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 cursor-default select-none">
                   Groq LLM Usage Analytics
                 </h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed cursor-default select-none">
                   Real-time interactive SVG bar charts tracking daily API calls, total token volume, and daily aggregated MongoDB records.
                 </p>
               </div>
             </div>
 
-            {/* Admin Feature 2 */}
-            <div className="flex gap-4 group">
-              <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center group-hover:bg-brand-500/10 group-hover:border-brand-500/30 transition-all duration-300 shadow-sm">
-                <Users className="w-5 h-5 text-sky-500 dark:text-sky-400" />
+            {/* Admin Feature 2: Paginated User Management */}
+            <div className="flex gap-4 items-start group cursor-default select-none">
+              <div 
+                className="flex-shrink-0 w-11 h-11 rounded-xl bg-[#fcfaf5] dark:bg-slate-900 border border-stone-200/80 dark:border-slate-800 flex items-center justify-center shadow-sm transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1.5 group-hover:scale-110 group-hover:shadow-md group-hover:border-stone-300 dark:group-hover:border-slate-700 cursor-default"
+              >
+                <Users className="w-5 h-5 text-[#0284c7] dark:text-[#38bdf8] transition-transform duration-300 group-hover:scale-105 pointer-events-none" />
               </div>
-              <div>
-                <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+              <div className="cursor-default select-none">
+                <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 cursor-default select-none">
                   Paginated User Management
                 </h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed cursor-default select-none">
                   Server-side MongoDB pagination, instant regex search across usernames and emails, role control, and account verification status.
                 </p>
               </div>
             </div>
 
-            {/* Admin Feature 3 */}
-            <div className="flex gap-4 group">
-              <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-[#fcfaf5] dark:bg-slate-900 border border-stone-200/80 dark:border-slate-800 flex items-center justify-center group-hover:bg-brand-500/10 group-hover:border-brand-500/30 transition-all duration-300 shadow-sm">
-                <Activity className="w-5 h-5 text-cyan-500 dark:text-cyan-400" />
+            {/* Admin Feature 3: System Health & Live Logs */}
+            <div className="flex gap-4 items-start group cursor-default select-none">
+              <div 
+                className="flex-shrink-0 w-11 h-11 rounded-xl bg-[#fcfaf5] dark:bg-slate-900 border border-stone-200/80 dark:border-slate-800 flex items-center justify-center shadow-sm transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1.5 group-hover:scale-110 group-hover:shadow-md group-hover:border-stone-300 dark:group-hover:border-slate-700 cursor-default"
+              >
+                <Activity className="w-5 h-5 text-[#06b6d4] dark:text-[#22d3ee] transition-transform duration-300 group-hover:scale-105 pointer-events-none" />
               </div>
-              <div>
-                <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+              <div className="cursor-default select-none">
+                <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 cursor-default select-none">
                   System Health & Live Logs
                 </h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed cursor-default select-none">
                   Monitor MongoDB ping response time, DuckDB memory sandboxes, and auto-stream backend server logs via in-memory ring buffer.
                 </p>
               </div>
@@ -271,7 +277,7 @@ export default function AdminAuth() {
           <div className="text-center mt-6 pt-4 border-t border-slate-200 dark:border-slate-800">
             <Link
               to="/login"
-              className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
+              className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors hover:underline hover:underline-offset-4"
             >
               &larr; Return to Standard User Login
             </Link>
