@@ -1,10 +1,10 @@
 <div align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=32&pause=1000&color=3B82F6&center=true&vCenter=true&width=800&lines=AI+Data+Analysis;Your+Intelligent+Data+Assistant" alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=32&pause=1000&color=0071E3&center=true&vCenter=true&width=800&lines=AI+Data+Analysis;Your+Intelligent+Data+Assistant" alt="Typing SVG" />
 </div>
 
 <div align="center">
-  <h1>✨ AI Data Analysis Web App✨</h1>
-  <p><i>Your intelligent, conversational data analysis assistant.</i></p>
+  <h1>✨ AI Data Analysis Web App ✨</h1>
+  <p><i>Your intelligent, conversational data analysis assistant — no SQL required.</i></p>
 
   <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" alt="FastAPI" />
   <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
@@ -22,6 +22,7 @@
 ## 🌟 Key Features
 
 - 🖥️ **macOS Studio Aesthetic**: Sleek frosted glass (`backdrop-blur-2xl`), interactive collapsible dock sidebar with hover tooltips, and ultra-compact responsive layout.
+- 🤖 **Hero Assistant-Bot Illustration**: Custom SVG vector bot (`Assistant-Bot.svg`) fully styled in the platform's brand palette — deep navy body (`#1a2332`), Apple blue LEDs (`#0071e3`), deep blue arm accents (`#005bb5`), and icy blue-white panels (`#eef5ff`) — suspended perfectly still on the hero section with ambient radial backglow and elevated drop-shadows.
 - 🌀 **Quantum Splash Loader (`MainAppLoader.jsx`)**: High-tech tri-orbital quantum reactor with alternating rotational arcs, satellite node, neural data frequency bars, unboxed floating favicon with ambient drop-shadow, and a minimum 3-second brand intro.
 - 🧭 **Dynamic Scroll-Squeezing Navigation**: Starts full-screen width at the top (`scrollY === 0`) and smoothly squeezes into a floating frosted glass pill on scroll across the Home page and all legal/documentation pages (`/terms`, `/privacy`, `/docs`, `/faq`).
 - 🎯 **Centered Hero Headers**: Clean, unified centered hero banners on all footer redirect pages with unclipped cursive typography (`font-kaushan`).
@@ -61,7 +62,8 @@ ai-data-analysis/
 │   │   ├── validation/             # Whitelist SQL safety & AST parse checker
 │   │   └── main.py                 # FastAPI app entry point & CORS configuration
 │   ├── tests/                      # Integration & multi-file upload test suite
-│   ├── requirements.txt            # Python dependencies
+│   ├── pyproject.toml              # uv/pip project dependencies (modern Python packaging)
+│   ├── requirements.txt            # Pip-compatible dependency list
 │   └── .env.example                # Environment variable configuration template
 │
 ├── frontend/                       # React (Vite) + Tailwind CSS + Plotly + AG Grid
@@ -75,16 +77,22 @@ ai-data-analysis/
 │   │   │   ├── shared/             # MainAppLoader, shimmer skeletons, network HUD
 │   │   │   ├── sql-editor/         # DuckDB SQL workspace & schema inspector
 │   │   │   ├── upload/             # Drag-and-drop dataset dropzone
-│   │   │   ├── AnimatedThemeToggler.tsx # View Transition animated theme switcher
+│   │   │   ├── AnimatedThemeToggler.jsx # View Transition animated theme switcher
 │   │   │   └── ThemeToggle.jsx     # Dark/light mode toggle wrapper
 │   │   ├── context/                # React state contexts (Dataset, User)
 │   │   ├── hooks/                  # Custom hooks (dark mode, network latency)
-│   │   ├── lib/                    # Shared utilities (type-safe clsx/twMerge)
 │   │   ├── pages/                  # Route views (Dashboard, Admin, Landing, Terms, Privacy, etc.)
 │   │   ├── services/               # Axios API client & backend endpoints
 │   │   ├── utils/                  # HTML report exporter
 │   │   ├── App.jsx                 # Main application router
 │   │   └── styles/index.css        # Global theme tokens, typography, glassmorphism
+│   ├── public/assets/              # Static assets
+│   │   ├── Assistant-Bot.svg       # Brand-styled AI bot vector illustration
+│   │   ├── img1.webp               # Workflow step 1 screenshot (Data Ingestion)
+│   │   ├── img2.webp               # Workflow step 2 screenshot (Ask, Explore & Visualize)
+│   │   ├── img3.webp               # Workflow step 3 screenshot (Decide, Export & Share)
+│   │   ├── cta_data_topography.webp       # CTA section background (dark mode)
+│   │   └── cta_data_topography_light.webp # CTA section background (light mode)
 │   ├── package.json                # Frontend scripts & NPM dependencies
 │   ├── tailwind.config.js          # Tailwind CSS theme extensions & animations
 │   └── vite.config.js              # Vite bundler settings & API reverse proxy
@@ -105,37 +113,37 @@ ai-data-analysis/
 
 ```bash
 cd backend
-# 1. Create Python virtual environment (Python 3.10 - 3.12 recommended; Python 3.11 is ideal)
-# Note: Avoid Python 3.14 as PyPI does not yet have pre-compiled wheels for pandas/duckdb on Windows
+
+# Option A — Modern: use uv (recommended, fast)
+pip install uv
+uv sync
+
+# Option B — Classic: Python venv + pip
+# (Python 3.10 – 3.12 recommended; avoid 3.14 — no pre-built wheels for pandas/duckdb yet)
 python -m venv .venv
 
-# 2. Activate virtual environment:
-# 🔹 PowerShell (Windows):
+# Activate (PowerShell):
 .\.venv\Scripts\Activate.ps1
-
-# 🔹 Git Bash (MINGW64 / Windows):
+# Activate (Git Bash / macOS / Linux):
 source .venv/Scripts/activate
 
-# 🔹 Command Prompt (CMD / Windows):
-.venv\Scripts\activate.bat
-
-# 🔹 macOS / Linux:
-source .venv/bin/activate
-
-# 3. Install dependencies & configure environment:
 pip install -r requirements.txt
-cp .env.example .env   # 🔑 Add your GROQ_API_KEY, MONGODB_URI, and MAIL credentials
 
-# 4. (Optional) Run automated tests:
+# Configure environment:
+cp .env.example .env   # 🔑 Add GROQ_API_KEY, MONGODB_URI, MAIL_* credentials
+
+# (Optional) Run automated tests:
 python tests/test_fastapi_upload.py
 python tests/test_multi_upload.py
 
-# 5. Start the backend server:
+# Start the backend server:
 uvicorn app.main:app --reload --port 8000
+# OR with uv:
+uv run uvicorn app.main:app --reload --port 8000
 ```
 
-*API docs available at [http://localhost:8000/docs](http://localhost:8000/docs) and Admin API endpoints at [http://localhost:8000/api/admin](http://localhost:8000/api/admin) once running.*  
-*Default Demo Admin Credentials: `admin@demo.com` / `admin123`.*
+*API docs available at [http://localhost:8000/docs](http://localhost:8000/docs)*  
+*Demo Admin Credentials: `admin@demo.com` / `admin123`*
 
 ### 🎨 Frontend Setup
 
@@ -146,7 +154,7 @@ npm run dev
 ```
 
 *The Vite dev server proxies `/api/*` to `http://localhost:8000`.*  
-*Admin Portal UI available at [http://localhost:5173/admin](http://localhost:5173/admin) (Login page: [http://localhost:5173/admin/login](http://localhost:5173/admin/login)).*
+*Admin Portal at [http://localhost:5173/admin](http://localhost:5173/admin)*
 
 ---
 
@@ -159,14 +167,14 @@ npm run dev
 | `SECRET_KEY` | 🟢 **Yes** | JWT secret key for signing authentication tokens |
 | `MAIL_USERNAME` / `MAIL_PASSWORD` | ⚪ Optional | Gmail SMTP credentials for sending 6-digit email OTPs |
 | `FIREBASE_PROJECT_ID` | ⚪ Optional | Firebase Project ID for server-side Google OAuth token verification |
-| `FIREBASE_CLIENT_EMAIL` / `FIREBASE_PRIVATE_KEY` | ⚪ Optional | Service account credentials for Firebase Admin SDK (optional fallback to Google public certs) |
+| `FIREBASE_CLIENT_EMAIL` / `FIREBASE_PRIVATE_KEY` | ⚪ Optional | Service account credentials for Firebase Admin SDK |
 | `APP_ENV` | ⚪ No | `development` (default) or `production` |
 | `MAX_UPLOAD_MB` | ⚪ No | Max file size in MB (default: `200`) |
 | `UPLOAD_DIR` | ⚪ No | Temp upload path (default: `./uploads`) |
 | `CORS_ORIGINS` | ⚪ No | Comma-separated allowed origins (default: `http://localhost:5173,http://127.0.0.1:5173`) |
 
 > 💡 **Frontend Firebase Variables (`frontend/.env`):**  
-> For Google sign-in on the frontend, add `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID`, and `VITE_FIREBASE_APP_ID`.
+> For Google sign-in, add `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID`, and `VITE_FIREBASE_APP_ID`.
 >
 > 💡 **Tip:** The app works without an API key for upload, preview, and manual explore! Only the AI chat tab requires `GROQ_API_KEY`.
 
@@ -207,22 +215,24 @@ npm run dev
 ### 🔐 User Authentication & Profile (`/api/auth`)
 
 - **Secure JWT Session Management**: Email verification with 6-digit OTPs, bcrypt hashed passwords, and password resets.
-- **Google OAuth via Firebase**: 1-click Google Sign-In with popup OAuth flow, server-side token claim validation (supporting both Firebase Admin SDK and direct Google public cert verification), and automatic user account upserting.
+- **Google OAuth via Firebase**: 1-click Google Sign-In with popup OAuth flow, server-side token claim validation, and automatic user account upserting.
 - **Persistent Header Profile**: Real-time user avatar, username display, modal window with outside-click dismissal, and account settings.
 
-### 🛡️ Admin Portal & Control Center (Frontend: `http://localhost:5173/admin` | Backend API: `http://localhost:8000/api/admin`)
+### 🛡️ Admin Portal & Control Center
+
+*Frontend: `http://localhost:5173/admin` | Backend API: `http://localhost:8000/api/admin`*
 
 - **Role-Protected & Demo Auth**: Access via email/password or 1-click Demo Admin (`admin@demo.com`), secured by JWT Bearer tokens and admin role authorization.
-- **Groq API Usage Tracker with Date Range Filtering**: Custom SVG daily bar chart and summary analytics tracking total LLM API calls, estimated token consumption, today's request count, and recorded days in MongoDB `groq_usage` collection, with support for date range filters (`All Time`, `Today`, `Last 7 Days`, `Last 30 Days`, and Custom Start/End Date Pickers).
-- **Standalone Admin & User Directories**: Independent top-level tabs for **Admin Management** and **User Management** with server-side MongoDB `.skip()` / `.limit()` pagination, regex search, role badges, and verification status.
-- **Active WebApp User Session Tracker**: Thread-safe live session monitoring (`/api/admin/active-sessions`) tracking real-time active user sessions, admin vs standard user breakdown, idle time, and online state.
-- **System Health Diagnostics**: Real-time monitoring of MongoDB connectivity & ping response time (ms), active DuckDB in-memory connections, active webapp sessions, Groq API key readiness, and API latency.
-- **Live System Log Streamer**: In-memory ring buffer log capture streaming real-time FastAPI logs with log level filtering (`ALL`, `INFO`, `WARNING`, `ERROR`), search filtering, and 3-second live auto-refresh.
+- **Groq API Usage Tracker**: Custom SVG daily bar chart tracking total LLM API calls, estimated token consumption, today's request count, with date range filters (`All Time`, `Today`, `Last 7 Days`, `Last 30 Days`, Custom Date Pickers).
+- **Admin & User Directories**: Independent tabs with server-side MongoDB pagination, regex search, role badges, and verification status.
+- **Active WebApp Session Tracker**: Thread-safe live session monitoring tracking real-time active user sessions, admin vs standard user breakdown, idle time, and online state.
+- **System Health Diagnostics**: Real-time monitoring of MongoDB connectivity & ping (ms), active DuckDB connections, active sessions, Groq API key readiness, and API latency.
+- **Live System Log Streamer**: In-memory ring buffer streaming real-time FastAPI logs with level filtering (`ALL`, `INFO`, `WARNING`, `ERROR`) and 3-second live auto-refresh.
 
 ### 🎨 Modern Apple macOS Studio UI & Motion Engine
 
-- **Animated View Transitions Theme Switcher**: Full View Transitions API integration (`AnimatedThemeToggler.tsx`) with GPU clip-path animations expanding from the click origin across 7 geometry variants (`circle`, `square`, `triangle`, `diamond`, `hexagon`, `rectangle`, `star`).
-- **Low-Network & Background Loading Skeletons**: Integrated network status hook (`useNetworkStatus.js`) and header badge displaying live latency (ms) and connection state. Shimmering skeleton placeholders (`CardSkeleton.jsx`) seamlessly take over cards, metrics, and chart canvas during data fetching or background DuckDB execution.
+- **Animated View Transitions Theme Switcher**: Full View Transitions API integration with GPU clip-path animations expanding from click origin across 7 geometry variants.
+- **Low-Network & Background Loading Skeletons**: Live latency (ms) and connection state badge, shimmering skeleton placeholders during data fetching.
 - **120Hz Smooth Inertia Scrolling**: Powered by Lenis with dynamic interactive spring animations.
 - **Frosted Glass Navigation**: Translucent floating navbar with instant theme switcher and Kaushan Script typography.
 - **MacBook Pro Window Aesthetics**: Realistic traffic light controls, bento grid layout, and backgroundless floating graphics.
@@ -237,6 +247,7 @@ npm run dev
 - [x] ⚡ 120Hz Lenis smooth inertial scrolling
 - [x] 🌓 Silky smooth View Transitions theme switcher with 7 geometric shapes & quintic easing
 - [x] 📶 Real-time network latency HUD & responsive shimmer skeleton loading states
+- [x] 🤖 Brand-styled SVG Hero Illustration with platform color palette
 - [ ] 📌 Saved/named dashboards
 - [ ] 🔄 Multi-turn conversation context (history passed to the LLM)
 - [ ] 🔗 Multi-file joins
@@ -365,8 +376,8 @@ Connect directly to live relational and cloud data warehouses without manual CSV
 
 1. **Native DuckDB Engine Connectors**:
    - Utilize DuckDB's native zero-copy extensions:
-     - `INSTALL postgres; LOAD postgres;` $\rightarrow$ `ATTACH 'dbname=... host=...' AS pg_db (TYPE POSTGRES);`
-     - `INSTALL mysql; LOAD mysql;` $\rightarrow$ `ATTACH 'host=... user=...' AS my_db (TYPE MYSQL);`
+     - `INSTALL postgres; LOAD postgres;` → `ATTACH 'dbname=... host=...' AS pg_db (TYPE POSTGRES);`
+     - `INSTALL mysql; LOAD mysql;` → `ATTACH 'host=... user=...' AS my_db (TYPE MYSQL);`
      - Snowflake / BigQuery connector via SQLAlchemy and Apache Arrow record batch streaming.
 
 2. **Secure Credential Vault (`backend/app/db/connections.py`)**:

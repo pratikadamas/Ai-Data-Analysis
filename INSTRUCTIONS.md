@@ -72,6 +72,7 @@ Here is exactly how to get all the required keys for your `.env` file to get the
    - `VITE_FIREBASE_STORAGE_BUCKET`
    - `VITE_FIREBASE_MESSAGING_SENDER_ID`
    - `VITE_FIREBASE_APP_ID`
+
 #### 5. 🛡️ Admin Portal Credentials (`/admin/login`)
 
 *The application includes a built-in admin dashboard for system diagnostics, Groq API usage tracking, and user account management.*
@@ -120,9 +121,11 @@ Here is exactly how to get all the required keys for your `.env` file to get the
   - *The Quantum Splash Loader.* Features a tri-orbital quantum reactor with alternating rotational arcs, satellite node, neural data frequency bars, unboxed floating favicon, and a dynamic laser progress beam.
 - **`frontend/src/pages/Dashboard.jsx`** 🎛️
   - *The Command Center.* The main user interface where the Sidebar, Upload Area, Chat Panel, and Charts all come together.
+- **`frontend/src/pages/LandingPage.jsx` & `frontend/public/assets/Assistant-Bot.svg`** 🤖
+  - *The Hero Showcase & Vector Bot.* Features the fully brand-styled SVG vector bot with deep navy body (`#1a2332`), Apple blue LED screen (`#0071e3`), deep blue arm/hand accents (`#005bb5`), and icy blue-white data panels (`#eef5ff`, `#bfdbfe`). Suspended perfectly still in the hero section with ambient radial backglow and elevated drop-shadows (zero blur, zero text).
 - **`frontend/src/pages/Terms.jsx`, `PrivacyPolicy.jsx`, `Docs.jsx`, `FaqPage.jsx`** 📜
   - *Legal & Knowledge Base Pages.* Features dynamic scroll-squeezing navigation (full-width initially, smoothly squeezing into a floating pill on scroll), centered hero headers, and unclipped cursive typography (`font-kaushan`).
-- **`frontend/src/components/AnimatedThemeToggler.tsx` & `ThemeToggle.jsx`** 🌓
+- **`frontend/src/components/AnimatedThemeToggler.jsx` & `ThemeToggle.jsx`** 🌓
   - *The Motion Theme Switcher.* View Transitions API implementation supporting 7 geometry transition shapes (`circle`, `square`, `triangle`, `diamond`, `hexagon`, `rectangle`, `star`) expanding from the click origin.
 - **`frontend/src/components/shared/CardSkeleton.jsx`** ⏳
   - *The Skeleton Loading System.* Glassmorphic skeleton cards and shimmers providing smooth visual feedback during data queries and low network connections.
@@ -136,8 +139,8 @@ Here is exactly how to get all the required keys for your `.env` file to get the
   - *The State Manager.* Globally manages user authentication (both email/password and Google OAuth), stores JWT tokens, and handles profile avatar states.
 - **`frontend/src/components/layout/UserNavProfile.jsx`** 👤
   - *The Profile Navigation Component.* Renders the active user pill on the floating navbar, shows user info/actions, and supports smooth outside-click modal dismissal.
-- **`frontend/src/lib/utils.ts` & `utils.js`** 🛠️
-  - *Utility Functions.* Provides the type-safe `cn` class combiner helper with iterative array flattening to prevent infinite type recursion, paired with `tsconfig.json` for IDE path mapping.
+- **`backend/pyproject.toml` & `backend/uv.lock`** 📦
+  - *Modern Python Packaging.* PEP 621 project metadata and dependency specification compatible with `uv sync` for fast, reproducible virtual environment creation. Run `uv sync` in the `backend/` directory to set up the environment in one step.
 
 ---
 

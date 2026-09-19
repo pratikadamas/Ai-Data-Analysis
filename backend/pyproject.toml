@@ -1,0 +1,59 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "backend"
+version = "0.1.0"
+description = "AI Data Analysis - FastAPI DuckDB Backend Engine"
+readme = "README.md"
+requires-python = ">=3.10, <3.13"
+dependencies = [
+    # --- Web framework ---
+    "fastapi==0.115.0",
+    "uvicorn[standard]==0.30.6",
+    "python-multipart>=0.0.18",
+
+    # --- Data engine / file formats ---
+    "duckdb==1.0.0",
+    "pandas==2.2.2",
+    "openpyxl==3.1.5",
+    "xlrd==2.0.1",
+    "sqlparse==0.5.1",
+
+    # --- Visualization ---
+    "plotly==5.24.1",
+
+    # --- Config ---
+    "python-dotenv==1.0.1",
+
+    # --- LLM (NL -> SQL) ---
+    "groq==0.11.0",
+
+    # --- Validation ---
+    "pydantic==2.9.2",
+    "email-validator==2.2.0",
+
+    # --- Database (MongoDB Atlas) ---
+    "pymongo==4.17.0",
+    "certifi==2024.8.30",
+
+    # --- Auth ---
+    "bcrypt==5.0.0",
+    "pyjwt==2.8.0",
+
+    # --- Rate Limiting ---
+    "slowapi==0.1.9",
+
+    # --- Firebase Admin SDK ---
+    "firebase-admin>=6.5.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "httpx>=0.27.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]

@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=28&pause=1000&color=8B5CF6&center=true&vCenter=true&width=800&lines=System+Architecture;How+Everything+Connects" alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=28&pause=1000&color=0071E3&center=true&vCenter=true&width=800&lines=System+Architecture;How+Everything+Connects" alt="Typing SVG" />
 </div>
 
 # 🏗️ System Architecture
@@ -22,6 +22,7 @@ The application follows a standard client-server architecture:
 graph TD
     subgraph Frontend [🎨 React / Vite macOS Studio Frontend]
         UI[User Interface & Window Header]
+        HeroBot["Brand-Styled SVG Hero Bot (still, floating)"]
         SplashLoader[MainAppLoader / Quantum Reactor Splash]
         ScrollNav[Dynamic Scroll-Squeezing Navbars]
         ThemeToggle[AnimatedThemeToggler / View Transitions API]
@@ -36,6 +37,7 @@ graph TD
         Charts[Plotly Visualizations]
         
         SplashLoader --> UI
+        UI --> HeroBot
         UI --> ScrollNav
         UI --> ThemeToggle
         UI --> NetBadge
@@ -59,6 +61,7 @@ graph TD
         SQLValid[SQL Read-Only Whitelist Validator]
         DuckDB[(DuckDB In-Memory & Multi-Table Joins)]
         MongoDB[(MongoDB Atlas - User Auth & Usage)]
+        PyProject[pyproject.toml / uv — Dependencies]
         
         Upload -.->|CSV / Excel / SQLite / SQL| FileLoader
         FileLoader --> DuckDB
