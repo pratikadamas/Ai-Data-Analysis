@@ -114,14 +114,10 @@ class LLMService:
             raise last_exc
         raise LLMServiceError("No valid Groq LLM model found.")
 
-    def analyze_intent(self, question: str) -> tuple[str, str]:
-        """Analyze user input intent.
-        Returns tuple of (intent_type, message_reply)
-        intent_type is one of: "GREETING", "DATA_QUERY", "OFF_TOPIC"
-        """
+    def fast_intent_match(self, question: str) -> tuple[str, str] | None:
+        """Fast local pattern match for common greetings. Returns (intent, reply) or None."""
         clean_q = question.strip().lower()
 
-        # 1. Fast local pattern match for common greetings, compliments, and small talk
         greetings_map = {
             "hi": "Hello! 👋 How can I help you analyze your data today?",
             "hello": "Hello! 👋 Feel free to ask any question about your uploaded dataset.",
@@ -156,6 +152,17 @@ class LLMService:
             if clean_q.startswith(("hi ", "hello ", "hey ", "good morning", "good evening", "good afternoon")):
                 if not any(kw in clean_q for kw in ["select", "show", "count", "sum", "avg", "total", "top", "where", "list", "how many", "which", "find"]):
                     return ("GREETING", "Hello! 👋 How can I help you analyze your data today?")
+        
+        return None
+
+    def analyze_intent(self, question: str) -> tuple[str, str]:
+        """Analyze user input intent.
+        Returns tuple of (intent_type, message_reply)
+        intent_type is one of: "GREETING", "DATA_QUERY", "OFF_TOPIC"
+        """
+        match = self.fast_intent_match(question)
+        if match:
+            return match
 
         # 2. LLM intent classifier for complex / ambiguous queries
         try:
