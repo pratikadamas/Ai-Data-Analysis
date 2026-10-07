@@ -1,4 +1,4 @@
-"""MongoDB-backed sliding window rate limiter.
+"""MongoDB-backed sliding window rate limiter and OTP failure lockout.
 
 Uses the existing MongoDB connection (no new dependencies) so rate-limit state
 is:
@@ -9,12 +9,24 @@ is:
 The `rate_limits` collection stores one document per (key, window_start) pair
 and uses a TTL index to auto-expire old records — no manual cleanup needed.
 
-Collection schema per document:
+Collection schema per rate_limits document:
   {
     "key":          "ip:1.2.3.4" | "user:email@example.com",
     "window_start": <datetime — truncated to current window>,
     "count":        <int — number of attempts in this window>,
     "expires_at":   <datetime — window_start + window_seconds, used by TTL index>
+  }
+
+The `otp_lockouts` collection stores one document per email address and tracks
+consecutive OTP verification failures. After MAX_OTP_FAILURES consecutive wrong
+OTPs the account is locked until the document's TTL expires.
+
+Collection schema per otp_lockouts document:
+  {
+    "email":      <str — lowercase email address>,
+    "failures":   <int — consecutive failed OTP attempts>,
+    "locked":     <bool — True once failure limit is reached>,
+    "expires_at": <datetime — auto-cleared by MongoDB TTL index>
   }
 """
 from __future__ import annotations
@@ -137,3 +149,120 @@ otp_limiter = MongoRateLimiter(
     window_seconds=900,
     custom_detail="Too many OTP requests. Maximum 3 OTPs per 15 minutes allowed. Please try again later.",
 )
+
+
+# ── OTP Failure Lockout ───────────────────────────────────────────────────────
+
+class OtpFailureLockout:
+    """MongoDB-backed consecutive OTP failure tracker with automatic lockout.
+
+    After MAX_FAILURES wrong OTP submissions for the same email the account
+    is locked for LOCKOUT_SECONDS. MongoDB TTL ensures the lock document is
+    automatically deleted, so no manual expiry management is required.
+
+    Parameters
+    ----------
+    max_failures : int
+        Number of consecutive wrong OTPs before the account is locked.
+    lockout_seconds : int
+        Duration of the lockout window in seconds.
+    """
+
+    def __init__(self, max_failures: int = 5, lockout_seconds: int = 900) -> None:
+        self.max_failures = max_failures
+        self.lockout_seconds = lockout_seconds
+        self._col = None  # lazy-loaded
+
+    def _get_col(self):
+        """Lazy-load the otp_lockouts collection."""
+        if self._col is not None:
+            return self._col
+        from app.db.mongodb import db  # noqa: PLC0415
+        col = db["otp_lockouts"]
+        try:
+            # TTL index: MongoDB auto-deletes expired lockout documents.
+            col.create_index("expires_at", expireAfterSeconds=0, background=True)
+            col.create_index("email", unique=True, background=True)
+        except Exception as exc:
+            logger.warning("OtpFailureLockout: could not create indexes: %s", exc)
+        self._col = col
+        return col
+
+    def check_locked(self, email: str) -> None:
+        """Raise HTTP 429 if the email is currently locked out.
+
+        Should be called *before* any OTP hash comparison.
+        """
+        col = self._get_col()
+        email_key = email.strip().lower()
+        try:
+            doc = col.find_one({"email": email_key, "locked": True})
+            if doc:
+                remaining = max(
+                    0,
+                    int(
+                        (doc["expires_at"] - datetime.now(timezone.utc))
+                        .total_seconds()
+                    ),
+                )
+                mins = remaining // 60
+                secs = remaining % 60
+                time_str = f"{mins}m {secs}s" if mins else f"{secs}s"
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail=(
+                        f"Account temporarily locked after {self.max_failures} failed OTP "
+                        f"attempts. Please try again in {time_str} or request a new OTP."
+                    ),
+                )
+        except HTTPException:
+            raise
+        except Exception as exc:
+            logger.error("OtpFailureLockout.check_locked error (failing open): %s", exc)
+
+    def record_failure(self, email: str) -> None:
+        """Increment the failure counter and lock the account if the limit is reached."""
+        from pymongo import ReturnDocument  # noqa: PLC0415
+
+        col = self._get_col()
+        email_key = email.strip().lower()
+        expires_at = datetime.now(timezone.utc) + timedelta(seconds=self.lockout_seconds)
+
+        try:
+            result = col.find_one_and_update(
+                {"email": email_key},
+                {
+                    "$inc": {"failures": 1},
+                    "$set": {"expires_at": expires_at},
+                    "$setOnInsert": {"locked": False},
+                },
+                upsert=True,
+                return_document=ReturnDocument.AFTER,
+            )
+            failures = result.get("failures", 1) if result else 1
+
+            if failures >= self.max_failures and not result.get("locked", False):
+                col.update_one(
+                    {"email": email_key},
+                    {"$set": {"locked": True, "expires_at": expires_at}},
+                )
+                logger.warning(
+                    "OTP lockout triggered for %s after %d consecutive failures.",
+                    email_key,
+                    failures,
+                )
+        except Exception as exc:
+            logger.error("OtpFailureLockout.record_failure error: %s", exc)
+
+    def reset(self, email: str) -> None:
+        """Clear the failure counter on a successful OTP submission."""
+        col = self._get_col()
+        email_key = email.strip().lower()
+        try:
+            col.delete_one({"email": email_key})
+        except Exception as exc:
+            logger.error("OtpFailureLockout.reset error: %s", exc)
+
+
+# Singleton — one per purpose so limits stay independent
+otp_failure_lockout = OtpFailureLockout(max_failures=5, lockout_seconds=900)

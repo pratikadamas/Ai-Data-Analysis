@@ -57,7 +57,15 @@ def init_db():
         rate_limits.create_index("expires_at", expireAfterSeconds=0)
         rate_limits.create_index([("key", 1), ("window_start", 1)])
 
+        # OTP failure lockout collection
+        # TTL index auto-deletes expired lockout documents; unique email index ensures
+        # atomic upserts across all worker processes (no duplicate documents).
+        otp_lockouts = db["otp_lockouts"]
+        otp_lockouts.create_index("expires_at", expireAfterSeconds=0)
+        otp_lockouts.create_index("email", unique=True)
+
         logger.info("MongoDB unique, performance, and TTL indexes initialized successfully.")
+
 
         # ── Seed the Bloom Filter ──────────────────────────────────────────────
         # One-time bulk read of all existing usernames. After this point, every

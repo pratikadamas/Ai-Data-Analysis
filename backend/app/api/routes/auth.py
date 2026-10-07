@@ -26,7 +26,7 @@ from app.utils.firebase_admin_sdk import verify_firebase_token
 # pyrefly: ignore [missing-import]
 from app.utils.mail import send_otp_email
 # pyrefly: ignore [missing-import]
-from app.utils.rate_limit import login_limiter, otp_limiter
+from app.utils.rate_limit import login_limiter, otp_limiter, otp_failure_lockout
 
 logger = logging.getLogger(__name__)
 
@@ -153,10 +153,13 @@ async def register(payload: RegisterRequest, request: Request, background_tasks:
     }
 
 @router.post("/verify-otp")
-async def verify_otp(payload: VerifyOTPRequest):
+async def verify_otp(payload: VerifyOTPRequest, request: Request):
     users_col = db["users"]
     email_clean = payload.email.strip().lower()
     otp_clean = payload.otp.strip().replace(" ", "").replace("-", "")
+
+    # ── Lockout guard: check *before* any DB work ─────────────────────────────
+    otp_failure_lockout.check_locked(email_clean)
 
     user = users_col.find_one({"email": email_clean})
     if not user:
@@ -185,12 +188,17 @@ async def verify_otp(payload: VerifyOTPRequest):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="OTP code has expired. Please click 'Resend OTP' to receive a new code."
         )
-        
+
     if not verify_password(otp_clean, verification["otp_hash"]):
+        # Record this failure; locks the account automatically after max_failures.
+        otp_failure_lockout.record_failure(email_clean)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid OTP code. Please check your email for the 6-digit verification code."
         )
+
+    # ── OTP correct: clear the failure counter and mark verified ─────────────
+    otp_failure_lockout.reset(email_clean)
         
     # Mark user as verified
     users_col.update_one(
@@ -281,6 +289,10 @@ async def resend_otp(payload: ResendOTPRequest, request: Request, background_tas
         "used": False,
         "created_at": now
     })
+
+    # Clear any existing OTP failure lockout — the user is now receiving a fresh
+    # code, so previous failed attempts no longer apply.
+    otp_failure_lockout.reset(email_clean)
 
     background_tasks.add_task(send_otp_email, user["email"], user["username"], otp, email_purpose)
 
@@ -382,6 +394,9 @@ async def reset_password(payload: ResetPasswordRequest):
     email_clean = payload.email.strip().lower()
     otp_clean = payload.otp.strip().replace(" ", "").replace("-", "")
 
+    # ── Lockout guard ─────────────────────────────────────────────────────────
+    otp_failure_lockout.check_locked(email_clean)
+
     user = users_col.find_one({"email": email_clean})
     if not user:
         raise HTTPException(
@@ -406,12 +421,17 @@ async def reset_password(payload: ResetPasswordRequest):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Password reset code has expired. Please request a new code."
         )
-        
+
     if not verify_password(otp_clean, reset_doc["otp_hash"]):
+        # Record failure; auto-locks after max_failures consecutive wrong attempts.
+        otp_failure_lockout.record_failure(email_clean)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid OTP code. Please enter the 6-digit code from your email."
         )
+
+    # ── OTP correct: clear failure counter before changing password ───────────
+    otp_failure_lockout.reset(email_clean)
         
     # Reset password
     hashed = hash_password(payload.password)
