@@ -45,6 +45,7 @@ Rules:
 - Use DuckDB SQL syntax.
 - Always use standard function calls with parentheses for all aggregate functions (e.g., write MAX("Discount") or SUM("Total") instead of MAX Discount or SUM Total).
 - Always double-quote the table name and column names to ensure valid syntax regardless of spaces, special characters, or case-sensitivity (e.g. SELECT MAX("Discount") FROM "sales_data").
+- If the query returns raw data rows (e.g. SELECT *), always append LIMIT 10 to prevent returning the full table, unless the user explicitly asks for a different limit.
 - Return ONLY raw SQL, no markdown fences, no commentary.
 """
 
