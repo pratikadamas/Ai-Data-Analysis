@@ -55,7 +55,11 @@ async def chat(req: ChatRequest, request: Request) -> ChatResponse:
     try:
         raw_sql = llm_service.generate_sql(req.question, schemas, target_table=req.table_name)
         safe_sql = validate_sql(raw_sql)
-        df = conn.execute(safe_sql).fetch_df()
+        
+        # Enforce a hard limit of 100 rows to prevent massive payloads.
+        # We wrap it dynamically so the user still sees the clean 'safe_sql' in the UI.
+        bounded_sql = f"SELECT * FROM ({safe_sql}) LIMIT 100"
+        df = conn.execute(bounded_sql).fetch_df()
     except LLMServiceError as exc:
         # Could be an empty response because it's not a data query, or Groq API error
         sql_error = exc
