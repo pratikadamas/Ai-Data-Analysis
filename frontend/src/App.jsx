@@ -9,6 +9,7 @@ import FaqPage from "./pages/FaqPage.jsx";
 import Docs from "./pages/Docs.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 import Terms from "./pages/Terms.jsx";
+import NotFound from "./pages/NotFound.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -35,6 +36,7 @@ function PageTitleUpdater() {
       "/terms": "Terms of Service | AI Data Analysis Platform",
       "/admin/login": "Admin Sign In | AI Data Analysis Platform",
       "/admin": "Admin Portal | AI Data Analysis Platform",
+      "/404": "Page Not Found | AI Data Analysis Platform",
     };
 
     document.title = titles[location.pathname] || "AI Data Analysis Platform";
@@ -127,8 +129,8 @@ export default function App() {
           } 
         />
         
-        {/* Fallback to home */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Custom 404 — catch all unmatched frontend routes */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <ToastContainer 
         position="bottom-right" 
