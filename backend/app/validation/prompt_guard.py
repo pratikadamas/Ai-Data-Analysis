@@ -34,12 +34,15 @@ _DESTRUCTIVE_PATTERNS = [
     r"\b(shutdown|kill|format)\b.{0,20}\b(database|server|table)?\b",
 ]
 
+from app.validation.command_guard import is_os_command_injection
+
 _COMPILED_INJECTION = [re.compile(p, re.IGNORECASE | re.DOTALL) for p in _INJECTION_PATTERNS]
 _COMPILED_DESTRUCTIVE = [re.compile(p, re.IGNORECASE | re.DOTALL) for p in _DESTRUCTIVE_PATTERNS]
 
 
 def is_prompt_injection(prompt: str) -> tuple[bool, str]:
-    """Check if the user prompt is attempting prompt injection, jailbreaking, or destructive operations.
+    """Check if the user prompt is attempting prompt injection, jailbreaking,
+    destructive operations, or OS command injection.
 
     Returns:
         (True, reason) if blocked.
@@ -54,10 +57,17 @@ def is_prompt_injection(prompt: str) -> tuple[bool, str]:
     normalized = re.sub(r"\s+", " ", normalized)
     normalized = re.sub(r"[\u200B-\u200D\uFEFF]", "", normalized)
 
+    # 1. OS Command Injection & system command defense
+    is_cmd, cmd_reason = is_os_command_injection(normalized)
+    if is_cmd:
+        return True, f"OS command injection or system tampering attempt detected: {cmd_reason}"
+
+    # 2. Jailbreak / instruction override
     for pattern in _COMPILED_INJECTION:
         if pattern.search(normalized):
             return True, "Instruction override or jailbreak pattern detected."
 
+    # 3. Destructive database mutation
     for pattern in _COMPILED_DESTRUCTIVE:
         if pattern.search(normalized):
             return True, "Data modification or destruction command detected."

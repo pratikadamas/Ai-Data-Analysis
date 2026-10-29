@@ -34,8 +34,9 @@ FORBIDDEN_KEYWORDS = {
     "READ_CSV", "READ_CSV_AUTO", "READ_PARQUET", "READ_JSON", "READ_JSON_AUTO",
     "READ_TEXT", "READ_BLOB", "SCAN_CSV", "SCAN_PARQUET", "GLOB",
     "SQLITE_SCAN", "POSTGRES_SCAN", "MYSQL_SCAN", "ICEBERG_SCAN", "DELTA_SCAN",
-    # Environment variables & system info (prevent secret leakage)
-    "GETENV", "CURRENT_SETTING", "SET_VARIABLE", "SYSTEM",
+    # Environment variables, OS command execution & system info (prevent secret leakage & command injection)
+    "GETENV", "CURRENT_SETTING", "SET_VARIABLE", "SYSTEM", "SYS_CMD", "SYSTEM_EXEC",
+    "SHELL", "CMD", "EXEC",
     "QUERY", "QUERY_TABLE", "SQL",
 }
 

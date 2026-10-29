@@ -19,6 +19,7 @@ from typing import Generator
 import duckdb
 
 from app.config import settings
+from app.utils.file_utils import validate_dataset_id
 
 logger = logging.getLogger(__name__)
 
@@ -51,8 +52,11 @@ class DuckDBManager:
 
     def get_database_path(self, dataset_id: str) -> Path:
         """Return the filesystem path for the persistent DuckDB file for dataset_id."""
+        if dataset_id == ":memory:":
+            return Path(":memory:")
+        safe_id = validate_dataset_id(dataset_id)
         upload_dir = Path(settings.upload_dir)
-        return upload_dir / f"{dataset_id}.duckdb"
+        return upload_dir / f"{safe_id}.duckdb"
 
     def set_dataset_owner(self, dataset_id: str, owner_id: str) -> None:
         """Record dataset owner in the in-memory cache."""
@@ -64,11 +68,20 @@ class DuckDBManager:
         with self._lock:
             return self._owners.get(dataset_id)
 
-    def _configure_connection(self, conn: duckdb.DuckDBPyConnection) -> None:
-        """Apply memory, thread, and security resource limits to a DuckDB connection."""
+    def _configure_connection(self, conn: duckdb.DuckDBPyConnection, read_only: bool = False) -> None:
+        """Apply memory, thread, and security resource limits to a DuckDB connection.
+        
+        For read-only connections (querying and exports), disables external access at
+        the engine level to prevent OS command execution, arbitrary file access, and extension loading.
+        """
         try:
             conn.execute("SET threads = 2")
             conn.execute("SET max_memory = '512MB'")
+            if read_only:
+                try:
+                    conn.execute("SET enable_external_access = false")
+                except Exception as sec_exc:
+                    logger.debug("DuckDB external access lockdown note: %s", sec_exc)
         except Exception as exc:
             logger.debug("DuckDB connection configuration: %s", exc)
 
@@ -117,7 +130,7 @@ class DuckDBManager:
                 db_path.parent.mkdir(parents=True, exist_ok=True)
                 conn = duckdb.connect(database=str(db_path), read_only=read_only)
 
-            self._configure_connection(conn)
+            self._configure_connection(conn, read_only=read_only)
             self._connections[dataset_id] = conn
             if table_name:
                 self._table_names[dataset_id] = [table_name]
@@ -146,7 +159,7 @@ class DuckDBManager:
             if db_path.exists():
                 try:
                     ro_conn = duckdb.connect(database=str(db_path), read_only=True)
-                    self._configure_connection(ro_conn)
+                    self._configure_connection(ro_conn, read_only=True)
                     tables = [row[0] for row in ro_conn.execute("SHOW TABLES").fetchall()]
                     self._connections[dataset_id] = ro_conn
                     self._table_names[dataset_id] = tables
@@ -170,7 +183,7 @@ class DuckDBManager:
         if db_path.exists():
             try:
                 conn = duckdb.connect(database=str(db_path), read_only=True)
-                self._configure_connection(conn)
+                self._configure_connection(conn, read_only=True)
                 tables = self._introspect_tables(conn)
                 with self._lock:
                     self._connections[dataset_id] = conn
@@ -291,17 +304,22 @@ class DuckDBManager:
 
     def exists(self, dataset_id: str) -> bool:
         """Check if dataset exists in cache, as a persistent .duckdb file, or as raw upload files."""
+        try:
+            safe_id = validate_dataset_id(dataset_id)
+        except ValueError:
+            return False
+
         with self._lock:
-            if dataset_id in self._connections:
+            if safe_id in self._connections:
                 return True
 
-        db_path = self.get_database_path(dataset_id)
+        db_path = self.get_database_path(safe_id)
         if db_path.exists():
             return True
 
         upload_dir = Path(settings.upload_dir)
         if upload_dir.exists():
-            prefix = f"{dataset_id}_"
+            prefix = f"{safe_id}_"
             for f in upload_dir.iterdir():
                 if f.is_file() and f.name.startswith(prefix) and not f.name.endswith(".meta.json"):
                     return True
